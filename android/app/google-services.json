@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "998391121356",
+    "project_id": "elbaraexpress-9b834",
+    "storage_bucket": "elbaraexpress-9b834.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:5a1f9f942c51519aee8969",
+        "android_client_info": {
+          "package_name": "com.example.elbara_express"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:ce3b8e3e65ff3e5fee8969",
+        "android_client_info": {
+          "package_name": "com.example.elbara_express_livreur"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

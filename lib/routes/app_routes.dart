@@ -102,6 +102,7 @@ import 'package:elbara_express/presentation/verification_screen/binding/verifica
 import 'package:elbara_express/presentation/verification_screen/verification_screen.dart';
 import 'package:elbara_express/presentation/verification_with_error_screen/binding/verification_with_error_binding.dart';
 import 'package:elbara_express/presentation/verification_with_error_screen/verification_with_error_screen.dart';
+import 'package:elbara_express/presentation/gestionnaire_gare/home/home.dart';
 import 'package:get/get.dart';
 
 import '../presentation/chatbot/chatbot_screen.dart';
@@ -144,6 +145,9 @@ class AppRoutes {
   static const String homeContainerPage = '/home_container_page';
 
   static const String homeContainer1Screen = '/home_container1_screen';
+
+  static const String homeGestionnaireScreen = '/home_gestionnaire_gare_screen';
+
 
   static const String sendPackageScreen = '/send_package_screen';
 
@@ -482,6 +486,14 @@ class AppRoutes {
         EmptyMyOrdersBinding(),
       ],
     ),
+    GetPage(
+      name: homeGestionnaireScreen,
+      page: () => HomeGareScreen(),
+      // bindings: [
+      //   HomeGareScreen(),
+      // ],
+    ),
+    
     // GetPage(
     //   name: orderDetailsInTransitScreen,
     //   page: () => OrderDetailsInTransitScreen(),

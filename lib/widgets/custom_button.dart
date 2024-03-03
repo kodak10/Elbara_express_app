@@ -15,7 +15,7 @@ class CustomButton extends StatelessWidget {
       this.height,
       this.text,
       this.prefixWidget,
-      this.suffixWidget});
+      this.suffixWidget,});
 
   ButtonShape? shape;
 

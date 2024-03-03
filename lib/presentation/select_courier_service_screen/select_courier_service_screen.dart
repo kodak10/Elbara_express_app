@@ -1,9 +1,12 @@
 import 'package:elbara_express/core/utils/color_constant.dart';
+import 'package:elbara_express/core/utils/size_utils.dart';
 import 'package:elbara_express/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elbara_express/widgets/custom_button.dart';
+
 
 class SelectCourierServiceScreen extends StatefulWidget {
   const SelectCourierServiceScreen({Key? key}) : super(key: key);
@@ -116,7 +119,7 @@ class _SelectCourierServiceScreenState
                         Text('Moto'),
                       ],
                     ),
-                    Text('Prix'),
+                    Text('500'),
                   ],
                 ),
               ),
@@ -161,7 +164,7 @@ class _SelectCourierServiceScreenState
                         Text('Tricycle'),
                       ],
                     ),
-                    Text('Prix'),
+                    Text('800'),
                   ],
                 ),
               ),
@@ -206,7 +209,7 @@ class _SelectCourierServiceScreenState
                         Text('Camion'),
                       ],
                     ),
-                    Text('Prix'),
+                    Text('1500'),
                   ],
                 ),
               ),
@@ -218,8 +221,8 @@ class _SelectCourierServiceScreenState
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomButton(
-                buttonText: 'Payer Mainteant',
+              CustomButtonSelect(
+                buttonText: 'Payer Maintenant',
                 isSelected: selectedButton == 'now',
                 onPressed: () {
                   setState(() {
@@ -228,7 +231,7 @@ class _SelectCourierServiceScreenState
                 },
               ),
               SizedBox(width: 20),
-              CustomButton(
+              CustomButtonSelect(
                 buttonText: 'Payer à la Livraison',
                 isSelected: selectedButton == 'delivery',
                 onPressed: () {
@@ -239,22 +242,37 @@ class _SelectCourierServiceScreenState
               ),
             ],
           ),
-        ],
+        ]
       ),
+      // bottomNavigationBar: CustomButton(
+      //   buttonText: 'Suivant',
+      //   isSelected: true,
+      //   onPressed: () {
+      //     saveCommande();
+      //     // if (selectedButton == 'now') {
+      //     //   this.selectNow(); // Utilisez this pour appeler les méthodes de classe
+      //     // } else if (selectedButton == 'delivery') {
+      //     //   this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
+      //     // } else {
+      //     //   printError(info: 'Veuillez choisir un mode de paiement');
+      //     // }
+      //   },
+      // ),
       bottomNavigationBar: CustomButton(
-        buttonText: 'Suivant',
-        isSelected: true,
-        onPressed: () {
-          saveCommande();
-          // if (selectedButton == 'now') {
-          //   this.selectNow(); // Utilisez this pour appeler les méthodes de classe
-          // } else if (selectedButton == 'delivery') {
-          //   this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
-          // } else {
-          //   printError(info: 'Veuillez choisir un mode de paiement');
-          // }
-        },
-      ),
+                    height: getVerticalSize(54),
+                    text: "Suivant".tr,
+                    margin: getMargin(left: 16, right: 16, bottom: 40),
+                    onTap: () {
+                    //saveCommande();
+                    if (selectedButton == 'now') {
+                      this.selectNow(); // Utilisez this pour appeler les méthodes de classe
+                    } else if (selectedButton == 'delivery') {
+                      this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
+                    } else {
+                      printError(info: 'Veuillez choisir un mode de paiement');
+                    }
+                  },
+                    )
     );
   }
 
@@ -274,12 +292,12 @@ class _SelectCourierServiceScreenState
 // Déplacez ces méthodes en dehors de la classe CustomButton
 
 // Définition du widget CustomButton
-class CustomButton extends StatelessWidget {
+class CustomButtonSelect extends StatelessWidget {
   final String buttonText;
   final bool isSelected;
   final VoidCallback onPressed;
 
-  const CustomButton({
+  const CustomButtonSelect({
     required this.buttonText,
     required this.isSelected,
     required this.onPressed,

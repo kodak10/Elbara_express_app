@@ -12,20 +12,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
 
 
 class CourierService {
-  String nom;
+  String name;
   String logo;
 
   CourierService({
-    required this.nom,
+    required this.name,
     required this.logo,
   });
 
   static CourierService fromMap(Map<String, dynamic> data) {
     return CourierService(
-      nom: data['nom'] ?? '',
+      name: data['name'] ?? '',
       logo: data['logo'] ?? '',
     );
   }
@@ -246,25 +248,26 @@ class HomeContainerPage extends StatelessWidget {
                                       MainAxisAlignment.center,
                                   children: [
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        CustomImageView(
-                                          svgPath: data.logo,
+                                        SvgPicture.network(
+                                          data.logo,
+                                          width: getSize(24), // ajustez la largeur selon vos besoins
+                                          height: getSize(24), // ajustez la hauteur selon vos besoins
                                         ),
                                         SizedBox(
                                           width: 8,
                                         ),
                                         Text(
-                                          data.nom,
+                                          data.name,
                                           style: TextStyle(
                                             fontSize: 16,
-                                            fontWeight:
-                                                FontWeight.bold,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ],
                                     ),
+
                                   ],
                                 ),
                               ),

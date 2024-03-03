@@ -15,6 +15,7 @@ import 'package:dropdown_search/dropdown_search.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class SendPackageScreen extends StatefulWidget {
   SendPackageScreen({Key? key}) : super(key: key);
 
@@ -33,12 +34,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   final TextEditingController _poids = TextEditingController();
   final TextEditingController _taille = TextEditingController();
 
-  final List<String> items = [
-    "MD Transport",
-    "AVS",
-    "Utrako",
-    "UTB",
-  ];
+  String? selectedValue;
+  String? selectedGare;
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -53,35 +50,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
     );
   }
 
-  // void saveDataToFirebase() {
-  //   String id_compagny = _compagny.text;
-  //   String id_gare = _gare.text;
-  //   String lieu = _lieu.text;
-  //   String codeDuColis = _code.text;
-  //   String nomDeLaPersonne = _receptionneur.text;
-  //   String telephone = _telephone.text;
-  //   String poids = _poids.text;
-  //   String taille = _taille.text;
-
-  //   Map<String, dynamic> data = {
-  //     'id_compagny': id_compagny,
-  //     'id_gare': id_gare,
-  //     'lieu': lieu,
-  //     'codeDuColis': codeDuColis,
-  //     'nomDeLaPersonne': nomDeLaPersonne,
-  //     'telephone': telephone,
-  //     'poids': poids,
-  //     'taille': taille,
-  //   };
-
-  //   _firestore.collection('commande').add(data)
-  //     .then((value) {
-  //       print('Ajouter okay');
-  //     })
-  //     .catchError((error) {
-  //       print('Erreur: $error');
-  //     });
-  // }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -119,40 +88,78 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                         children: [
                           SizedBox(width: 20),
 
-                          Expanded(
-                            child: Padding(
-                              padding: getPadding(top: 19, bottom: 10),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    DropdownSearch<String>(
-                                      popupProps: PopupProps.menu(
-                                        showSelectedItems: true,
-                                        disabledItemFn: (String s) =>
-                                            s.startsWith('I'),
-                                      ),
-                                      items: const [
-                                        "Aucun"
-                                            "MD Transport",
-                                        "AVS",
-                                        "Utrako",
-                                        "UTB",
-                                      ],
-                                      dropdownDecoratorProps:
-                                          const DropDownDecoratorProps(
-                                        dropdownSearchDecoration:
-                                            InputDecoration(
-                                          labelText: "Selectionner une Gare",
-                                          hintText: "Gare",
+                          Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: getPadding(top: 19, bottom: 10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance.collection("compagnie").snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasError) {
+                                              return Center(
+                                                child: Text("Some error occured ${snapshot.error}"),
+                                              );
+                                            }
+                                            List<DropdownMenuItem> programItems = [];
+                                            if (!snapshot.hasData) {
+                                              return const CircularProgressIndicator();
+                                            } else {
+                                              final selectProgram = snapshot.data?.docs.reversed.toList();
+                                              if (selectProgram != null) {
+                                                for (var program in selectProgram) {
+                                                  programItems.add(
+                                                    DropdownMenuItem(
+                                                      value: program.id,
+                                                      child: Text(
+                                                        program['name'],
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                              return Padding(
+                                                padding: const EdgeInsets.all(10.0),
+                                                child: Container(
+                                                  padding: const EdgeInsets.only(right: 15, left: 15),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(color: Colors.grey, width: 1),
+                                                    borderRadius: BorderRadius.circular(15),
+                                                  ),
+                                                  child: DropdownButton(
+                                                    underline: const SizedBox(),
+                                                    isExpanded: true,
+                                                    hint: const Text(
+                                                      "La compagnie",
+                                                      style: TextStyle(fontSize: 16),
+                                                    ),
+                                                    value: selectedValue,
+                                                    items: programItems,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        selectedValue = value;
+                                                        selectedGare = "";
+                                                      });
+                                                    },
+                                                  ),
+                                                  
+                                                ),
+                                              );
+                                              
+                                            }
+                                          },
                                         ),
-                                      ),
-                                      onChanged: print,
-                                      selectedItem: "Aucun",
-                                    )
-                                  ]),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 20),
+
+                          //SizedBox(width: 20),
 
                           Row(
                             children: [
@@ -165,18 +172,50 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  
                                   children: [
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        FlutterDropdownSearch(
-                                          textController: _gare,
-                                          items: items,
-                                          dropdownHeight: 300,
-                                        ),
-                                      ],
-                                    ),
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        
+                                        children: [
+                                          FutureBuilder<QuerySnapshot>(
+                                            future: FirebaseFirestore.instance.collection('gare').where('compagnie', isEqualTo: selectedValue).get(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                                return CircularProgressIndicator();
+                                              }
+                                              if (snapshot.hasError) {
+                                                return Text('Erreur: ${snapshot.error}');
+                                              }
+                                              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                                                return Text('Aucune Gare Disponible');
+                                              }
+                                              return Column(
+                                                children: [
+                                                  DropdownButton<String>(
+                                                    hint: const Text('Choisir une gare'),
+                                                    value: selectedGare,
+                                                    onChanged: (String? newValue) {
+                                                      setState(() {
+                                                        selectedGare = newValue!;
+                                                      });
+                                                    },
+                                                    items: snapshot.data!.docs.map((DocumentSnapshot document) {
+                                                      return DropdownMenuItem<String>(
+                                                        value: document['name'],
+                                                        child: Text(document['name']),
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ),
+
+
+                                        ],
+                                      ),
+
                                     SizedBox(
                                       height: getVerticalSize(16),
                                     ),

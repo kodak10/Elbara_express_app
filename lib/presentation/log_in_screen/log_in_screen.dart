@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elbara_express/presentation/gestionnaire_gare/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -162,7 +164,30 @@ class _LogInScreenState extends State<LogInScreen> {
                               password: controller.passwordController.text,
                             );
                             // L'utilisateur est connecté avec succès
-                            onTapLogin();
+                            //onTapLogin();
+                            User? user = FirebaseAuth.instance.currentUser;
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user!.uid)
+                                .get()
+                                .then((DocumentSnapshot documentSnapshot) {
+                              if (documentSnapshot.exists) {
+                                if (documentSnapshot.get('role') == "user") {
+                                   Get.toNamed(
+                                      AppRoutes.homeContainer1Screen,
+                                    );
+                                } else {
+                                  Get.toNamed(
+                                      AppRoutes.homeGestionnaireScreen,
+                                    );
+                                }
+                              } else {
+                                print('Une erreur est survenue, veuillez contactez le service client.');
+                              }
+                            });
+
+                            
+                            
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
                               _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
@@ -228,6 +253,12 @@ _showSnackBar(String message) {
   );
 }
 
+
+  homeGestionnaireScreen() {
+    Get.toNamed(
+      AppRoutes.homeGestionnaireScreen,
+    );
+  }
 
   onTapTxtForgotpassword() {
     Get.toNamed(

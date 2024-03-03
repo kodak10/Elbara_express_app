@@ -1,210 +1,78 @@
-import 'package:colorful_safe_area/colorful_safe_area.dart';
-import 'package:elbara_express/core/app_export.dart';
-import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
-import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
-import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
-import 'package:elbara_express/widgets/custom_button.dart';
-import 'package:elbara_express/widgets/custom_text_form_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_dropdown_search/flutter_dropdown_search.dart';
-import 'package:dropdown_search/dropdown_search.dart';
-import 'controller/send_package_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
-class SendPackageScreen extends StatefulWidget {
-  SendPackageScreen({Key? key}) : super(key: key);
+class FirebaseDropdownMenuItem extends StatefulWidget {
+  const FirebaseDropdownMenuItem({super.key});
 
   @override
-  State<SendPackageScreen> createState() => _SendPackageScreenState();
+  _CommonStreamState createState() => _CommonStreamState();
 }
 
-class _SendPackageScreenState extends State<SendPackageScreen> {
-  final TextEditingController _compagny = TextEditingController();
-  final TextEditingController _gare = TextEditingController();
-  final TextEditingController _lieu = TextEditingController();
-  final TextEditingController _code = TextEditingController();
-  final TextEditingController _receptionneur = TextEditingController();
-  final TextEditingController _telephone = TextEditingController();
-  final TextEditingController _poids = TextEditingController();
-  final TextEditingController _taille = TextEditingController();
-
-  final List<String> items = [
-    "MD Transport",
-    "AVS",
-    "Utrako",
-    "UTB",
-  ];
-
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: ColorConstant.whiteA700,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-    );
-  }
-
-  void saveDataToFirebase() {
-    String id_compagny = _compagny.text;
-    String id_gare = _gare.text;
-    String lieu = _lieu.text;
-    String codeDuColis = _code.text;
-    String nomDeLaPersonne = _receptionneur.text;
-    String telephone = _telephone.text;
-    String poids = _poids.text;
-    String taille = _taille.text;
-
-    Map<String, dynamic> data = {
-      'id_compagny': id_compagny,
-      'id_gare': id_gare,
-      'lieu': lieu,
-      'codeDuColis': codeDuColis,
-      'nomDeLaPersonne': nomDeLaPersonne,
-      'telephone': telephone,
-      'poids': poids,
-      'taille': taille,
-    };
-
-    _firestore.collection('send_packages').add(data)
-      .then((value) {
-        print('Data added to Firestore');
-      })
-      .catchError((error) {
-        print('Failed to add data: $error');
-      });
-  }
+class _CommonStreamState extends State<FirebaseDropdownMenuItem> {
+  String? selectedValue;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        return true;
-      },
-      child: ColorfulSafeArea(
-        color: ColorConstant.whiteA700,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: ColorConstant.whiteA700,
-          appBar: CustomAppBar(
-            height: getVerticalSize(79),
-            leadingWidth: 42,
-            leading: AppbarImage(
-              height: getSize(24),
-              width: getSize(24),
-              svgPath: ImageConstant.imgArrowleft,
-              margin: getMargin(left: 18, top: 29, bottom: 26),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            centerTitle: true,
-            title: AppbarSubtitle1(text: "Envoyer un colis".tr),
-            styleType: Style.bgFillWhiteA700,
-          ),
-          body: Container(
-            child: Padding(
-              padding: getPadding(left: 16, right: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: Padding(
-                      padding: getPadding(top: 19, bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          DropdownSearch<String>(
-                            items: items,
-                            onChanged: print,
-                            dropdownSearchDecoration: InputDecoration(
-                              labelText: "Selectionner une Gare",
-                              hintText: "Gare",
-                            ),
-                            selectedItem: "MD Transport",
-                          ),
-                        ],
-                      ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: const Text(" Firebase DropdownMenuItems"),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("Programming_Language")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Some error occured ${snapshot.error}"),
+            );
+          }
+          List<DropdownMenuItem> programItems = [];
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          } else {
+            final selectProgram = snapshot.data?.docs.reversed.toList();
+            if (selectProgram != null) {
+              for (var program in selectProgram) {
+                programItems.add(
+                  DropdownMenuItem(
+                    value: program.id,
+                    child: Text(
+                      program['name'],
                     ),
                   ),
-                  SizedBox(width: 20),
-                  Row(
-                    children: [
-                      CustomImageView(
-                        svgPath: ImageConstant.imgTimeLineIcon,
-                      ),
-                      SizedBox(
-                        width: getHorizontalSize(16),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FlutterDropdownSearch(
-                                  textController: _gare,
-                                  items: items,
-                                  dropdownHeight: 300,
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: getVerticalSize(16),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Livrer à".tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: AppStyle.txtSubheadline,
-                                ),
-                                SizedBox(
-                                  height: getVerticalSize(8),
-                                ),
-                                CustomTextFormField(
-                                  hintText: "Livrer à".tr,
-                                  suffix: Container(
-                                    margin: getMargin(
-                                      left: 15,
-                                      top: 15,
-                                      right: 15,
-                                      bottom: 15,
-                                    ),
-                                    child: CustomImageView(
-                                      onTap: () {
-                                        // Handle onTap action
-                                      },
-                                      svgPath:
-                                          ImageConstant.imgLocationBlack900,
-                                    ),
-                                  ),
-                                  suffixConstraints: BoxConstraints(
-                                    maxHeight: getVerticalSize(54),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                );
+              }
+            }
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                padding: const EdgeInsets.only(right: 15, left: 15),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey, width: 1),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: DropdownButton(
+                  underline: const SizedBox(),
+                  isExpanded: true,
+                  hint: const Text(
+                    "Select the Items",
+                    style: TextStyle(fontSize: 20),
                   ),
-                  // Ajoutez les autres champs de texte et éléments ici
-                ],
+                  value: selectedValue,
+                  items: programItems,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedValue = value;
+                    });
+                  },
+                ),
               ),
-            ),
-          ),
-          bottomNavigationBar: CustomButton(
-            height: getVerticalSize(54),
-            text: "Suivant".tr,
-            margin: getMargin(left: 16, right: 16, b
+            );
+          }
+        },
+      ),
+    );
+  }
+}

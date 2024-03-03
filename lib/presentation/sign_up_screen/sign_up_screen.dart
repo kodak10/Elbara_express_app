@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
@@ -19,6 +20,8 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   SignUpController controller = Get.put(SignUpController());
+  static const String defaultRole = 'user'; // Définir le rôle par défaut
+
 
   @override
   void initState() {
@@ -186,7 +189,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           email: controller.emailController.text,
           password: controller.passwordController.text,
         );
-        // Sign-up successful, navigate to next screen
+        // Call function to post user details to Firestore
+        await postDetailsToFirestore(controller.emailController.text, defaultRole );        // Sign-up successful, navigate to next screen
         Get.toNamed(AppRoutes.homeContainer1Screen);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
@@ -200,6 +204,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         // Show error message or handle the exception as per your requirement
       }
     }
+  }
+
+  postDetailsToFirestore(String email, String rool) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    var user = FirebaseAuth.instance.currentUser;
+    CollectionReference ref = firebaseFirestore.collection('users');
+    await ref.doc(user!.uid).set({'email': email, 'role': defaultRole}); // Utiliser le rôle par défaut
+    // Get.toNamed(AppRoutes.login); // Remplacez AppRoutes.login par le nom de votre route de connexion
   }
 
   onTapGoogle() {

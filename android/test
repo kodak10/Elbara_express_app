@@ -1,5 +1,16 @@
+buildscript {
+    //ext.kotlin_version = '1.6.10' // Change here
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10" // Mettez à jour la version ici
+        // autres dépendances...
+    }
+}
+
 allprojects {
-    //ext.kotlin_version = '1.7.1'
     repositories {
         google()
         mavenCentral()

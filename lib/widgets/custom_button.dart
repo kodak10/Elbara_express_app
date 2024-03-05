@@ -1,44 +1,35 @@
-import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
+import 'package:elbara_express/core/app_export.dart';
 
 // ignore: must_be_immutable
 class CustomButton extends StatelessWidget {
-  CustomButton(
-      {this.shape,
-      this.padding,
-      this.variant,
-      this.fontStyle,
-      this.alignment,
-      this.margin,
-      this.onTap,
-      this.width,
-      this.height,
-      this.text,
-      this.prefixWidget,
-      this.suffixWidget,});
+  CustomButton({
+    this.shape,
+    this.padding,
+    this.variant,
+    this.fontStyle,
+    this.alignment,
+    this.margin,
+    this.onTap, // Ajouter onTap
+    this.width,
+    this.height,
+    this.text,
+    this.prefixWidget,
+    this.suffixWidget,
+  });
 
   ButtonShape? shape;
-
   ButtonPadding? padding;
-
   ButtonVariant? variant;
-
   ButtonFontStyle? fontStyle;
-
   Alignment? alignment;
-
   EdgeInsetsGeometry? margin;
-
-  VoidCallback? onTap;
+  VoidCallback? onTap; // Déclarer onTap
 
   double? width;
-
   double? height;
-
   String? text;
-
   Widget? prefixWidget;
-
   Widget? suffixWidget;
 
   @override
@@ -55,7 +46,7 @@ class CustomButton extends StatelessWidget {
     return Padding(
       padding: margin ?? EdgeInsets.zero,
       child: TextButton(
-        onPressed: onTap,
+        onPressed: onTap, // Utiliser onTap
         style: _buildTextButtonStyle(),
         child: _buildButtonWithOrWithoutIcon(),
       ),
@@ -240,6 +231,15 @@ class CustomButton extends StatelessWidget {
 
   _setFontStyle() {
     switch (fontStyle) {
+      case ButtonFontStyle.SFProTextBold18:
+        return TextStyle(
+          color: ColorConstant.black900,
+          fontSize: getFontSize(
+            18,
+          ),
+          fontFamily: 'SF Pro Text',
+          fontWeight: FontWeight.w700,
+        );
       case ButtonFontStyle.SFProTextSemibold16:
         return TextStyle(
           color: ColorConstant.black900,

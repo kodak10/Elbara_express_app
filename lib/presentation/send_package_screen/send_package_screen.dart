@@ -15,6 +15,8 @@ import 'package:dropdown_search/dropdown_search.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:google_places_autocomplete_flutter/google_places_autocomplete_flutter.dart';
+import 'package:google_places_autocomplete_flutter/model/prediction.dart';
 
 class SendPackageScreen extends StatefulWidget {
   SendPackageScreen({Key? key}) : super(key: key);
@@ -33,6 +35,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   final TextEditingController _telephone = TextEditingController();
   final TextEditingController _poids = TextEditingController();
   final TextEditingController _taille = TextEditingController();
+  final TextEditingController livrer_a = TextEditingController();
 
   String? selectedValue;
   String? selectedGare;
@@ -127,14 +130,14 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                   padding: const EdgeInsets.only(right: 15, left: 15),
                                                   decoration: BoxDecoration(
                                                     border: Border.all(color: Colors.grey, width: 1),
-                                                    borderRadius: BorderRadius.circular(15),
+                                                    borderRadius: BorderRadius.circular(8),
                                                   ),
                                                   child: DropdownButton(
                                                     underline: const SizedBox(),
                                                     isExpanded: true,
                                                     hint: const Text(
                                                       "La compagnie",
-                                                      style: TextStyle(fontSize: 16),
+                                                      style: TextStyle(fontSize: 14),
                                                     ),
                                                     value: selectedValue,
                                                     items: programItems,
@@ -219,36 +222,38 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                     SizedBox(
                                       height: getVerticalSize(16),
                                     ),
+                                    // Column(
+                                    //   crossAxisAlignment:
+                                    //       CrossAxisAlignment.start,
+                                    //   children: [
+                                    //     Text("Livrer à".tr,
+                                    //         overflow: TextOverflow.ellipsis,
+                                    //         textAlign: TextAlign.left,
+                                    //         style: AppStyle.txtSubheadline),
+                                    //     SizedBox(
+                                    //       height: getVerticalSize(8),
+                                    //     ),
+                                    //     CustomTextFormField(
+                                    //         hintText: "Livrer à".tr,
+                                            
+                                    //             )
+                                    //   ],
+                                    // )
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text("Livrer à".tr,
-                                            overflow: TextOverflow.ellipsis,
-                                            textAlign: TextAlign.left,
-                                            style: AppStyle.txtSubheadline),
-                                        SizedBox(
-                                          height: getVerticalSize(8),
+                                        Text(
+                                          "Livrer à",
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtSubheadline,
                                         ),
-                                        CustomTextFormField(
-                                            hintText: "Livrer à".tr,
-                                            suffix: Container(
-                                                margin: getMargin(
-                                                    left: 15,
-                                                    top: 15,
-                                                    right: 15,
-                                                    bottom: 15),
-                                                child: CustomImageView(
-                                                    onTap: () {
-                                                      Get.toNamed(AppRoutes
-                                                          .selectDeliveryAddressScreen);
-                                                    },
-                                                    svgPath: ImageConstant
-                                                        .imgLocationBlack900)),
-                                            suffixConstraints: BoxConstraints(
-                                                maxHeight: getVerticalSize(54)))
+                                        SizedBox(height: getVerticalSize(8)),
+                                        placesAutoCompleteTextField(),
+                                        
                                       ],
-                                    )
+                                    ),
+
                                   ],
                                 ),
                               )
@@ -276,17 +281,17 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                         textInputAction: TextInputAction.done,
                                         variant:
                                             TextFormFieldVariant.OutlineGray300,
-                                        prefix: Container(
-                                            margin: getMargin(
-                                                left: 16,
-                                                top: 15,
-                                                right: 16,
-                                                bottom: 15),
-                                            child: CustomImageView(
-                                                svgPath:
-                                                    ImageConstant.imgMail)),
-                                        prefixConstraints: BoxConstraints(
-                                            maxHeight: getVerticalSize(54)),
+                                        // prefix: Container(
+                                        //     margin: getMargin(
+                                        //         left: 16,
+                                        //         top: 15,
+                                        //         right: 16,
+                                        //         bottom: 15),
+                                        //     child: CustomImageView(
+                                        //         svgPath:
+                                        //             ImageConstant.imgMail)),
+                                        // prefixConstraints: BoxConstraints(
+                                        //     maxHeight: getVerticalSize(54)),
                                       ),
                                     ],
                                   ),
@@ -434,7 +439,9 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                 svgPath:
                                                     ImageConstant.imgMail)),
                                         prefixConstraints: BoxConstraints(
-                                            maxHeight: getVerticalSize(54)),
+                                            maxHeight: getVerticalSize(54)
+                                            ),
+
                                       ),
                                     ],
                                   ),
@@ -569,6 +576,31 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                     )));
   }
 
+placesAutoCompleteTextField() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: GooglePlaceAutoCompleteFlutterTextField(
+          textEditingController: livrer_a,
+          googleAPIKey: "AIzaSyDz0tgBl1m2nUR1jM2RxhNnRNfA_K4d1sw",
+          inputDecoration: InputDecoration(hintText: "La destination"),
+          debounceTime: 800,
+          countries: ["in", "fr"],
+          types: ['country'],
+          language: 'en',
+          isLatLngRequired: true,
+          getPlaceDetailWithLatLng: (Prediction prediction) {
+            print("placeDetails" + prediction.lng.toString());
+          },
+          itmClick: (Prediction prediction) {
+            livrer_a.text = prediction.description!;
+
+            livrer_a.selection = TextSelection.fromPosition(
+                TextPosition(offset: prediction.description!.length));
+          }
+          // default 600 ms ,
+          ),
+    );
+  }
   onTapDeliverto() {
     Get.toNamed(
       AppRoutes.selectDeliveryAddressScreen,

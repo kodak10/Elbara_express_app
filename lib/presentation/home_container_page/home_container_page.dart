@@ -40,6 +40,8 @@ class HomeContainerPage extends StatelessWidget {
 
   HomeContainerController controller = Get.put(HomeContainerController());
 
+  final User? user = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
     
@@ -320,137 +322,214 @@ class HomeContainerPage extends StatelessWidget {
                   height: getVerticalSize(16),
                 ),
                 // Commandes récentes
+                // SizedBox(
+                //   height: getSize(194),
+                //   child: ListView.builder(
+                //     padding: getPadding(left: 8, right: 8),
+                //     scrollDirection: Axis.horizontal,
+                //     itemCount:
+                //         controller.recentlyShipped.length < 2
+                //             ? controller.recentlyShipped.length
+                //             : 2,
+                //     itemBuilder: (context, index) {
+                //       RecentlyShipped data =
+                //           controller.recentlyShipped[index];
+                //       return Padding(
+                //         padding: getPadding(left: 8, right: 8),
+                //         child: Container(
+                //           width: getSize(308),
+                //           decoration: BoxDecoration(
+                //             color: ColorConstant.gray50,
+                //             borderRadius: BorderRadius.circular(
+                //                 getHorizontalSize(8)),
+                //           ),
+                //           child: Padding(
+                //             padding: getPadding(
+                //                 top: 16, left: 16, right: 16),
+                //             child: Column(
+                //               mainAxisAlignment:
+                //                   MainAxisAlignment.start,
+                //               crossAxisAlignment:
+                //                   CrossAxisAlignment.start,
+                //               children: [
+                //                 Row(
+                //                   mainAxisAlignment:
+                //                       MainAxisAlignment.start,
+                //                   crossAxisAlignment:
+                //                       CrossAxisAlignment.center,
+                //                   mainAxisSize: MainAxisSize.min,
+                //                   children: [
+                //                     CustomIconButton(
+                //                       height: 42,
+                //                       width: 42,
+                //                       shape:
+                //                           IconButtonShape.CircleBorder20,
+                //                       child: CustomImageView(
+                //                         svgPath: ImageConstant
+                //                             .imgArrowdownDeepPurple600,
+                //                       ),
+                //                     ),
+                //                     SizedBox(
+                //                       width: getHorizontalSize(8),
+                //                     ),
+                //                     Container(
+                //                       margin:
+                //                           getMargin(left: 8, top: 3),
+                //                       decoration: BoxDecoration(
+                //                         borderRadius:
+                //                             BorderRadiusStyle
+                //                                 .roundedBorder8,
+                //                       ),
+                //                       child: Column(
+                //                         mainAxisAlignment:
+                //                             MainAxisAlignment.start,
+                //                         crossAxisAlignment:
+                //                             CrossAxisAlignment.start,
+                //                         children: [
+                //                           Text(
+                //                             "Expédiés à".tr,
+                //                             overflow:
+                //                                 TextOverflow.ellipsis,
+                //                             textAlign: TextAlign.center,
+                //                             style: AppStyle
+                //                                 .txtSubheadlineGray600,
+                //                           ),
+                //                           Padding(
+                //                             padding: getPadding(
+                //                                 top: 4),
+                //                             child: Text(
+                //                               data.name!,
+                //                               overflow:
+                //                                   TextOverflow.ellipsis,
+                //                               textAlign: TextAlign.left,
+                //                               style: AppStyle
+                //                                   .txtSubheadline,
+                //                             ),
+                //                           ),
+                //                         ],
+                //                       ),
+                //                     ),
+                //                   ],
+                //                 ),
+                //                 SizedBox(
+                //                   height: getVerticalSize(15),
+                //                 ),
+                //                 Text(
+                //                   "Numéro de commande : ${data.orderID}",
+                //                   overflow: TextOverflow.ellipsis,
+                //                   textAlign: TextAlign.left,
+                //                   style:
+                //                       AppStyle.txtSFProTextRegular14,
+                //                 ),
+                //                 Padding(
+                //                   padding: getPadding(top: 4),
+                //                   child: Text(
+                //                     "Date de commande : ${data.date}",
+                //                     overflow: TextOverflow.ellipsis,
+                //                     textAlign: TextAlign.left,
+                //                     style:
+                //                         AppStyle.txtFootnote,
+                //                   ),
+                //                 ),
+                //                 SizedBox(
+                //                   height: getVerticalSize(15),
+                //                 ),
+                //                 CustomButton(
+                //                   onTap: () {
+                //                     Get.toNamed(AppRoutes
+                //                         .trackingDetailsScreen);
+                //                   },
+                //                   height: getSize(40),
+                //                   text: "Suivre la commande".tr,
+                //                   fontStyle: ButtonFontStyle
+                //                       .SFProTextBold15WhiteA700,
+                //                   padding: ButtonPadding.PaddingT0,
+                //                 ),
+                //               ],
+                //             ),
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
                 SizedBox(
-                  height: getSize(194),
-                  child: ListView.builder(
-                    padding: getPadding(left: 8, right: 8),
-                    scrollDirection: Axis.horizontal,
-                    itemCount:
-                        controller.recentlyShipped.length < 2
-                            ? controller.recentlyShipped.length
-                            : 2,
-                    itemBuilder: (context, index) {
-                      RecentlyShipped data =
-                          controller.recentlyShipped[index];
-                      return Padding(
-                        padding: getPadding(left: 8, right: 8),
-                        child: Container(
-                          width: getSize(308),
-                          decoration: BoxDecoration(
-                            color: ColorConstant.gray50,
-                            borderRadius: BorderRadius.circular(
-                                getHorizontalSize(8)),
-                          ),
-                          child: Padding(
-                            padding: getPadding(
-                                top: 16, left: 16, right: 16),
-                            child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.start,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.start,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    CustomIconButton(
-                                      height: 42,
-                                      width: 42,
-                                      shape:
-                                          IconButtonShape.CircleBorder20,
-                                      child: CustomImageView(
-                                        svgPath: ImageConstant
-                                            .imgArrowdownDeepPurple600,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: getHorizontalSize(8),
-                                    ),
-                                    Container(
-                                      margin:
-                                          getMargin(left: 8, top: 3),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadiusStyle
-                                                .roundedBorder8,
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Expédiés à".tr,
-                                            overflow:
-                                                TextOverflow.ellipsis,
-                                            textAlign: TextAlign.center,
-                                            style: AppStyle
-                                                .txtSubheadlineGray600,
-                                          ),
-                                          Padding(
-                                            padding: getPadding(
-                                                top: 4),
-                                            child: Text(
-                                              data.name!,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSubheadline,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: getVerticalSize(15),
-                                ),
-                                Text(
-                                  "Numéro de commande : ${data.orderID}",
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style:
-                                      AppStyle.txtSFProTextRegular14,
-                                ),
-                                Padding(
-                                  padding: getPadding(top: 4),
-                                  child: Text(
-                                    "Date de commande : ${data.date}",
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.left,
-                                    style:
-                                        AppStyle.txtFootnote,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: getVerticalSize(15),
-                                ),
-                                CustomButton(
-                                  onTap: () {
-                                    Get.toNamed(AppRoutes
-                                        .trackingDetailsScreen);
-                                  },
-                                  height: getSize(40),
-                                  text: "Suivre la commande".tr,
-                                  fontStyle: ButtonFontStyle
-                                      .SFProTextBold15WhiteA700,
-                                  padding: ButtonPadding.PaddingT0,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+  height: getSize(194),
+  child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('commande')
+            .where('userID', isEqualTo: user?.uid)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+      return ListView.builder(
+        padding: getPadding(left: 8, right: 8),
+        scrollDirection: Axis.horizontal,
+        itemCount: snapshot.data!.docs.length,
+        itemBuilder: (context, index) {
+          var document = snapshot.data!.docs[index];
+          var data = document.data() as Map<String, dynamic>;
+          return Padding(
+            padding: getPadding(left: 8, right: 8),
+            child: Container(
+              width: getSize(308),
+              decoration: BoxDecoration(
+                color: ColorConstant.gray50,
+                borderRadius: BorderRadius.circular(getHorizontalSize(8)),
+              ),
+              child: Padding(
+                padding: getPadding(top: 16, left: 16, right: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Expédiés à: ${data['name']}",
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      style: AppStyle.txtSubheadline,
+                    ),
+                    SizedBox(height: getVerticalSize(15)),
+                    Text(
+                      "Numéro de commande: ${data['orderID']}",
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left,
+                      style: AppStyle.txtSFProTextRegular14,
+                    ),
+                    Padding(
+                      padding: getPadding(top: 4),
+                      child: Text(
+                        "Date et heure de commande: ${data['date']}",
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.left,
+                        style: AppStyle.txtFootnote,
+                      ),
+                    ),
+                    SizedBox(height: getVerticalSize(15)),
+                    CustomButton(
+                      onTap: () {
+                        Get.toNamed(AppRoutes.trackingDetailsScreen);
+                      },
+                      height: getSize(40),
+                      text: "Suivre la commande",
+                      fontStyle: ButtonFontStyle.SFProTextBold15WhiteA700,
+                      padding: ButtonPadding.PaddingT0,
+                    ),
+                  ],
                 ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  ),
+),
+
                 SizedBox(
                   height: getVerticalSize(20),
                 ),

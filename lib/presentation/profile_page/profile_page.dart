@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        "lbl_profile".tr,
+                        "Mon Profil".tr,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                         style: AppStyle.txtSFProTextBold28,
@@ -100,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           top: 3,
                         ),
                         child: Text(
-                          "lbl_my_profile".tr,
+                          "Mon Compte".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtBody,
@@ -125,128 +125,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(AppRoutes.paymentMethodOneScreen);
-                },
-                child: Container(
-                  margin: getMargin(
-                    left: 16,
-                    top: 16,
-                    right: 16,
-                  ),
-                  padding: getPadding(
-                    left: 16,
-                    top: 15,
-                    right: 16,
-                    bottom: 15,
-                  ),
-                  decoration: AppDecoration.fillGray50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomImageView(
-                        svgPath: ImageConstant.imgSave,
-                        height: getSize(
-                          22,
-                        ),
-                        width: getSize(
-                          22,
-                        ),
-                      ),
-                      Padding(
-                        padding: getPadding(
-                          left: 8,
-                          top: 3,
-                        ),
-                        child: Text(
-                          "lbl_my_cards".tr,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtBody,
-                        ),
-                      ),
-                      Spacer(),
-                      CustomImageView(
-                        svgPath: ImageConstant.imgArrowrightBlack900,
-                        height: getSize(
-                          16,
-                        ),
-                        width: getSize(
-                          16,
-                        ),
-                        margin: getMargin(
-                          top: 3,
-                          right: 1,
-                          bottom: 3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(AppRoutes.myAddressScreen);
-                },
-                child: Container(
-                  margin: getMargin(
-                    left: 16,
-                    top: 16,
-                    right: 16,
-                  ),
-                  padding: getPadding(
-                    left: 16,
-                    top: 15,
-                    right: 16,
-                    bottom: 15,
-                  ),
-                  decoration: AppDecoration.outlineGray200,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomImageView(
-                        svgPath: ImageConstant.imgSignalBlack90022x22,
-                        height: getSize(
-                          22,
-                        ),
-                        width: getSize(
-                          22,
-                        ),
-                      ),
-                      Padding(
-                        padding: getPadding(
-                          left: 8,
-                          top: 3,
-                        ),
-                        child: Text(
-                          "lbl_my_address".tr,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtBody,
-                        ),
-                      ),
-                      Spacer(),
-                      CustomImageView(
-                        svgPath: ImageConstant.imgArrowrightBlack900,
-                        height: getSize(
-                          16,
-                        ),
-                        width: getSize(
-                          16,
-                        ),
-                        margin: getMargin(
-                          top: 3,
-                          right: 1,
-                          bottom: 3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              
+              
               GestureDetector(
                 onTap: () {
                   Get.toNamed(AppRoutes.customerSupportScreen);
@@ -283,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           top: 3,
                         ),
                         child: Text(
-                          "msg_customer_support".tr,
+                          "Support client".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtBody,
@@ -344,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           top: 3,
                         ),
                         child: Text(
-                          "lbl_privacy_policy".tr,
+                          "Politique et Confidentialité".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtBody,
@@ -418,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           top: 3,
                         ),
                         child: Text(
-                          "lbl_log_out".tr,
+                          "Se Déconnecter".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtBody,

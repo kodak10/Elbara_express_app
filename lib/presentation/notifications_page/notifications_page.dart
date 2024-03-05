@@ -19,113 +19,114 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return controller.notificationData.isEmpty
-        ? SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                app_bar(),
-                Spacer(),
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 0,
-                  margin: EdgeInsets.all(0),
-                  color: ColorConstant.deepPurple50,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusStyle.circleBorder70,
-                  ),
-                  child: Container(
-                    height: getSize(
-                      140,
-                    ),
-                    width: getSize(
-                      140,
-                    ),
-                    padding: getPadding(
-                      left: 30,
-                      top: 29,
-                      right: 30,
-                      bottom: 29,
-                    ),
-                    decoration: AppDecoration.fillDeeppurple50.copyWith(
-                      borderRadius: BorderRadiusStyle.circleBorder70,
-                    ),
-                    child: Stack(
-                      children: [
-                        CustomImageView(
-                          svgPath: ImageConstant.imgBell11,
-                          height: getSize(
-                            80,
-                          ),
-                          width: getSize(
-                            80,
-                          ),
-                          alignment: Alignment.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: getPadding(
-                    top: 19,
-                  ),
-                  child: Text(
-                    "msg_no_notification".tr,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left,
-                    style: AppStyle.txtSFProTextBold22,
-                  ),
-                ),
-                Container(
-                  width: getHorizontalSize(
-                    270,
-                  ),
-                  margin: getMargin(
-                    top: 14,
-                    bottom: 249,
-                  ),
-                  child: Text(
-                    "msg_pellentesque_eu".tr,
-                    maxLines: null,
-                    textAlign: TextAlign.center,
-                    style: AppStyle.txtBody,
-                  ),
-                ),
-              ],
-            ),
-          )
-        : Container(
-            child: Column(
-              children: [
-                app_bar(),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      Container(
-                          margin: getMargin(top: 15),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadiusStyle.roundedBorder8),
-                          child: ListView.separated(
-                              physics: BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              primary: false,
-                              separatorBuilder: (context, index) {
-                                return SizedBox(height: getVerticalSize(16));
-                              },
-                              itemCount: controller.notificationData.length,
-                              itemBuilder: (context, index) {
-                                NotificationsItemModel model =
-                                    controller.notificationData[index];
-                                return NotificationsItemWidget(model);
-                              })),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          );
+    return Scaffold();
+    // return controller.notificationData.isEmpty
+    //     ? SizedBox(
+    //         width: double.maxFinite,
+    //         child: Column(
+    //           mainAxisAlignment: MainAxisAlignment.start,
+    //           children: [
+    //             app_bar(),
+    //             Spacer(),
+    //             Card(
+    //               clipBehavior: Clip.antiAlias,
+    //               elevation: 0,
+    //               margin: EdgeInsets.all(0),
+    //               color: ColorConstant.deepPurple50,
+    //               shape: RoundedRectangleBorder(
+    //                 borderRadius: BorderRadiusStyle.circleBorder70,
+    //               ),
+    //               child: Container(
+    //                 height: getSize(
+    //                   140,
+    //                 ),
+    //                 width: getSize(
+    //                   140,
+    //                 ),
+    //                 padding: getPadding(
+    //                   left: 30,
+    //                   top: 29,
+    //                   right: 30,
+    //                   bottom: 29,
+    //                 ),
+    //                 decoration: AppDecoration.fillDeeppurple50.copyWith(
+    //                   borderRadius: BorderRadiusStyle.circleBorder70,
+    //                 ),
+    //                 child: Stack(
+    //                   children: [
+    //                     CustomImageView(
+    //                       svgPath: ImageConstant.imgBell11,
+    //                       height: getSize(
+    //                         80,
+    //                       ),
+    //                       width: getSize(
+    //                         80,
+    //                       ),
+    //                       alignment: Alignment.center,
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //             Padding(
+    //               padding: getPadding(
+    //                 top: 19,
+    //               ),
+    //               child: Text(
+    //                 "msg_no_notification".tr,
+    //                 overflow: TextOverflow.ellipsis,
+    //                 textAlign: TextAlign.left,
+    //                 style: AppStyle.txtSFProTextBold22,
+    //               ),
+    //             ),
+    //             Container(
+    //               width: getHorizontalSize(
+    //                 270,
+    //               ),
+    //               margin: getMargin(
+    //                 top: 14,
+    //                 bottom: 249,
+    //               ),
+    //               child: Text(
+    //                 "msg_pellentesque_eu".tr,
+    //                 maxLines: null,
+    //                 textAlign: TextAlign.center,
+    //                 style: AppStyle.txtBody,
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       )
+    //     : Container(
+    //         child: Column(
+    //           children: [
+    //             app_bar(),
+    //             Expanded(
+    //               child: ListView(
+    //                 children: [
+    //                   Container(
+    //                       margin: getMargin(top: 15),
+    //                       decoration: BoxDecoration(
+    //                           borderRadius: BorderRadiusStyle.roundedBorder8),
+    //                       child: ListView.separated(
+    //                           physics: BouncingScrollPhysics(),
+    //                           shrinkWrap: true,
+    //                           primary: false,
+    //                           separatorBuilder: (context, index) {
+    //                             return SizedBox(height: getVerticalSize(16));
+    //                           },
+    //                           itemCount: controller.notificationData.length,
+    //                           itemBuilder: (context, index) {
+    //                             NotificationsItemModel model =
+    //                                 controller.notificationData[index];
+    //                             return NotificationsItemWidget(model);
+    //                           })),
+    //                 ],
+    //               ),
+    //             )
+    //           ],
+    //         ),
+    //       );
   }
 
   Widget app_bar() {

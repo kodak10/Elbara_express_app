@@ -225,6 +225,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.10"
+  dio:
+    dependency: transitive
+    description:
+      name: dio
+      sha256: "49af28382aefc53562459104f64d16b9dfd1e8ef68c862d5af436cc8356ce5a8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.4.1"
   drop_down_search_field:
     dependency: "direct main"
     description:
@@ -560,6 +568,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  google_places_autocomplete_flutter:
+    dependency: "direct main"
+    description:
+      name: google_places_autocomplete_flutter
+      sha256: "1b5b8d63c73fb8681e551adaf585dfc3114cbae5ad2326349bd070c2960791ec"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   html:
     dependency: transitive
     description:

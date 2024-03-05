@@ -41,7 +41,7 @@ class CancelOrderOneScreen extends GetWidget<CancelOrderOneController> {
                                       Expanded(
                                           child: CustomButton(
                                               height: getVerticalSize(46),
-                                              text: "lbl_no".tr,
+                                              text: "Non".tr,
                                               margin: getMargin(right: 10),
                                               variant: ButtonVariant
                                                   .OutlineDeeppurple600,
@@ -58,7 +58,7 @@ class CancelOrderOneScreen extends GetWidget<CancelOrderOneController> {
                                                 Get.back();
                                               },
                                               height: getVerticalSize(46),
-                                              text: "lbl_yes".tr,
+                                              text: "Oui".tr,
                                               margin: getMargin(left: 10),
                                               padding:
                                                   ButtonPadding.PaddingAll11,

@@ -21,23 +21,23 @@ class CustomBottomBar extends StatelessWidget {
   List<BottomMenuModel> bottomMenuList = [
     BottomMenuModel(
       icon: ImageConstant.imgHomeUnselected,
-      title: "Home",
+      title: "Accueil",
       type: BottomBarEnum.Home,
       selectedicon: ImageConstant.imgHomeSelected,
     ),
     BottomMenuModel(
         icon: ImageConstant.imgOrderUnselected,
-        title: "My order",
+        title: "Mes commandes",
         type: BottomBarEnum.Order,
         selectedicon: ImageConstant.imgOrderSelected),
     BottomMenuModel(
         icon: ImageConstant.imgNotificationUnselected,
-        title: "Basket",
+        title: "Notifications",
         type: BottomBarEnum.Notification,
         selectedicon: ImageConstant.imgNotificationSelected),
     BottomMenuModel(
         icon: ImageConstant.imgProfileUnselected,
-        title: "User",
+        title: "Mon Profil",
         type: BottomBarEnum.Profile,
         selectedicon: ImageConstant.imgProfileSelected)
   ];

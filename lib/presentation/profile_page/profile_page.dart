@@ -66,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               GestureDetector(
                 onTap: () {
-                  Get.toNamed(AppRoutes.profileDetailsScreen);
+                  //Get.toNamed(AppRoutes.profileDetailsScreen);
                 },
                 child: Container(
                   margin: getMargin(

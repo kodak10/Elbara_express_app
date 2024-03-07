@@ -139,7 +139,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       "La compagnie",
                                                       style: TextStyle(fontSize: 14),
                                                     ),
-                                                    value: selectedValue,
+                                                    //value: selectedValue, parfait
                                                     items: programItems,
                                                     onChanged: (value) {
                                                       setState(() {

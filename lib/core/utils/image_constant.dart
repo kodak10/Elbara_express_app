@@ -35,10 +35,10 @@ class ImageConstant {
   static String imgTrackingOrder = 'assets/images/tracking_order_time_line.svg';
 
 
-  static String imgPaypalIcon = 'assets/images/paypal_icon.svg';
-  static String imgMasterCardIcon = 'assets/images/master_card.svg';
-  static String imgApplePayIcon = 'assets/images/apple_pay.svg';
-  static String imgGooglePayIcon = 'assets/images/google_pay_icon.svg';
+  static String imgPaypalIcon = 'assets/images/wave.jpg';
+  static String imgMasterCardIcon = 'assets/images/orange.png';
+  static String imgApplePayIcon = 'assets/images/moov.png';
+  static String imgGooglePayIcon = 'assets/images/mtn.png';
 
   static String imgVector = 'assets/images/img_vector.svg';
   static String imgTickIcon = 'assets/images/tick_icon.svg';

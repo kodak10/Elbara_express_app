@@ -1541,9 +1541,11 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                                                               color: ColorConstant
                                                                   .blueGray400))
                                                     ]))),
+
+                                                    // Parfait
                                         GestureDetector(
                                             onTap: () {
-                                              onTapEmptyMyorders();
+                                              onTapRecentlyShipped();
                                             },
                                             child: Container(
                                                 decoration: AppDecoration.white,
@@ -2824,11 +2826,14 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
 
   /// When the action is triggered, this function uses the `Get` package to
   /// push the named route for the emptyMyOrdersScreen.
-  onTapEmptyMyorders() {
-    Get.toNamed(
-      AppRoutes.emptyMyOrdersScreen,
-    );
-  }
+  /// //Parfait
+  // onTapEmptyMyorders() {
+  //   Get.toNamed(
+  //     AppRoutes.emptyMyOrdersScreen,
+      
+      
+  //   );
+  // }
 
   /// Navigates to the orderDetailsInTransitScreen when the action is triggered.
 

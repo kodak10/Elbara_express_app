@@ -49,7 +49,7 @@ class _LogOutScreenState extends State<LogOutScreen> {
                                             Get.back();
                                           },
                                           height: getVerticalSize(46),
-                                          text: "lbl_cancel".tr,
+                                          text: "Non".tr,
                                           margin: getMargin(right: 10),
                                           variant: ButtonVariant
                                               .OutlineDeeppurple600,
@@ -59,7 +59,7 @@ class _LogOutScreenState extends State<LogOutScreen> {
                                   Expanded(
                                       child: CustomButton(
                                     height: getVerticalSize(46),
-                                    text: "lbl_log_out".tr,
+                                    text: "Oui".tr,
                                     margin: getMargin(left: 10),
                                     padding: ButtonPadding.PaddingAll11,
                                     fontStyle:

@@ -1,10 +1,12 @@
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
+import 'package:elbara_express/presentation/verification_screen/verification_screen.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -22,6 +24,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   ForgotPasswordController controller = Get.put(ForgotPasswordController());
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  String _email = '';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
@@ -30,6 +35,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+  }
+
+  Future<void> _resetPassword(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: controller.emailController.text.trim(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Un email de réinitialisation a été envoyé."),
+        ),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text("Erreur lors de l'envoi de l'email de réinitialisation."),
+        ),
+      );
+    }
   }
 
   @override
@@ -56,7 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           onTapArrowleft();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "lbl_forgot_password".tr),
+                    title: AppbarSubtitle1(text: "Mot de passe oublié"),
                     styleType: Style.bgFillWhiteA700),
                 body: Form(
                     key: _formKey,
@@ -76,8 +101,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                       style: AppStyle.txtBody)),
                               CustomFloatingEditText(
                                   controller: controller.emailController,
-                                  labelText: "lbl_email_address2".tr,
-                                  hintText: "lbl_email_address2".tr,
+                                  labelText: "Adresse Email",
+                                  hintText: "Adresse Email",
                                   margin: getMargin(top: 37),
                                   prefixConstraints: BoxConstraints(
                                       maxHeight: getSize(54),
@@ -87,17 +112,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     if (value == null ||
                                         (!isValidEmail(value,
                                             isRequired: true))) {
-                                      return "Please enter valid email";
+                                      return "Adresse email non valide";
                                     }
                                     return null;
                                   }),
                               CustomButton(
                                   height: getVerticalSize(54),
-                                  text: "lbl_send".tr,
+                                  text: "Envoyer",
                                   margin: getMargin(top: 30, bottom: 5),
                                   onTap: () {
                                     if (_formKey.currentState!.validate()) {
-                                      onTapSend();
+                                      _resetPassword(context);
+
+                                      //_resetPassword(_email);
                                     }
                                   })
                             ]))))));

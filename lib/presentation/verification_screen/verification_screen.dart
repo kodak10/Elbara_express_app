@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({Key? key}) : super(key: key);
+  
 
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
@@ -32,6 +33,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    String _code = '';
+
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -77,7 +81,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 child: RichText(
                                     text: TextSpan(children: [
                                       TextSpan(
-                                          text: "lbl_code_sent_to".tr,
+                                          text: "Code envoyé à",
                                           style: TextStyle(
                                               color: ColorConstant.black900,
                                               fontSize: getFontSize(16),
@@ -117,7 +121,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
-                                              return "Please enter valid code";
+                                              return "Veuillez entrer le code";
                                             }
                                             return null;
                                           },
@@ -198,7 +202,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                     )),
                             CustomButton(
                                 height: getVerticalSize(54),
-                                text: "lbl_verify".tr,
+                                text: "Vérifier".tr,
                                 margin: getMargin(top: 30),
                                 onTap: () {
                                   if (_formKey.currentState!.validate()) {
@@ -217,7 +221,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                               fontFamily: 'SF Pro Text',
                                               fontWeight: FontWeight.w400)),
                                       TextSpan(
-                                          text: "lbl_resend_code".tr,
+                                          text: "Renvoyer le code".tr,
                                           style: TextStyle(
                                               color:
                                                   ColorConstant.deepPurple600,

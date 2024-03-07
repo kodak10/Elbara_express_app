@@ -102,7 +102,7 @@ import 'package:elbara_express/presentation/verification_screen/binding/verifica
 import 'package:elbara_express/presentation/verification_screen/verification_screen.dart';
 import 'package:elbara_express/presentation/verification_with_error_screen/binding/verification_with_error_binding.dart';
 import 'package:elbara_express/presentation/verification_with_error_screen/verification_with_error_screen.dart';
-import 'package:elbara_express/presentation/gestionnaire_gare/home/home.dart';
+import 'package:elbara_express/presentation/gestionnaire_gare/pages/dashboard.dart';
 import 'package:get/get.dart';
 
 import '../presentation/chatbot/chatbot_screen.dart';
@@ -488,7 +488,7 @@ class AppRoutes {
     ),
     GetPage(
       name: homeGestionnaireScreen,
-      page: () => HomeGareScreen(),
+      page: () => DashboardGestionnaireGare(),
       // bindings: [
       //   HomeGareScreen(),
       // ],

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Importer le package pour gérer la mémoire locale
+
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

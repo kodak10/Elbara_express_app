@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:elbara_express/presentation/gestionnaire_gare/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,6 +7,7 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/custom_floating_edit_text.dart';
 import 'controller/log_in_controller.dart';
 
@@ -148,10 +148,11 @@ class _LogInScreenState extends State<LogInScreen> {
                   ),
                   CustomButton(
                     height: getVerticalSize(54),
-                    text: "Se Connecter",
+                    text: "Se Connecté",
                     margin: getMargin(top: 31),
                     onTap: () async {
-                      
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      prefs.setBool('isLoggedIn', true);
                       if (_formKey.currentState!.validate()) {
                         setState(() {
                               _isLoading = true; // Mettre à jour l'état de chargement

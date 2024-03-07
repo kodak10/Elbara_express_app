@@ -6,7 +6,9 @@ import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../courier_services_screen/widgets/courier_item_widget.dart';
 import '../home_container_page/controller/home_container_controller.dart';
+import '../home_container_page/models/corier_service_model.dart';
 import 'controller/courier_services_controller.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -58,7 +60,7 @@ class _CourierServicesScreenState extends State<CourierServicesScreen> {
                           onTapArrowleft14();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "Nos compagnies".tr),
+                    title: AppbarSubtitle1(text: "msg_courier_services2".tr),
                     styleType: Style.bgFillWhiteA700),
                 body: StreamBuilder<QuerySnapshot>(
                             stream: FirebaseFirestore.instance.collection('compagnie').snapshots(),
@@ -79,7 +81,7 @@ class _CourierServicesScreenState extends State<CourierServicesScreen> {
                                 itemBuilder: (context, index) {
                                   // Adaptation nécessaire en fonction de la structure de vos données
                                   String companyName = documents[index].get('name');
-                                  String companyLogoUrl = documents[index].get('logo');
+                                  String companyLogoUrl = documents[index].get('logoUrl');
                                   return ListTile(
                                     leading: CircleAvatar(
                                       backgroundImage: NetworkImage(companyLogoUrl),

@@ -21,6 +21,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   SignUpController controller = Get.put(SignUpController());
   static const String defaultRole = 'user'; // Définir le rôle par défaut
+  static const String compagnie = ''; // Définir le rôle par défaut
+  static const String gare = ''; // Définir le rôle par défaut
+  static const String imagepath = ''; // Définir le rôle par défaut
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+
 
 
   @override
@@ -188,9 +195,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: controller.emailController.text,
           password: controller.passwordController.text,
+          
         );
         // Call function to post user details to Firestore
-        await postDetailsToFirestore(controller.emailController.text, defaultRole );        // Sign-up successful, navigate to next screen
+        //await postDetailsToFirestore(controller.emailController.text, defaultRole );
+        await postDetailsToFirestore(
+        controller.emailController.text,
+        controller.nameController.text, // Pass the name from the nameController
+        defaultRole,
+        controller.phoneNumberController.text, // Pass the phoneNumber from the phoneNumberController
+      );      // Sign-up successful, navigate to next screen
         Get.toNamed(AppRoutes.homeContainer1Screen);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
@@ -206,23 +220,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  postDetailsToFirestore(String email, String rool) async {
+  postDetailsToFirestore(String email, String name, String role, String phoneNumber,) async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = FirebaseAuth.instance.currentUser;
     CollectionReference ref = firebaseFirestore.collection('users');
-    await ref.doc(user!.uid).set({'email': email, 'role': defaultRole}); // Utiliser le rôle par défaut
-    // Get.toNamed(AppRoutes.login); // Remplacez AppRoutes.login par le nom de votre route de connexion
+    await ref.doc(user!.uid).set({
+      'email': email,
+      'displayName': name,
+      'role': defaultRole,
+      'contact' : phoneNumber,
+      'compagnie' : compagnie,
+      'gare' : gare,
+      'imagepath' : imagepath,
+      
+    }); // Utiliser le rôle par défaut
+    Get.toNamed(AppRoutes.logInScreen); // Remplacez AppRoutes.login par le nom de votre route de connexion
   }
 
-  onTapGoogle() {
-    // Handle Google sign-up
-    // Get.toNamed(AppRoutes.citySelectionScreen);
-  }
-
-  onTapApple() {
-    // Handle Apple sign-up
-    // Get.toNamed(AppRoutes.citySelectionScreen);
-  }
+ 
 
   onTapTxtAlreadyhavean() {
     Get.back();

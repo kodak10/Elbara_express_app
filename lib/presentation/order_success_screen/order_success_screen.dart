@@ -84,7 +84,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                           CustomButton(
                               height: getVerticalSize(53),
                               width: getHorizontalSize(164),
-                              text: "Page d'Accueil".tr,
+                              text: "Retour".tr,
                               margin: getMargin(top: 38, bottom: 5),
                               onTap: () {
                                 onTapGotohome();

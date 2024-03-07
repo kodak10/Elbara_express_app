@@ -68,7 +68,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                           children: [
                             Padding(
                               padding: getPadding(left: 16, right: 16),
-                              child: Text("Mode de payment".tr,
+                              child: Text("Mode de paiement".tr,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.left,
                                   style: AppStyle.txtSFProTextBold20),

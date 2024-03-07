@@ -208,6 +208,10 @@
 //   }
 // }
 
+import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
+import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
+import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
@@ -226,90 +230,131 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Mes Commandes"),
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('commande')
-            .where('userID', isEqualTo: user?.uid)
-            .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          return _buildOrderList(snapshot.data!.docs);
+     User? user = FirebaseAuth.instance.currentUser;
+    return WillPopScope(
+        onWillPop: () async {
+          Get.back();
+          return true;
         },
-      ),
-    );
+        child: ColorfulSafeArea(
+            color: ColorConstant.whiteA700,
+            child: Scaffold(
+              backgroundColor: ColorConstant.whiteA700,
+              appBar: CustomAppBar(
+                  height: getVerticalSize(79),
+                  leadingWidth: 42,
+                  leading: AppbarImage(
+                      height: getSize(24),
+                      width: getSize(24),
+                      svgPath: ImageConstant.imgArrowleft,
+                      margin: getMargin(left: 18, top: 29, bottom: 26),
+                      onTap: () {
+                        onTapArrowleft15();
+                      }),
+                  centerTitle: true,
+                  title: AppbarSubtitle1(text: "Mes Commandes".tr),
+                  styleType: Style.bgFillWhiteA700),
+              body: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                    .collection('commande')
+                    .where('userID', isEqualTo: user?.uid)
+                    .where('status', isEqualTo: 'en cours') // Filtrer par statut de la commande
+                    //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
+                    .limit(5) // Limiter à 5 commandes
+                    .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Erreur: ${snapshot.error}'),
+                      );
+                    }
+                    List<DocumentSnapshot> documents = snapshot.data!.docs;
+                    
+                    return ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: documents.length,
+                      itemBuilder: (context, index) {
+                        // var orderId = documents.id;
+                        // var data = documents.data() as Map<String, dynamic>;
+                        // Adaptation nécessaire en fonction de la structure de vos données
+                       // String orderID = documents[index].get('orderID');
+                        String name = documents[index].get('nomDeLaPersonne');
+                        //String date = documents[index].get('date');
+                        String status = documents[index].get('status');
+                        bool isCompleted = status == 'terminé';
+  
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(Icons.arrow_downward),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Expédié à: $name',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12),
+                                  //Text('Numéro de commande: $orderID'),
+                                  // Text(
+                                  //   "Date et heure de commande: ${DateFormat("d MMMM y à HH:mm:ss").format(data['date'].toDate())}",
+                                  //   ),
+                                  //Text('ID de commande: $orderID'),
+                                  // Text(
+                                  //   "Date et heure de commande: ${DateFormat("d MMMM y à HH:mm:ss").format(data['date'].toDate())}",
+                                  //   ),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    'Statut de la commande: $status',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 16),
+                                  if (!isCompleted)
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Get.toNamed(AppRoutes.trackingDetailsScreen);
+
+                                      },
+                                      child: Text('Suivre la Commande'),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+            )));
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Vous n'avez pas encore passé de commandes.",
-            style: AppStyle.txtSFProTextBold28,
-          ),
-          CustomButton(
-            text: "Passer une commande",
-            onTap: () {
-              // Action lorsque l'utilisateur appuie sur le bouton pour passer une commande
-            },
-          ),
-        ],
-      ),
-    );
+  onTapTrackpackage() {
+    Get.toNamed(AppRoutes.trackingDetailsTwoScreen);
   }
 
-  Widget _buildOrderList(List<DocumentSnapshot> documents) {
-    return ListView.builder(
-      itemCount: documents.length,
-      itemBuilder: (BuildContext context, int index) {
-        var document = documents[index];
-        var orderId = document.id;
-        var orderData = document.data() as Map<String, dynamic>;
-        // Ici, vous pouvez utiliser les données de la commande, telles que orderData['nom'], orderData['date'], etc.
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: ColorConstant.gray50,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ListTile(
-              title: Text(
-                "Commande: $orderId",
-                style: AppStyle.txtSFProTextBold20,
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Nom: ${orderData['nom']}",
-                    style: AppStyle.txtSFProTextRegular17,
-                  ),
-                  Text(
-                    "Date: ${orderData['date']}",
-                    style: AppStyle.txtSFProTextRegular17,
-                  ),
-                  // Ajoutez d'autres détails de la commande ici
-                ],
-              ),
-              // Afficher d'autres détails de la commande ici
-            ),
-          ),
-        );
-      },
-    );
+  onTapArrowleft15() {
+    Get.back();
   }
 }
 

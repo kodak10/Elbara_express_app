@@ -1,5 +1,6 @@
 import 'package:elbara_express/presentation/home_container_page/models/home_slider_model.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:intl/intl.dart';
 import '../home_container_page/widgets/slidermaskgroup_item_widget.dart';
 import 'controller/home_container_controller.dart';
 import 'models/corier_service_model.dart';
@@ -157,7 +158,7 @@ class HomeContainerPage extends StatelessWidget {
                       ),
                       category_button(
                         () {
-                          Get.toNamed(AppRoutes.orderTrackingScreen);
+                          //Get.toNamed(AppRoutes.orderTrackingScreen);
                         },
                         "Suivre un colis".tr,
                         ImageConstant.imgOrderTracingIcon,
@@ -459,6 +460,9 @@ class HomeContainerPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('commande')
             .where('userID', isEqualTo: user?.uid)
+            .where('status', isEqualTo: 'en cours') // Filtrer par statut de la commande
+            //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
+            .limit(5) // Limiter à 5 commandes
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
@@ -472,6 +476,7 @@ class HomeContainerPage extends StatelessWidget {
         itemCount: snapshot.data!.docs.length,
         itemBuilder: (context, index) {
           var document = snapshot.data!.docs[index];
+          var orderId = document.id;
           var data = document.data() as Map<String, dynamic>;
           return Padding(
             padding: getPadding(left: 8, right: 8),
@@ -488,14 +493,14 @@ class HomeContainerPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Expédiés à: ${data['name']}",
+                      "Expédiés à: ${data['nomDeLaPersonne']}",
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtSubheadline,
                     ),
                     SizedBox(height: getVerticalSize(15)),
                     Text(
-                      "Numéro de commande: ${data['orderID']}",
+                      "Numéro de commande: $orderId",
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtSFProTextRegular14,
@@ -503,16 +508,25 @@ class HomeContainerPage extends StatelessWidget {
                     Padding(
                       padding: getPadding(top: 4),
                       child: Text(
-                        "Date et heure de commande: ${data['date']}",
+                        "Date et heure de commande: ${DateFormat("d MMMM y à HH:mm:ss").format(data['date'].toDate())}",
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                         style: AppStyle.txtFootnote,
                       ),
+                      
                     ),
                     SizedBox(height: getVerticalSize(15)),
                     CustomButton(
                       onTap: () {
-                        Get.toNamed(AppRoutes.trackingDetailsScreen);
+                        Get.toNamed(
+                          AppRoutes.trackingDetailsScreen,
+                          // arguments: {
+                          //   'name': name, // Nom de la personne
+                          //   'orderID': orderID, // Numéro de commande
+                          //   'status': status, // Statut de la commande
+                          //   // Autres informations de la commande...
+                          // },
+                        );
                       },
                       height: getSize(40),
                       text: "Suivre la commande",

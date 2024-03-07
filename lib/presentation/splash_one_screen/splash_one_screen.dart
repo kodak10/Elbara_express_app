@@ -1,6 +1,7 @@
 import 'controller/splash_one_controller.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore_for_file: must_be_immutable
 class SplashOneScreen extends GetWidget<SplashOneController> {

@@ -445,7 +445,41 @@ class CustomButtonSelect extends StatelessWidget {
         backgroundColor: isSelected
             ? MaterialStateProperty.all(Colors.blue)
             : MaterialStateProperty.all(Colors.transparent),
-      ),
-    );
+      )
+      );
+    //   ElevatedButton(
+    //   onPressed: () {},
+    //   //child: const Text('Fluttering Button'),
+    //   child: Text(
+    //     buttonText,
+    //     style: TextStyle(
+    //       color: isSelected ? Colors.white : Colors.blue,
+    //     ),
+    //   ),
+    //   style: ButtonStyle(
+    //     backgroundColor: isSelected
+    //     ? MaterialStateProperty.all(Colors.deepPurpleAccent)
+    //     : MaterialStateProperty.all(Colors.transparent),
+
+    //     padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
+
+    //     //backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+    //     shadowColor: MaterialStateProperty.all<Color>(Colors.grey),
+
+    //     elevation: MaterialStateProperty.resolveWith<double>(
+    //       (Set<MaterialState> states) {
+    //         if (states.contains(MaterialState.pressed)) return 10;
+    //         return 5; // default elevation
+    //       },
+    //     ),
+    //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    //       RoundedRectangleBorder(
+    //         borderRadius: BorderRadius.circular(25),
+    //       ),
+    //     ),
+    //     animationDuration: Duration(milliseconds: 200)
+    //   ),
+    // );
+    
   }
 }

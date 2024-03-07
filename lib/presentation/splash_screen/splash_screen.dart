@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'controller/splash_controller.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

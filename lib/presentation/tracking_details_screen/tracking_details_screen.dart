@@ -49,7 +49,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                           onTapArrowleft12();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "msg_tracking_details".tr),
+                    title: AppbarSubtitle1(text: "Suivi de commande".tr),
                     styleType: Style.bgFillWhiteA700),
                 body: Container(
                     width: double.maxFinite,

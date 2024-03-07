@@ -9,7 +9,7 @@ final Map<String, String> enUs = {
   "msg_new_mexico_31134": " New Mexico 31134",
   "msg_tracking_details3": "Tracking details One",
   "msg_please_provide_the":
-      "Please provide the email address that you used when signed up for your account.",
+      "Veuillez fournir l'adresse e-mail que vous avez utilisée lors de la création de votre compte.",
   "lbl_30_off_on": "30% Off on \n",
   "lbl_reset_password": "Reset password",
   "msg_maecenas_egestas":
@@ -240,7 +240,7 @@ final Map<String, String> enUs = {
   "msg_already_have_an2": "Already have an account ? ",
   "lbl_view_all": "View all",
   "msg_cancel_order_one": "cancel order One",
-  "msg_your_package_book": "Votre commande à été effectuer avec succès",
+  "msg_your_package_book": "Votre commande a été effectuée avec succès",
   "msg_your_order_has_been": "Your Order has been placed successfully",
   "msg_sed_sollicitudin":
       "Sed sollicitudin nisi mollis libero consectetur rutrum. Nam maximus mollis nisl quis facilisis. Integer fermentum commodo nibh. Ut mollis tincidunt hendrerit. Duis ipsum velit, maximus sed commodo imperdiet, dapibus id velit. Nullam in maximus enim. Pellentesque vulputate nisi sit amet lacus pulvinar finibus. Nullam sit amet enim id nibh volutpat gravida vitae in orci. Quisque nibh nisl, congue in ex a, ultricies ultrices metus. ",
@@ -272,7 +272,7 @@ final Map<String, String> enUs = {
       "Hello, Welcome Customer \nSupport How May i Help You",
   "lbl_courier": "COURIER",
   "msg_join_the_community": "Join the community. Sign up and connect",
-  "msg_don_t_receive_code2": "Don’t receive code? ",
+  "msg_don_t_receive_code2": "Vous n'avez pas reçu de code?",
   "msg_tracking_details": "Tracking details",
   "msg_shipping_address": "Shipping Address :",
   "lbl_22_h_ago": "22 h ago",

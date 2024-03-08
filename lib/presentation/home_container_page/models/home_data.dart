@@ -10,9 +10,9 @@ class HomeData {
       HomeSlider(ImageConstant.imgSlider1st,
           "Obtenez 25 % de réduction sur le premier service"),
       HomeSlider(ImageConstant.imgSlider2nd,
-          "Obtenez 25 % de réduction sur le premier service"),
+          "Vivez l'Expérience de la Livraison Réinventée"),
       HomeSlider(ImageConstant.imgSlider3rd,
-          "Obtenez 25 % de réduction sur le premier service"),
+          "Économisez Instantanément sur Votre Prochaine Commande !"),
     ];
   }
 

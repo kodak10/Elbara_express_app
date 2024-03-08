@@ -14,6 +14,8 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+
 
 
 
@@ -158,7 +160,7 @@ class HomeContainerPage extends StatelessWidget {
                       ),
                       category_button(
                         () {
-                          //Get.toNamed(AppRoutes.orderTrackingScreen);
+                          Get.toNamed(AppRoutes.orderTrackingScreen);
                         },
                         "Suivre un colis".tr,
                         ImageConstant.imgOrderTracingIcon,
@@ -322,147 +324,14 @@ class HomeContainerPage extends StatelessWidget {
                 SizedBox(
                   height: getVerticalSize(16),
                 ),
-                // Commandes récentes
-                // SizedBox(
-                //   height: getSize(194),
-                //   child: ListView.builder(
-                //     padding: getPadding(left: 8, right: 8),
-                //     scrollDirection: Axis.horizontal,
-                //     itemCount:
-                //         controller.recentlyShipped.length < 2
-                //             ? controller.recentlyShipped.length
-                //             : 2,
-                //     itemBuilder: (context, index) {
-                //       RecentlyShipped data =
-                //           controller.recentlyShipped[index];
-                //       return Padding(
-                //         padding: getPadding(left: 8, right: 8),
-                //         child: Container(
-                //           width: getSize(308),
-                //           decoration: BoxDecoration(
-                //             color: ColorConstant.gray50,
-                //             borderRadius: BorderRadius.circular(
-                //                 getHorizontalSize(8)),
-                //           ),
-                //           child: Padding(
-                //             padding: getPadding(
-                //                 top: 16, left: 16, right: 16),
-                //             child: Column(
-                //               mainAxisAlignment:
-                //                   MainAxisAlignment.start,
-                //               crossAxisAlignment:
-                //                   CrossAxisAlignment.start,
-                //               children: [
-                //                 Row(
-                //                   mainAxisAlignment:
-                //                       MainAxisAlignment.start,
-                //                   crossAxisAlignment:
-                //                       CrossAxisAlignment.center,
-                //                   mainAxisSize: MainAxisSize.min,
-                //                   children: [
-                //                     CustomIconButton(
-                //                       height: 42,
-                //                       width: 42,
-                //                       shape:
-                //                           IconButtonShape.CircleBorder20,
-                //                       child: CustomImageView(
-                //                         svgPath: ImageConstant
-                //                             .imgArrowdownDeepPurple600,
-                //                       ),
-                //                     ),
-                //                     SizedBox(
-                //                       width: getHorizontalSize(8),
-                //                     ),
-                //                     Container(
-                //                       margin:
-                //                           getMargin(left: 8, top: 3),
-                //                       decoration: BoxDecoration(
-                //                         borderRadius:
-                //                             BorderRadiusStyle
-                //                                 .roundedBorder8,
-                //                       ),
-                //                       child: Column(
-                //                         mainAxisAlignment:
-                //                             MainAxisAlignment.start,
-                //                         crossAxisAlignment:
-                //                             CrossAxisAlignment.start,
-                //                         children: [
-                //                           Text(
-                //                             "Expédiés à".tr,
-                //                             overflow:
-                //                                 TextOverflow.ellipsis,
-                //                             textAlign: TextAlign.center,
-                //                             style: AppStyle
-                //                                 .txtSubheadlineGray600,
-                //                           ),
-                //                           Padding(
-                //                             padding: getPadding(
-                //                                 top: 4),
-                //                             child: Text(
-                //                               data.name!,
-                //                               overflow:
-                //                                   TextOverflow.ellipsis,
-                //                               textAlign: TextAlign.left,
-                //                               style: AppStyle
-                //                                   .txtSubheadline,
-                //                             ),
-                //                           ),
-                //                         ],
-                //                       ),
-                //                     ),
-                //                   ],
-                //                 ),
-                //                 SizedBox(
-                //                   height: getVerticalSize(15),
-                //                 ),
-                //                 Text(
-                //                   "Numéro de commande : ${data.orderID}",
-                //                   overflow: TextOverflow.ellipsis,
-                //                   textAlign: TextAlign.left,
-                //                   style:
-                //                       AppStyle.txtSFProTextRegular14,
-                //                 ),
-                //                 Padding(
-                //                   padding: getPadding(top: 4),
-                //                   child: Text(
-                //                     "Date de commande : ${data.date}",
-                //                     overflow: TextOverflow.ellipsis,
-                //                     textAlign: TextAlign.left,
-                //                     style:
-                //                         AppStyle.txtFootnote,
-                //                   ),
-                //                 ),
-                //                 SizedBox(
-                //                   height: getVerticalSize(15),
-                //                 ),
-                //                 CustomButton(
-                //                   onTap: () {
-                //                     Get.toNamed(AppRoutes
-                //                         .trackingDetailsScreen);
-                //                   },
-                //                   height: getSize(40),
-                //                   text: "Suivre la commande".tr,
-                //                   fontStyle: ButtonFontStyle
-                //                       .SFProTextBold15WhiteA700,
-                //                   padding: ButtonPadding.PaddingT0,
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // ),
                 SizedBox(
   height: getSize(194),
   child: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('commande')
             .where('userID', isEqualTo: user?.uid)
-            .where('status', isEqualTo: 'en cours') // Filtrer par statut de la commande
             //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
-            .limit(5) // Limiter à 5 commandes
+            .limit(5) // parfait
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
@@ -500,7 +369,7 @@ class HomeContainerPage extends StatelessWidget {
                     ),
                     SizedBox(height: getVerticalSize(15)),
                     Text(
-                      "Numéro de commande: $orderId",
+                      "N° de commande: $orderId",
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtSFProTextRegular14,
@@ -508,7 +377,7 @@ class HomeContainerPage extends StatelessWidget {
                     Padding(
                       padding: getPadding(top: 4),
                       child: Text(
-                        "Date et heure de commande: ${DateFormat("d MMMM y à HH:mm:ss").format(data['date'].toDate())}",
+                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['date'].toDate())}",
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                         style: AppStyle.txtFootnote,
@@ -520,12 +389,13 @@ class HomeContainerPage extends StatelessWidget {
                       onTap: () {
                         Get.toNamed(
                           AppRoutes.trackingDetailsScreen,
-                          // arguments: {
-                          //   'name': name, // Nom de la personne
-                          //   'orderID': orderID, // Numéro de commande
-                          //   'status': status, // Statut de la commande
-                          //   // Autres informations de la commande...
-                          // },
+                         arguments: {
+                            'name': data['nomDeLaPersonne'], // Nom de la personne
+                            'orderID': orderId, // Numéro de commande
+                            'status': data['status'], // Statut de la commande
+                            'date': data['date'].toDate(), // Date de la commande
+                            // Vous pouvez ajouter d'autres informations de la commande ici
+                          },
                         );
                       },
                       height: getSize(40),

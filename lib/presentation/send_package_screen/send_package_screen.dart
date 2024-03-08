@@ -139,7 +139,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       "La compagnie",
                                                       style: TextStyle(fontSize: 14),
                                                     ),
-                                                    //value: selectedValue, parfait
+                                                    value: selectedValue, //parfait
                                                     items: programItems,
                                                     onChanged: (value) {
                                                       setState(() {
@@ -155,6 +155,9 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                             }
                                           },
                                         ),
+                                        
+  
+
                                       ],
                                     ),
                                   ),
@@ -205,8 +208,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                     },
                                                     items: snapshot.data!.docs.map((DocumentSnapshot document) {
                                                       return DropdownMenuItem<String>(
-                                                        value: document['name'],
-                                                        child: Text(document['name']),
+                                                        value: document['nom'],
+                                                        child: Text(document['nom']),
                                                       );
                                                     }).toList(),
                                                   ),
@@ -617,9 +620,9 @@ placesAutoCompleteTextField() {
     // Collectez toutes les données de l'écran 1
   Map<String, dynamic> DataInfos = {
 
-    'id_compagny': _compagny.text,
-    'gare': _gare.text,
-    'lieu': _lieu.text,
+    'id_compagny': selectedValue,
+    'gare': selectedGare,
+    'lieu': livrer_a.text,
     'codeDuColis': _code.text,
     'nomDeLaPersonne': _receptionneur.text,
     'telephone': _telephone.text,

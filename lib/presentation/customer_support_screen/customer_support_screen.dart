@@ -327,7 +327,7 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
                           Expanded(
                               child: CustomTextFormField(
                                   controller: controller.messagefourController,
-                                  hintText: "lbl_massage".tr,
+                                  hintText: "Message".tr,
                                   variant: TextFormFieldVariant.FillGray50,
                                   shape: TextFormFieldShape.RoundedBorder16,
                                   padding: TextFormFieldPadding.PaddingT20,

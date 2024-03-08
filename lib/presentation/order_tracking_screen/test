@@ -1,16 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:flutter/services.dart';
+
+import 'controller/order_tracking_controller.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 
-import 'controller/order_tracking_controller.dart';
+import 'models/order_tracking_model.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   const OrderTrackingScreen({Key? key}) : super(key: key);
@@ -21,7 +20,6 @@ class OrderTrackingScreen extends StatefulWidget {
 
 class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
   OrderTrackingController controller = Get.put(OrderTrackingController());
-
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
@@ -32,10 +30,8 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     super.initState();
   }
 
- final User? user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
-     User? user = FirebaseAuth.instance.currentUser;
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -69,50 +65,22 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                           textAlign: TextAlign.left,
                           style: AppStyle.txtSFProTextBold20)),
                   Expanded(
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('commande')
-                          .where('userID', isEqualTo: user?.uid)
-                          .where('status',isEqualTo: 'en cours') // Filtrer par statut de la commande
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Text('Erreur : ${snapshot.error}');
-                        }
-
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        }
-
-                        List<DocumentSnapshot> documents =
-                            snapshot.data!.docs;
-
-                        return ListView.builder(
-                          itemCount: documents.length,
+                    child: ListView(
+                      children: [
+                        ListView.builder(
+                          primary: false,
+                          shrinkWrap: true,
+                          itemCount: controller.orderTrakingData.length,
                           itemBuilder: (context, index) {
-                            DocumentSnapshot doc = documents[index];
-                              var document = snapshot.data!.docs[index];
-                              var orderId = document.id;
-                              var data = document.data() as Map<String, dynamic>;
-                              String name = documents[index].get('nomDeLaPersonne');
+                            OrderTrackingModel data =
+                                controller.orderTrakingData[index];
+
                             return Padding(
                               padding: getPadding(
                                   top: 8, bottom: 8, left: 16, right: 16),
                               child: GestureDetector(
                                 onTap: () {
-                                  Get.toNamed(
-                                              AppRoutes.trackingDetailsScreen,
-                                              arguments: {
-                                                'name': data['nomDeLaPersonne'], // Nom de la personne
-                                                'orderID': orderId, // Numéro de commande
-                                                'status': data['status'], // Statut de la commande
-                                                'date': data['date'].toDate(), // Date de la commande
-                                                // Vous pouvez ajouter d'autres informations de la commande ici
-                                              },);
-                                  // Naviguer vers les détails de la commande
-                                  // Utilisez doc pour accéder aux données de la commande
-                                  //Get.toNamed(AppRoutes.trackingDetailsScreen);
+                                  Get.toNamed(AppRoutes.trackingDetailsScreen);
                                 },
                                 child: Container(
                                   decoration: AppDecoration.fillGray50.copyWith(
@@ -143,23 +111,22 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  orderId,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style: AppStyle.txtHeadline,
-                                                ),
+                                                Text(data.orderTitle!,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        AppStyle.txtHeadline),
                                                 SizedBox(
                                                   height: getVerticalSize(6),
                                                 ),
-                                                // Text(
-                                                //   "Order id : ${doc['name']}",
-                                                //   overflow:
-                                                //       TextOverflow.ellipsis,
-                                                //   textAlign: TextAlign.left,
-                                                //   style: AppStyle.txtFootnote,
-                                                // )
+                                                Text(
+                                                    "Order id : ${data.orderID}"
+                                                        .tr,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style: AppStyle.txtFootnote)
                                               ],
                                             )
                                           ],
@@ -176,8 +143,8 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                               ),
                             );
                           },
-                        );
-                      },
+                        ),
+                      ],
                     ),
                   ),
                 ],

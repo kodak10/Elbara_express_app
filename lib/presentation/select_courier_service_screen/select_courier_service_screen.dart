@@ -143,8 +143,8 @@ void displaySimulatedPrices(double distance, double weight, double size) {
                       children: [
                         Image.asset(
                           'assets/images/moto.png',
-                          width: 50,
-                          height: 50,
+                          width: 70,
+                          height: 70,
                         ),
                         SizedBox(width: 10),
                         Text('Moto'),
@@ -195,8 +195,8 @@ void displaySimulatedPrices(double distance, double weight, double size) {
                       children: [
                         Image.asset(
                           'assets/images/tricycle.png',
-                          width: 50,
-                          height: 50,
+                          width: 70,
+                          height: 70,
                         ),
                         SizedBox(width: 10),
                         Text('Tricycle'),
@@ -247,8 +247,8 @@ void displaySimulatedPrices(double distance, double weight, double size) {
                       children: [
                         Image.asset(
                           'assets/images/camion.png',
-                          width: 50,
-                          height: 50,
+                          width: 70,
+                          height: 70,
                         ),
                         SizedBox(width: 10),
                         Text('Camion'),
@@ -357,10 +357,11 @@ void displaySimulatedPrices(double distance, double weight, double size) {
                     text: "Suivant".tr,
                     margin: getMargin(left: 16, right: 16, bottom: 40),
                     onTap: () {
-                    saveCommande();
+                    
                     if (selectedButton == 'now') {
                       this.selectNow(); // Utilisez this pour appeler les méthodes de classe
                     } else if (selectedButton == 'delivery') {
+                      saveCommande();
                       this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
                     } else {
                       printError(info: 'Veuillez choisir un mode de paiement');
@@ -419,7 +420,10 @@ double calculatePrice(String selectedVehicle, double distance, double weight, do
 
 // Déplacez ces méthodes en dehors de la classe CustomButton
 
+
 // Définition du widget CustomButton
+
+
 class CustomButtonSelect extends StatelessWidget {
   final String buttonText;
   final bool isSelected;

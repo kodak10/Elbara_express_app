@@ -148,7 +148,7 @@ class _LogInScreenState extends State<LogInScreen> {
                   ),
                   CustomButton(
                     height: getVerticalSize(54),
-                    text: "Se Connecté",
+                    text: "Se Connecter",
                     margin: getMargin(top: 31),
                     onTap: () async {
                       SharedPreferences prefs = await SharedPreferences.getInstance();

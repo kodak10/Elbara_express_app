@@ -137,7 +137,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                       maxHeight: getVerticalSize(62)),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return "Please enter valid password";
+                                      return "Veuillez entrer un mot de passe valide";
                                     }
                                     return null;
                                   })),

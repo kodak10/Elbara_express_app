@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
@@ -7,9 +8,16 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
 
 class TrackingDetailsScreen extends StatefulWidget {
-  const TrackingDetailsScreen({Key? key}) : super(key: key);
+  final String orderId;
+
+  const TrackingDetailsScreen({Key? key, required this.orderId}) : super(key: key);
+
+  //const TrackingDetailsScreen({Key? key}) : super(key: key);
 
   @override
   State<TrackingDetailsScreen> createState() => _TrackingDetailsScreenState();
@@ -17,6 +25,9 @@ class TrackingDetailsScreen extends StatefulWidget {
 
 class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   @override
+  late DocumentSnapshot orderSnapshot;
+
+
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -26,8 +37,31 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
     super.initState();
   }
 
+  void fetchOrderDetails() async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('commande')
+          .doc(widget.orderId)
+          .get();
+
+      setState(() {
+        orderSnapshot = documentSnapshot;
+      });
+    } catch (e) {
+      print('Error fetching order details: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args = Get.arguments ?? {};
+    final String name = args['name'] ?? '';
+    final String orderID = args['orderID'] ?? '';
+    final String status = args['status'] ?? '';
+    //final String dateCommande = args['date'] ?? ''; // Utiliser la clé 'date'
+
+
+
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -49,7 +83,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                           onTapArrowleft12();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "Suivi de commande".tr),
+                    title: AppbarSubtitle1(text: "Suivi de commande"),
                     styleType: Style.bgFillWhiteA700),
                 body: Container(
                     width: double.maxFinite,
@@ -83,7 +117,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Text("lbl_202022194".tr,
+                                              Text(orderID,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   textAlign: TextAlign.left,
@@ -100,8 +134,8 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                             alignment: Alignment
                                                                 .center,
                                                             child: Text(
-                                                                "msg_on_going_9_may"
-                                                                    .tr,
+                                                                "",//date
+                                                                
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -109,7 +143,8 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                                     TextAlign
                                                                         .left,
                                                                 style: AppStyle
-                                                                    .txtFootnote)),
+                                                                    .txtFootnote)
+                                                                    ),
                                                         Align(
                                                             alignment: Alignment
                                                                 .topLeft,
@@ -147,23 +182,29 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                             radius: BorderRadius.circular(
                                                 getHorizontalSize(8)),
                                             alignment: Alignment.center),
-                                        CustomButton(
-                                            height: getVerticalSize(40),
-                                            width: getHorizontalSize(143),
-                                            text: "lbl_live_tracking".tr,
-                                            margin:
-                                                getMargin(left: 8, bottom: 8),
-                                            padding: ButtonPadding.PaddingAll11,
-                                            fontStyle: ButtonFontStyle
-                                                .SFProTextBold15WhiteA700,
-                                            onTap: () {
-                                              onTapLivetracking();
-                                            },
-                                            alignment: Alignment.bottomLeft)
+                                        Visibility(
+                                            visible: status == "livraison",
+                                            child: Padding(
+                                              padding: getPadding(left: 8, right: 8),
+                                              child: CustomButton(
+                                                height: getVerticalSize(40),
+                                                width: getHorizontalSize(143),
+                                                text: "Suivre le livreur".tr,
+                                                margin: getMargin(left: 8, bottom: 8),
+                                                padding: ButtonPadding.PaddingAll11,
+                                                fontStyle: ButtonFontStyle.SFProTextBold15WhiteA700,
+                                                onTap: () {
+                                                  onTapLivetracking();
+                                                },
+                                                alignment: Alignment.bottomLeft,
+                                              ),
+                                            ),
+                                          )
+
                                       ])),
                               Padding(
                                   padding: getPadding(top: 21),
-                                  child: Text("msg_tracking_history".tr,
+                                  child: Text("Historique de suivi".tr,
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: AppStyle.txtSFProTextBold20)),
@@ -189,14 +230,14 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Text("lbl_checking".tr,
+                                            Text("Vérification".tr,
                                                 overflow: TextOverflow.ellipsis,
                                                 textAlign: TextAlign.left,
                                                 style: AppStyle.txtHeadline),
                                             Padding(
-                                                padding: getPadding(top: 8),
+                                                padding: getPadding(top:13),
                                                 child: Text(
-                                                    "msg_completed_9_may".tr,
+                                                    "",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,
@@ -213,14 +254,14 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Text("msg_waiting_for_pick2".tr,
+                                            Text("En transit",
                                                 overflow: TextOverflow.ellipsis,
                                                 textAlign: TextAlign.left,
                                                 style: AppStyle.txtHeadline),
                                             Padding(
                                                 padding: getPadding(top: 13),
                                                 child: Text(
-                                                    "msg_completed_10_may".tr,
+                                                    "",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,
@@ -237,38 +278,38 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Text("lbl_in_transit2".tr,
-                                                overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.left,
-                                                style: AppStyle.txtHeadline),
-                                            Padding(
-                                                padding: getPadding(top: 15),
-                                                child: Text(
-                                                    "msg_on_transit_102".tr,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style:
-                                                        AppStyle.txtFootnote))
-                                          ]),
-                                      SizedBox(
-                                        height: getVerticalSize(40),
-                                      ),
-                                      Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text("lbl_out_of_delivery2".tr,
+                                            Text("Livraison en cours",
                                                 overflow: TextOverflow.ellipsis,
                                                 textAlign: TextAlign.left,
                                                 style: AppStyle.txtHeadline),
                                             Padding(
                                                 padding: getPadding(top: 13),
                                                 child: Text(
-                                                    "msg_pending_13_may".tr,
+                                                    "",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        AppStyle.txtFootnote))
+                                          ]),
+                                      SizedBox(
+                                        height: getVerticalSize(40),
+                                      ),
+                                      Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text("Colis livré",
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtHeadline),
+                                            Padding(
+                                                padding: getPadding(top: 13),
+                                                child: Text(
+                                                    "",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,

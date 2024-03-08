@@ -1,11 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/presentation/edit_profile_screen/controller/edit_profile_controller.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import 'controller/profile_details_controller.dart';
 
@@ -15,10 +19,17 @@ class ProfileDetailsScreen extends StatefulWidget {
 }
 
 class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
-  ProfileDetailsController controlelr = Get.put(ProfileDetailsController());
+ late String email = '';
+  late String name = '';
+  late String phoneNumber = '';
+
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late User _currentUser;
 
   @override
   void initState() {
+    _currentUser = FirebaseAuth.instance.currentUser!;
+    _loadUserData();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: ColorConstant.whiteA700,
@@ -27,8 +38,36 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
     super.initState();
   }
 
+  Future<void> _loadUserData() async {
+    if (_currentUser != null) {
+      // Fetch user data from Firebase Auth
+      // For example:
+      // controller.nameController.text = _currentUser.displayName ?? '';
+      // controller.emailController.text = _currentUser.email ?? '';
+
+      // Fetch additional user data from Firestore
+      // For example:
+      DocumentSnapshot userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_currentUser.uid)
+          .get();
+          if (userData.exists) {
+          setState(() {
+            email = userData['email'] ?? '';
+            name = userData['displayName'] ?? '';
+            phoneNumber = userData['contact'] ?? '';
+          });
+        }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+   
+
+    
+    late final User currentUser = FirebaseAuth.instance.currentUser!;
+
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -50,7 +89,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           onTapArrowleft22();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "lbl_profile".tr),
+                    title: AppbarSubtitle1(text: "Profil"),
                     actions: [
                       AppbarImage(
                           height: getSize(24),
@@ -104,8 +143,11 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           SizedBox(
                             height: getVerticalSize(40),
                           ),
-                          profileDetail(ImageConstant.imgUSerIcon, "Name",
-                              "Ronald richards"),
+                          // profileDetail(ImageConstant.imgUSerIcon, "Name",
+                          //     "Ronald richards"),
+                          profileDetail(ImageConstant.imgUSerIcon, "Pseudo",
+                              name),
+
                           SizedBox(
                             height: getVerticalSize(20),
                           ),
@@ -116,8 +158,10 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           SizedBox(
                             height: getVerticalSize(20),
                           ),
+                          // profileDetail(ImageConstant.imgMailIcon,
+                          //     "Email address", "ronaldrichard@gmail.com"),
                           profileDetail(ImageConstant.imgMailIcon,
-                              "Email address", "ronaldrichard@gmail.com"),
+                              "Adresse Email",email),
                           SizedBox(
                             height: getVerticalSize(20),
                           ),
@@ -128,8 +172,11 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           SizedBox(
                             height: getVerticalSize(20),
                           ),
-                          profileDetail(ImageConstant.imgCallIcon,
-                              "Phone Number", "(405) 555-0128"),
+                          profileDetail(
+                              ImageConstant.imgCallIcon,
+                              "Numéro de téléphone",
+                              phoneNumber),
+
                           SizedBox(
                             height: getVerticalSize(20),
                           ),

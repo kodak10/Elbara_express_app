@@ -42,24 +42,24 @@ class SlidermaskgroupItemWidget extends StatelessWidget {
                 style: AppStyle.txtHeadlineWhiteA700,
               ),
             ),
-            SizedBox(
-              height: getVerticalSize(8),
-            ),
-            CustomButton(
-              onTap: () {
-                Get.toNamed(AppRoutes.selectCourierServiceScreen);
-              },
-              height: getVerticalSize(
-                34,
-              ),
-              width: getHorizontalSize(
-                103,
-              ),
-              text: "Commander".tr,
-              variant: ButtonVariant.White,
-              padding: ButtonPadding.PaddingAll8,
-              fontStyle: ButtonFontStyle.SFProTextBold15,
-            ),
+            // SizedBox(
+            //   height: getVerticalSize(8),
+            // ),
+            // CustomButton(
+            //   onTap: () {
+            //     Get.toNamed(AppRoutes.selectCourierServiceScreen);
+            //   },
+            //   height: getVerticalSize(
+            //     34,
+            //   ),
+            //   width: getHorizontalSize(
+            //     103,
+            //   ),
+            //   text: "Commander".tr,
+            //   variant: ButtonVariant.White,
+            //   padding: ButtonPadding.PaddingAll8,
+            //   fontStyle: ButtonFontStyle.SFProTextBold15,
+            // ),
           ],
         ),
       ),

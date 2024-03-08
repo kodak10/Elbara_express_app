@@ -71,7 +71,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                               padding: getPadding(top: 21),
                               child: Text("msg_your_package_book".tr,
                                   overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
+                                  textAlign: TextAlign.center,
                                   maxLines: 2,
                                   style: AppStyle.txtSFProTextBold22)),
                           Container(

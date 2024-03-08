@@ -431,7 +431,7 @@ class AppRoutes {
     ),
     GetPage(
       name: trackingDetailsScreen,
-      page: () => TrackingDetailsScreen(),
+      page: () => TrackingDetailsScreen(orderId: '',), // parfait
       bindings: [
         TrackingDetailsBinding(),
       ],

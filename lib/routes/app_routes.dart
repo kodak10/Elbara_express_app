@@ -34,6 +34,7 @@ import 'package:elbara_express/presentation/empty_payment_screen/binding/empty_p
 import 'package:elbara_express/presentation/empty_payment_screen/empty_payment_screen.dart';
 import 'package:elbara_express/presentation/forgot_password_screen/binding/forgot_password_binding.dart';
 import 'package:elbara_express/presentation/forgot_password_screen/forgot_password_screen.dart';
+import 'package:elbara_express/presentation/gestionnaire_gare/pages/OrderDetails.dart';
 import 'package:elbara_express/presentation/grid_screen/binding/grid_binding.dart';
 import 'package:elbara_express/presentation/grid_screen/grid_screen.dart';
 import 'package:elbara_express/presentation/home_container1_screen/binding/home_container1_binding.dart';
@@ -236,10 +237,27 @@ class AppRoutes {
   static const String logOutScreen = '/log_out_screen';
 
   static const String appNavigationScreen = '/app_navigation_screen';
+  
 
   static const String initialRoute = '/initialRoute';
 
+//Gestionnaire
+  static const String gestionnaireOrderDetailPage = '/gestionaire_order_details';
+
+
   static List<GetPage> pages = [
+
+    // Gestionnaire gare
+    GetPage(
+      name: gestionnaireOrderDetailPage,
+      page: () => OrderDetailsPage(orderId: '',),
+      // bindings: [
+      //   OrderDetailsPage(),
+      // ],
+    ),
+
+
+
     GetPage(
       name: splashScreen,
       page: () => SplashScreen(),

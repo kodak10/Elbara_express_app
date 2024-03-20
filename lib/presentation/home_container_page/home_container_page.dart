@@ -255,11 +255,14 @@ class HomeContainerPage extends StatelessWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        SvgPicture.network(
-                                          data.logo,
-                                          width: getSize(24), // ajustez la largeur selon vos besoins
-                                          height: getSize(24), // ajustez la hauteur selon vos besoins
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(data.logo,),
                                         ),
+                                        // SvgPicture.network(
+                                        //   data.logo,
+                                        //   width: getSize(24), // ajustez la largeur selon vos besoins
+                                        //   height: getSize(24), // ajustez la hauteur selon vos besoins
+                                        // ),
                                         SizedBox(
                                           width: 8,
                                         ),
@@ -272,7 +275,6 @@ class HomeContainerPage extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-
                                   ],
                                 ),
                               ),
@@ -330,6 +332,7 @@ class HomeContainerPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('commande')
             .where('userID', isEqualTo: user?.uid)
+            //.where('status', isNotEqualTo: "terminer")
             //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
             .limit(5) // parfait
             .snapshots(),

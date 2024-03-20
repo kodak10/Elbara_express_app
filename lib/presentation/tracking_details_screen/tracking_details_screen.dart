@@ -320,10 +320,76 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                   )
                                 ],
                               ),
+                              //buildTrackingHistory(status),
                             ]),
                       ],
                     )))));
   }
+
+  Widget buildTrackingHistory(String status) {
+    final List<String> steps = ['Verification', 'Transit', 'Livraison', 'Terminer'];
+    final List<String> stepDescriptions = [
+      'Vérification de la commande',
+      'Le colis est en transit',
+      'Le colis est en cours de livraison',
+      'Colis livré'
+    ];
+    final int currentStepIndex = status == 'verification'
+        ? 0
+        : status == 'transit'
+            ? 1
+            : status == 'livraison'
+                ? 2
+                : 3;
+
+    return Row(
+      children: [
+        CustomImageView(
+          svgPath: ImageConstant.imgTrackingOrder,
+          height: getSize(318),
+        ),
+        SizedBox(width: getHorizontalSize(14)),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: List.generate(steps.length, (index) {
+            final String step = steps[index];
+            final String stepDescription = stepDescriptions[index];
+            final bool isCompleted = index < currentStepIndex;
+            final bool isActive = index == currentStepIndex;
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  step,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.left,
+                  style: AppStyle.txtHeadline.copyWith(
+                    color: isActive ? ColorConstant.black900 : ColorConstant.gray600,
+                  ),
+                ),
+                Padding(
+                  padding: getPadding(top: 13),
+                  child: Text(
+                    stepDescription,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                    style: AppStyle.txtFootnote.copyWith(
+                      color: isActive ? ColorConstant.black900 : ColorConstant.gray600,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
 
   onTapLivetracking() {
     Get.toNamed(

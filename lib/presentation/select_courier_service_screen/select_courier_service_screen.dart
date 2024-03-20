@@ -28,10 +28,11 @@ class _SelectCourierServiceScreenState
 
   String selectedVehicle = 'Moto';
   String selectedButton = ''; // Ajout de la variable selectedButton
+  double selectedPrice = 0.0;
 
   //late Map<String, dynamic> DataInfos;
   Map<String, dynamic>? DataInfos;
-  
+
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
@@ -44,7 +45,7 @@ class _SelectCourierServiceScreenState
     // Récupérez les données transmises depuis l'écran précédent
     //Map<String, dynamic> DataInfos = Get.arguments;
     DataInfos = Get.arguments as Map<String, dynamic>;
-    
+    selectedPrice = calculatePrice("Moto", 3.0, 1.0, 1.0);
     
 
   }
@@ -77,6 +78,8 @@ void displaySimulatedPrices(double distance, double weight, double size) {
       'selectedVehicle': selectedVehicle,
       'userID': user?.uid,
       'date': date,
+      'selectedPrice': selectedPrice,
+
       //'selectedButton': selectedButton,
       // Autres données de l'écran 2
     };
@@ -118,6 +121,8 @@ void displaySimulatedPrices(double distance, double weight, double size) {
               onPressed: () {
                 setState(() {
                   selectedVehicle = 'Moto';
+                  selectedPrice = calculatePrice("Moto", distance, weight, size);
+                  
                 });
               },
               style: ButtonStyle(
@@ -170,6 +175,7 @@ void displaySimulatedPrices(double distance, double weight, double size) {
               onPressed: () {
                 setState(() {
                   selectedVehicle = 'Tricycle';
+                  selectedPrice = calculatePrice("Tricycle", distance, weight, size);
                 });
               },
               style: ButtonStyle(
@@ -222,6 +228,7 @@ void displaySimulatedPrices(double distance, double weight, double size) {
               onPressed: () {
                 setState(() {
                   selectedVehicle = 'Camion';
+                  selectedPrice = calculatePrice("Camion", distance, weight, size);
                 });
               },
               style: ButtonStyle(

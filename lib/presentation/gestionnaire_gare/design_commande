@@ -20,7 +20,7 @@ class OrderTrackingScreen extends StatefulWidget {
 }
 
 class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
-  //OrderTrackingController controller = Get.put(OrderTrackingController());
+  OrderTrackingController controller = Get.put(OrderTrackingController());
 
   @override
   void initState() {

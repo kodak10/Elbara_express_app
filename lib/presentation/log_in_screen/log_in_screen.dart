@@ -57,7 +57,7 @@ class _LogInScreenState extends State<LogInScreen> {
                   Padding(
                     padding: getPadding(top: 5),
                     child: Text(
-                      "Content de te revoir!",
+                      "Content de vous revoir!",
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtSFProTextBold28,

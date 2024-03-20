@@ -146,8 +146,11 @@ class CustomButton extends StatelessWidget {
       case ButtonVariant.OutlineDeeppurple600:
         return null;
       default:
-        return ColorConstant.deepPurple600;
+        //return ColorConstant.deepPurple600;
+        return const Color(0xFFffba03);
     }
+    
+
   }
 
   _setTextButtonBorder() {

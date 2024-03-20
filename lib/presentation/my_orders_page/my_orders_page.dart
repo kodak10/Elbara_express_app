@@ -42,7 +42,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                       svgPath: ImageConstant.imgArrowleft,
                       margin: getMargin(left: 18, top: 29, bottom: 26),
                       onTap: () {
-                        onTapArrowleft15();
+                        //onTapArrowleft15();
                       }),
                   centerTitle: true,
                   title: AppbarSubtitle1(text: "Mes commandes"),
@@ -51,11 +51,8 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                 stream: FirebaseFirestore.instance
                     .collection('commande')
                     .where('userID', isEqualTo: user?.uid)
-                    .where('status',
-                        isEqualTo:
-                            'en cours') // Filtrer par statut de la commande
                     //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
-                    .limit(5) // Limiter à 5 commandes
+                    //.limit(5) // Limiter à 5 commandes
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -170,7 +167,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                   ),
                                 
                                 Visibility(
-                                            visible: status == "en cours",
+                                            visible: status != "terminer",
                                             child: Padding(
                                               padding: getPadding(left: 8, right: 8),
                                               child: CustomButton(

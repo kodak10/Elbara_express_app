@@ -66,9 +66,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                 stream: FirebaseFirestore.instance
                     .collection('commande')
                     .where('userID', isEqualTo: user?.uid)
-                    .where('status',
-                        isEqualTo:
-                            'en cours') // Filtrer par statut de la commande
+                    // Filtrer par statut de la commande
                     //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -183,24 +181,49 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                     height: getVerticalSize(15),
                                   ),
                                 
-                                CustomButton(
-                                  onTap: () {
-                                    Get.toNamed(
-                                      AppRoutes.trackingDetailsScreen,
-                                       arguments: {
-                                        'name': data['nomDeLaPersonne'], // Nom de la personne
-                                        'orderID': orderId, // Numéro de commande
-                                        'status': data['status'], // Statut de la commande
-                                        'date': data['date'].toDate(), // Date de la commande
-                                        // Vous pouvez ajouter d'autres informations de la commande ici
-                                      },);
-                                  },
-                                  height: getSize(40),
-                                  text: "Suivre la commande",
-                                  fontStyle:
-                                      ButtonFontStyle.SFProTextBold15WhiteA700,
-                                  padding: ButtonPadding.PaddingT0,
-                                )
+                                Visibility(
+                                            visible: status != "terminer",
+                                            child: Padding(
+                                              padding: getPadding(left: 8, right: 8),
+                                              child: CustomButton(
+                                          onTap: () {
+                                            Get.toNamed(
+                                              AppRoutes.trackingDetailsScreen,
+                                              arguments: {
+                                                'name': data['nomDeLaPersonne'], // Nom de la personne
+                                                'orderID': orderId, // Numéro de commande
+                                                'status': data['status'], // Statut de la commande
+                                                'date': data['date'].toDate(), // Date de la commande
+                                                // Vous pouvez ajouter d'autres informations de la commande ici
+                                              },);
+                                          },
+                                        height: getSize(40),
+                                        text: "Suivre la commande",
+                                        fontStyle:
+                                            ButtonFontStyle.SFProTextBold15WhiteA700,
+                                        padding: ButtonPadding.PaddingT0,
+                                      ),
+                                            ),
+                                          )
+
+                                // CustomButton(
+                                //   onTap: () {
+                                //     Get.toNamed(
+                                //       AppRoutes.trackingDetailsScreen,
+                                //        arguments: {
+                                //         'name': data['nomDeLaPersonne'], // Nom de la personne
+                                //         'orderID': orderId, // Numéro de commande
+                                //         'status': data['status'], // Statut de la commande
+                                //         'date': data['date'].toDate(), // Date de la commande
+                                //         // Vous pouvez ajouter d'autres informations de la commande ici
+                                //       },);
+                                //   },
+                                //   height: getSize(40),
+                                //   text: "Suivre la commande",
+                                //   fontStyle:
+                                //       ButtonFontStyle.SFProTextBold15WhiteA700,
+                                //   padding: ButtonPadding.PaddingT0,
+                                // )
                               ],
                             ),
                           ),

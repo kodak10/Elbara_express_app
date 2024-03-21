@@ -97,7 +97,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                               var document = snapshot.data!.docs[index];
                               var orderId = document.id;
                               var data = document.data() as Map<String, dynamic>;
-                              String name = documents[index].get('nomDeLaPersonne');
+                              String name = documents[index].get('nom_receptioneur');
                             return Padding(
                               padding: getPadding(
                                   top: 8, bottom: 8, left: 16, right: 16),
@@ -106,7 +106,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                   Get.toNamed(
                                               AppRoutes.trackingDetailsScreen,
                                               arguments: {
-                                                'name': data['nomDeLaPersonne'], // Nom de la personne
+                                                'name': data['nom_receptioneur'], // Nom de la personne
                                                 'orderID': orderId, // Numéro de commande
                                                 'status': data['status'], // Statut de la commande
                                                 'date': data['date'].toDate(), // Date de la commande

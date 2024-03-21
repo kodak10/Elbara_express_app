@@ -229,7 +229,7 @@ class _DashboardGestionnaireGareState extends State<DashboardGestionnaireGare> {
                   DocumentSnapshot document = documents[index];
                   var orderId = document.id;
                   var data = document.data() as Map<String, dynamic>;
-                  String name = documents[index].get('nomDeLaPersonne');
+                  String name = documents[index].get('nom_receptioneur');
 
                   return Padding(
                     padding:
@@ -240,7 +240,7 @@ class _DashboardGestionnaireGareState extends State<DashboardGestionnaireGare> {
                         //Utilisez document pour accéder aux données de la commande
                         Get.toNamed(AppRoutes.gestionnaireOrderDetailPage,
                          arguments: {
-                                                'name': data['nomDeLaPersonne'], // Nom de la personne
+                                                'name': data['nom_receptioneur'], // Nom de la personne
                                                 'orderID': orderId, // Numéro de commande
                                                 'status': data['status'], // Statut de la commande
                                                 //'date': data['date'].toDate(), // Date de la commande

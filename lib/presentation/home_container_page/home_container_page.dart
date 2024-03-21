@@ -365,7 +365,7 @@ class HomeContainerPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Expédiés à: ${data['nomDeLaPersonne']}",
+                      "Expédiés à: ${data['nom_receptioneur']}",
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtSubheadline,
@@ -393,7 +393,7 @@ class HomeContainerPage extends StatelessWidget {
                         Get.toNamed(
                           AppRoutes.trackingDetailsScreen,
                          arguments: {
-                            'name': data['nomDeLaPersonne'], // Nom de la personne
+                            'name': data['nom_receptioneur'], // Nom de la personne
                             'orderID': orderId, // Numéro de commande
                             'status': data['status'], // Statut de la commande
                             'date': data['date'].toDate(), // Date de la commande

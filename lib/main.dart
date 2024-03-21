@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,73 +27,18 @@ Future main() async {
     ),
   );
 
+final SharedPreferences prefs = await SharedPreferences.getInstance();
+  // final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+  // final User? user = FirebaseAuth.instance.currentUser;
+
+  // runApp(MyApp(isLoggedIn: isLoggedIn, user: user));
+
+  
   runApp(MyApp());
 }
 
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-// }
-// Future main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   if (kIsWeb) {
-//     await Firebase.initializeApp(
-//       options: const FirebaseOptions(
-//        apiKey: "AIzaSyCOwcttLnCPQsHxr-kMMdCkZeGTLtSxYWs",
-//       appId: "1:681350177041:ios:7c6339d023fbeb5c786cb0",
-//       messagingSenderId: "681350177041",
-//       projectId: "elbara-express-4r2l6q",
-//       ),
-//     );
-//   } else {
-//     await Firebase.initializeApp();
-//   }
-
-//   SystemChrome.setSystemUIOverlayStyle(
-//     const SystemUiOverlayStyle(
-//       statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-//       statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
-//     ),
-//   );
-
-//   runApp(MyApp());
-// }
-
-// void main() async {
-
-//   // WidgetsFlutterBinding.ensureInitialized();
-//   // await Firebase.initializeApp();
-
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(
-//     // Replace with actual values
-//     options: const FirebaseOptions(
-//       apiKey: "AIzaSyCOwcttLnCPQsHxr-kMMdCkZeGTLtSxYWs",
-//       appId: "1:681350177041:ios:7c6339d023fbeb5c786cb0",
-//       messagingSenderId: "681350177041",
-//       projectId: "elbara-express-4r2l6q",
-//     ),
-
-//   );
-//   SystemChrome.setSystemUIOverlayStyle(
-//     const SystemUiOverlayStyle(
-//       statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-//       statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
-//     ),
-//   );
-//   runApp(MyApp());
-
-//   // WidgetsFlutterBinding.ensureInitialized();
-//   // SystemChrome.setPreferredOrientations([
-//   //   DeviceOrientation.portraitUp,
-//   // ]).then((value) {
-//   //   Logger.init(kReleaseMode ? LogMode.live : LogMode.debug);
-//   //   runApp(MyApp());
-//   // });
-// }
-
 class MyApp extends StatelessWidget {
+  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

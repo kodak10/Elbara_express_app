@@ -89,7 +89,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                       var document = snapshot.data!.docs[index];
                       var orderId = document.id;
                       var data = document.data() as Map<String, dynamic>;
-                      String name = documents[index].get('nomDeLaPersonne');
+                      String name = documents[index].get('nom_receptioneur');
                       Timestamp timestamp = document.get('date');
                       DateTime date = timestamp.toDate();
                      
@@ -190,7 +190,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                             Get.toNamed(
                                               AppRoutes.trackingDetailsScreen,
                                               arguments: {
-                                                'name': data['nomDeLaPersonne'], // Nom de la personne
+                                                'name': data['nom_receptioneur'], // Nom de la personne
                                                 'orderID': orderId, // Numéro de commande
                                                 'status': data['status'], // Statut de la commande
                                                 'date': data['date'].toDate(), // Date de la commande
@@ -206,24 +206,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                             ),
                                           )
 
-                                // CustomButton(
-                                //   onTap: () {
-                                //     Get.toNamed(
-                                //       AppRoutes.trackingDetailsScreen,
-                                //        arguments: {
-                                //         'name': data['nomDeLaPersonne'], // Nom de la personne
-                                //         'orderID': orderId, // Numéro de commande
-                                //         'status': data['status'], // Statut de la commande
-                                //         'date': data['date'].toDate(), // Date de la commande
-                                //         // Vous pouvez ajouter d'autres informations de la commande ici
-                                //       },);
-                                //   },
-                                //   height: getSize(40),
-                                //   text: "Suivre la commande",
-                                //   fontStyle:
-                                //       ButtonFontStyle.SFProTextBold15WhiteA700,
-                                //   padding: ButtonPadding.PaddingT0,
-                                // )
+                              
                               ],
                             ),
                           ),

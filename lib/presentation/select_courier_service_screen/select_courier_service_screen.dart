@@ -74,6 +74,7 @@ void displaySimulatedPrices(double distance, double weight, double size) {
   void saveCommande() {
     // Collectez toutes les données de l'écran 2
     Map<String, dynamic> screen2Data = {
+    
       'status' : 'en cours',
       'selectedVehicle': selectedVehicle,
       'userID': user?.uid,
@@ -344,20 +345,7 @@ void displaySimulatedPrices(double distance, double weight, double size) {
 
         ]
       ),
-      // bottomNavigationBar: CustomButton(
-      //   buttonText: 'Suivant',
-      //   isSelected: true,
-      //   onPressed: () {
-      //     saveCommande();
-      //     // if (selectedButton == 'now') {
-      //     //   this.selectNow(); // Utilisez this pour appeler les méthodes de classe
-      //     // } else if (selectedButton == 'delivery') {
-      //     //   this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
-      //     // } else {
-      //     //   printError(info: 'Veuillez choisir un mode de paiement');
-      //     // }
-      //   },
-      // ),
+      
       bottomNavigationBar: CustomButton(
         
                     height: getVerticalSize(54),
@@ -458,39 +446,6 @@ class CustomButtonSelect extends StatelessWidget {
             : MaterialStateProperty.all(Colors.transparent),
       )
       );
-    //   ElevatedButton(
-    //   onPressed: () {},
-    //   //child: const Text('Fluttering Button'),
-    //   child: Text(
-    //     buttonText,
-    //     style: TextStyle(
-    //       color: isSelected ? Colors.white : Colors.blue,
-    //     ),
-    //   ),
-    //   style: ButtonStyle(
-    //     backgroundColor: isSelected
-    //     ? MaterialStateProperty.all(Colors.deepPurpleAccent)
-    //     : MaterialStateProperty.all(Colors.transparent),
-
-    //     padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(15)),
-
-    //     //backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-    //     shadowColor: MaterialStateProperty.all<Color>(Colors.grey),
-
-    //     elevation: MaterialStateProperty.resolveWith<double>(
-    //       (Set<MaterialState> states) {
-    //         if (states.contains(MaterialState.pressed)) return 10;
-    //         return 5; // default elevation
-    //       },
-    //     ),
-    //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-    //       RoundedRectangleBorder(
-    //         borderRadius: BorderRadius.circular(25),
-    //       ),
-    //     ),
-    //     animationDuration: Duration(milliseconds: 200)
-    //   ),
-    // );
     
   }
 }

@@ -8,11 +8,11 @@ class HomeData {
   static List<HomeSlider> getSliderData() {
     return [
       HomeSlider(ImageConstant.imgSlider1st,
-          "Obtenez 25 % de réduction sur le premier service"),
+          "Phrase 01"),
       HomeSlider(ImageConstant.imgSlider2nd,
-          "Vivez l'Expérience de la Livraison Réinventée"),
+          "Phrase 02"),
       HomeSlider(ImageConstant.imgSlider3rd,
-          "Économisez Instantanément sur Votre Prochaine Commande !"),
+          "Phrase 03"),
     ];
   }
 

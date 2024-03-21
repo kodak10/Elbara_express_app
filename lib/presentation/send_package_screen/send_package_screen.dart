@@ -5,6 +5,7 @@ import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_text_form_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,21 +37,28 @@ class SendPackageScreen extends StatefulWidget {
 }
 
 class _SendPackageScreenState extends State<SendPackageScreen> {
+  final TextEditingController _typeColis = TextEditingController();
+  final TextEditingController _lieuRamassage = TextEditingController();
+  final TextEditingController _destinationRamassage = TextEditingController();
+  final TextEditingController _nomRecepteur = TextEditingController();
+  final TextEditingController _telephoneRecepteur = TextEditingController();
+  final TextEditingController _infosComplementaire = TextEditingController();
+  final TextEditingController _dateRamassage = TextEditingController();
+
   final TextEditingController _compagny = TextEditingController();
   final TextEditingController _gare = TextEditingController();
-  final TextEditingController _lieu = TextEditingController();
-  final TextEditingController _code = TextEditingController();
-  final TextEditingController _receptionneur = TextEditingController();
-  final TextEditingController _telephone = TextEditingController();
   final TextEditingController _poids = TextEditingController();
   final TextEditingController _taille = TextEditingController();
-  final TextEditingController livrer_a = TextEditingController();
 
   String? selectedValue;
   String? selectedGare;
   String? _selectedOption = 'Type de colis';
   bool useCompagnie =
       false; // Variable pour activer ou désactiver l'utilisation de la compagnie
+  String? name;
+  String? contact;
+  String? birthday;
+
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -71,7 +79,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   DateTime _selectedDateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
-
     final String formattedDate = DateFormat.yMd().format(_selectedDateTime);
     //final selectedText = Text('You selected: $formattedDate');
 
@@ -79,11 +86,11 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
       color: Colors.transparent,
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[              
-               Text("Date de ramassage".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtSubheadline),
+        children: <Widget>[
+          Text("Date de ramassage".tr,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.left,
+              style: AppStyle.txtSubheadline),
           const Padding(
             padding: EdgeInsets.only(bottom: 5.0),
           ),
@@ -94,8 +101,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
         ],
       ),
     );
-
-
 
     return WillPopScope(
         onWillPop: () async {
@@ -144,8 +149,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           _selectedOption = newValue;
                                         });
                                       },
-                                      isExpanded:
-                                          true, // Permet au bouton de remplir l'espace horizontalement
+                                      isExpanded: true, // Permet au bouton de remplir l'espace horizontalement
                                       items: <String>[
                                         'Type de colis',
                                         'Alimentaires',
@@ -185,6 +189,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                         children: [
                                           CustomTextFormField(
                                               hintText: "Lieu de ramassage".tr,
+                                              controller: _lieuRamassage,
                                               suffix: Container(
                                                   margin: getMargin(
                                                       left: 15,
@@ -207,6 +212,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           CustomTextFormField(
                                               hintText:
                                                   "Lieu de destination".tr,
+                                              controller: _destinationRamassage,
                                               suffix: Container(
                                                   margin: getMargin(
                                                       left: 15,
@@ -241,7 +247,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                             style: AppStyle.txtSubheadline),
                                         CustomTextFormField(
                                           hintText: "Nom de la personne",
-                                          controller: _receptionneur,
+                                          controller: _nomRecepteur,
                                           margin: getMargin(top: 9),
                                           textInputAction: TextInputAction.done,
                                           variant: TextFormFieldVariant
@@ -267,7 +273,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                             style: AppStyle.txtSubheadline),
                                         CustomTextFormField(
                                           hintText: "Téléphone",
-                                          controller: _telephone,
+                                          controller: _telephoneRecepteur,
                                           margin: getMargin(top: 9),
                                           textInputAction: TextInputAction.done,
                                           variant: TextFormFieldVariant
@@ -301,11 +307,12 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                             style: AppStyle.txtSubheadline),
                                         CustomTextFormField(
                                           hintText: "Saisissez",
+                                          controller: _infosComplementaire,
                                           suffix: Padding(
                                             padding:
                                                 getPadding(top: 16, bottom: 16),
                                           ),
-                                          controller: _poids,
+                                          //controller: _poids,
                                           margin: getMargin(top: 9),
                                           textInputAction: TextInputAction.done,
                                           variant: TextFormFieldVariant
@@ -377,7 +384,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       in selectProgram) {
                                                     programItems.add(
                                                       DropdownMenuItem(
-                                                        value: program.id,
+                                                        value: program['name'],
                                                         child: Text(
                                                           program['name'],
                                                         ),
@@ -480,8 +487,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                         document) {
                                                   return DropdownMenuItem<
                                                       String>(
-                                                    value: document
-                                                        .id, // Utiliser l'ID du document comme valeur
+                                                    value: document['nom'],
                                                     child:
                                                         Text(document['nom']),
                                                   );
@@ -608,12 +614,10 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: 
-                                          <Widget>[
-                                              //selectedText,
-                                              const SizedBox(height: 15.0),
-                                              birthdayTile
-                                          
+                                        children: <Widget>[
+                                          //selectedText,
+                                          const SizedBox(height: 15.0),
+                                          birthdayTile
                                         ],
                                       ),
                                     ),
@@ -660,31 +664,58 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
     });
   }
 
+  // placesAutoCompleteTextField() {
+  //   return Container(
+  //     padding: EdgeInsets.symmetric(horizontal: 20),
+  //     child: GooglePlaceAutoCompleteFlutterTextField(
+  //         textEditingController: livrer_a,
+  //         googleAPIKey: "AIzaSyDz0tgBl1m2nUR1jM2RxhNnRNfA_K4d1sw",
+  //         inputDecoration: InputDecoration(hintText: "La destination"),
+  //         debounceTime: 800,
+  //         countries: ["in", "fr"],
+  //         types: ['country'],
+  //         language: 'en',
+  //         isLatLngRequired: true,
+  //         getPlaceDetailWithLatLng: (Prediction prediction) {
+  //           print("placeDetails" + prediction.lng.toString());
+  //         },
+  //         itmClick: (Prediction prediction) {
+  //           livrer_a.text = prediction.description!;
 
-  placesAutoCompleteTextField() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: GooglePlaceAutoCompleteFlutterTextField(
-          textEditingController: livrer_a,
-          googleAPIKey: "AIzaSyDz0tgBl1m2nUR1jM2RxhNnRNfA_K4d1sw",
-          inputDecoration: InputDecoration(hintText: "La destination"),
-          debounceTime: 800,
-          countries: ["in", "fr"],
-          types: ['country'],
-          language: 'en',
-          isLatLngRequired: true,
-          getPlaceDetailWithLatLng: (Prediction prediction) {
-            print("placeDetails" + prediction.lng.toString());
-          },
-          itmClick: (Prediction prediction) {
-            livrer_a.text = prediction.description!;
+  //           livrer_a.selection = TextSelection.fromPosition(
+  //               TextPosition(offset: prediction.description!.length));
+  //         }
+  //         // default 600 ms ,
+  //         ),
+  //   );
+  // }
 
-            livrer_a.selection = TextSelection.fromPosition(
-                TextPosition(offset: prediction.description!.length));
-          }
-          // default 600 ms ,
-          ),
-    );
+  void saveUserData() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String? name =
+          user.displayName; // Obtenez le nom de l'utilisateur connecté
+      String? contact =
+          user.phoneNumber; // Obtenez le contact de l'utilisateur connecté
+      if (name != null && contact != null) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({
+          'displayName': name,
+          'contact': contact,
+        }).then((value) {
+          print('Données utilisateur enregistrées avec succès');
+        }).catchError((error) {
+          print(
+              "Erreur lors de l'enregistrement des données utilisateur: $error");
+        });
+      } else {
+        print('Impossible de récupérer le nom ou le contact de l\'utilisateur');
+      }
+    } else {
+      print('Aucun utilisateur connecté');
+    }
   }
 
   onTapDeliverto() {
@@ -702,14 +733,20 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   onTapNext() {
     // Collectez toutes les données de l'écran 1
     Map<String, dynamic> DataInfos = {
+      'type_colis': _selectedOption,
+      'lieu_ramassage': _lieuRamassage.text,
+      'lieu_destination': _destinationRamassage.text,
+      'nom_receptioneur': _nomRecepteur.text,
+      'telephone_receptioneur': _telephoneRecepteur.text,
+      'infos_complementaire': _infosComplementaire.text,
+      'transiter_par_gare': useCompagnie,
       'id_compagny': selectedValue,
       'gare': selectedGare,
-      'lieu': livrer_a.text,
-      'codeDuColis': _code.text,
-      'nomDeLaPersonne': _receptionneur.text,
-      'telephone': _telephone.text,
       'poids': _poids.text,
       'taille': _taille.text,
+      'date_ramassage': _selectedDateTime,
+      'nom_client': name,
+      'contact_client': contact,
 
       // Autres champs de saisie de l'écran 1
     };

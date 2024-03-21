@@ -79,6 +79,7 @@ dependencies:
   flutter_switch: ^0.3.2
   awesome_bottom_bar: ^1.2.4
   bottom_picker: ^2.4.0
+  cupertino_date_textbox: ^1.0.3
 
 dev_dependencies:
   flutter_test:

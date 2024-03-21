@@ -5,6 +5,7 @@ import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_text_form_field.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mapbox_place_search/mapbox_place_search.dart';
@@ -24,6 +25,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mapbox_search/mapbox_search.dart';
 import 'package:bottom_picker/bottom_picker.dart';
+import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
+import 'package:intl/intl.dart';
 
 class SendPackageScreen extends StatefulWidget {
   SendPackageScreen({Key? key}) : super(key: key);
@@ -65,8 +68,35 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   final controller = MapController();
   final searchController = TextEditingController();
 
+  DateTime _selectedDateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
+
+    final String formattedDate = DateFormat.yMd().format(_selectedDateTime);
+    //final selectedText = Text('You selected: $formattedDate');
+
+    final birthdayTile = new Material(
+      color: Colors.transparent,
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[              
+               Text("Date de ramassage".tr,
+                                              overflow: TextOverflow.ellipsis,
+                                              textAlign: TextAlign.left,
+                                              style: AppStyle.txtSubheadline),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 5.0),
+          ),
+          CupertinoDateTextBox(
+              initialValue: _selectedDateTime,
+              onDateChange: onBirthdayChange,
+              hintText: DateFormat.yMd().format(_selectedDateTime)),
+        ],
+      ),
+    );
+
+
+
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -412,7 +442,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                 children: [
                                   Expanded(
                                     child: Container(
-                                      width: double.infinity, // Pour que le FutureBuilder prenne 100% de la largeur
+                                      width: double
+                                          .infinity, // Pour que le FutureBuilder prenne 100% de la largeur
                                       child: FutureBuilder<QuerySnapshot>(
                                         future: FirebaseFirestore.instance
                                             .collection('gare')
@@ -577,17 +608,12 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              _openDateTimePicker(context);
-                                            },
-                                            child: Text('Date et heure de rammasage'),
-                                          ),
-                                          )
-                                         
+                                        children: 
+                                          <Widget>[
+                                              //selectedText,
+                                              const SizedBox(height: 15.0),
+                                              birthdayTile
+                                          
                                         ],
                                       ),
                                     ),
@@ -628,25 +654,12 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
 //     }
 //   }
 
-  void _openDateTimePicker(BuildContext context) {
-    BottomPicker.dateTime(
-      title: '',
-      titleStyle: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 15,
-        color: Colors.black,
-      ),
-      onSubmit: (date) {
-        print(date);
-      },
-      onClose: () {
-        print('');
-      },
-      minDateTime: DateTime(2021, 5, 1),
-      maxDateTime: DateTime(2021, 8, 2),
-      initialDateTime: DateTime(2021, 5, 1),
-    ).show(context);
+  void onBirthdayChange(DateTime birthday) {
+    setState(() {
+      _selectedDateTime = birthday;
+    });
   }
+
 
   placesAutoCompleteTextField() {
     return Container(

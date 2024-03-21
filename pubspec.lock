@@ -225,6 +225,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  cupertino_date_textbox:
+    dependency: "direct main"
+    description:
+      name: cupertino_date_textbox
+      sha256: "62b957c34e3dfb484712458c8608c8f3e66d1ec7b8b101c304d57b8d6fa8948b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   cupertino_icons:
     dependency: "direct main"
     description:

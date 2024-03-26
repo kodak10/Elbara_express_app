@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
@@ -10,8 +12,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'controller/profile_details_controller.dart';
+import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ProfileDetailsScreen extends StatefulWidget {
   @override
@@ -25,11 +36,14 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late User _currentUser;
+  File? _imageFile;
 
   @override
   void initState() {
     _currentUser = FirebaseAuth.instance.currentUser!;
     _loadUserData();
+    _loadImage();
+
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: ColorConstant.whiteA700,
@@ -61,6 +75,49 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
     }
   }
 
+ Future<void> _loadImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('imagePath');
+    if (imagePath != null) {
+      setState(() {
+        _imageFile = File(imagePath);
+      });
+    }
+  }
+
+  
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path);
+      });
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('imagePath', pickedImage.path);
+    }
+  }
+
+  Future<void> _saveImageToDevice() async {
+    if (_imageFile != null) {
+      final Directory appDocumentsDirectory =
+          await getApplicationDocumentsDirectory();
+      final String imagePath =
+          '${appDocumentsDirectory.path}/mon_image.jpg';
+
+      try {
+        await _imageFile!.copy(imagePath);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('imagePath', imagePath);
+        print('Image enregistrée avec succès à $imagePath');
+      } catch (e) {
+        print('Erreur lors de l\'enregistrement de l\'image : $e');
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
    
@@ -91,6 +148,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                     centerTitle: true,
                     title: AppbarSubtitle1(text: "Profil"),
                     actions: [
+                       
                       AppbarImage(
                           height: getSize(24),
                           width: getSize(24),
@@ -118,7 +176,9 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                                   child: Stack(
                                       alignment: Alignment.bottomRight,
                                       children: [
-                                        CustomImageView(
+                                      
+                                            
+                                       CustomImageView(
                                             imagePath:
                                                 ImageConstant.imgEllipse240,
                                             height: getSize(110),
@@ -126,19 +186,44 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                                             radius: BorderRadius.circular(
                                                 getHorizontalSize(55)),
                                             alignment: Alignment.center),
-                                        CustomIconButton(
-                                            height: 28,
-                                            width: 28,
-                                            margin:
-                                                getMargin(right: 1, bottom: 5),
-                                            variant:
-                                                IconButtonVariant.FillGray50,
-                                            shape:
-                                                IconButtonShape.CircleBorder14,
-                                            alignment: Alignment.bottomRight,
-                                            child: CustomImageView(
-                                                svgPath: ImageConstant
-                                                    .imgGroup29Black900))
+                                       GestureDetector(
+                                            onTap: () async {
+                                              await _pickImage(ImageSource.gallery);
+                                            },
+                                            child: Stack(
+                                              children: [
+                                                Container(
+                                                  height: 110,
+                                                  width: 110,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: Colors.grey[200],
+                                                  ),
+                                                  child: _imageFile != null
+                                                      ? Image.file(
+                                                          _imageFile!,
+                                                          fit: BoxFit.cover,
+                                                          width: double.infinity,
+                                                          height: double.infinity,
+                                                        )
+                                                      : Icon(
+                                                          Icons.person,
+                                                          size: 50,
+                                                          color: Colors.grey,
+                                                        ),
+                                                ),
+                                                Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: CircleAvatar(
+                                                    backgroundColor: Colors.grey[200],
+                                                    child: Icon(Icons.camera_alt),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
                                       ]))),
                           SizedBox(
                             height: getVerticalSize(40),

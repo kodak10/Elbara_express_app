@@ -75,7 +75,7 @@ void displaySimulatedPrices(double distance, double weight, double size) {
     // Collectez toutes les données de l'écran 2
     Map<String, dynamic> screen2Data = {
     
-      'status' : 'en cours',
+      'status' : 'accepte',
       'selectedVehicle': selectedVehicle,
       'userID': user?.uid,
       'date': date,

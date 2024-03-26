@@ -65,12 +65,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
               body: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                      padding: getPadding(left: 16, right: 16, bottom: 8),
-                      child: Text("msg_ongoing_shipments".tr,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtSFProTextBold20)),
+                  
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance

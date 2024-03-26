@@ -1,8 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+
 import '../log_out_screen/log_out_screen.dart';
 import 'controller/profile_controller.dart';
 import 'models/profile_model.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -13,6 +22,64 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   ProfileController controller = Get.put(ProfileController(ProfileModel().obs));
+
+  File? _imageFile;
+
+  @override
+  void initState() {
+   
+    _loadImage();
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+          statusBarColor: ColorConstant.whiteA700,
+          statusBarIconBrightness: Brightness.dark),
+    );
+    super.initState();
+  }
+
+
+ Future<void> _loadImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final imagePath = prefs.getString('imagePath');
+    if (imagePath != null) {
+      setState(() {
+        _imageFile = File(imagePath);
+      });
+    }
+  }
+
+  
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        _imageFile = File(pickedImage.path);
+      });
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('imagePath', pickedImage.path);
+    }
+  }
+
+  Future<void> _saveImageToDevice() async {
+    if (_imageFile != null) {
+      final Directory appDocumentsDirectory =
+          await getApplicationDocumentsDirectory();
+      final String imagePath =
+          '${appDocumentsDirectory.path}/mon_image.jpg';
+
+      try {
+        await _imageFile!.copy(imagePath);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('imagePath', imagePath);
+        print('Image enregistrée avec succès à $imagePath');
+      } catch (e) {
+        print('Erreur lors de l\'enregistrement de l\'image : $e');
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -47,23 +114,45 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              CustomImageView(
-                imagePath: ImageConstant.imgEllipse240,
-                height: getSize(
-                  110,
-                ),
-                width: getSize(
-                  110,
-                ),
-                radius: BorderRadius.circular(
-                  getHorizontalSize(
-                    55,
-                  ),
-                ),
-                margin: getMargin(
-                  top: 40,
-                ),
-              ),
+              
+                                       GestureDetector(
+                                            onTap: () async {
+                                              //await _pickImage(ImageSource.gallery);
+                                            },
+                                            child: Stack(
+                                              children: [
+                                                Container(
+                                                  height: 110,
+                                                  width: 110,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    
+                                                    color: Colors.grey[200],
+                                                  ),
+                                                  child: _imageFile != null
+                                                      ? Image.file(
+                                                          _imageFile!,
+                                                          fit: BoxFit.cover,
+                                                          width: double.infinity,
+                                                          height: double.infinity,
+                                                        )
+                                                      : Icon(
+                                                          Icons.person,
+                                                          size: 50,
+                                                          color: Colors.grey,
+                                                        ),
+                                                ),
+                                                // Positioned(
+                                                //   bottom: 0,
+                                                //   right: 0,
+                                                //   child: CircleAvatar(
+                                                //     backgroundColor: Colors.grey[200],
+                                                //     child: Icon(Icons.camera_alt),
+                                                //   ),
+                                                // ),
+                                              ],
+                                            ),
+                                          ),
               GestureDetector(
                 onTap: () {
                   Get.toNamed(AppRoutes.profileDetailsScreen);

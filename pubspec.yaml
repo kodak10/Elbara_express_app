@@ -80,6 +80,10 @@ dependencies:
   awesome_bottom_bar: ^1.2.4
   bottom_picker: ^2.4.0
   cupertino_date_textbox: ^1.0.3
+  any_animated_button: ^0.0.4
+  image_picker: ^1.0.7
+  font_awesome_flutter: ^10.7.0
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:

@@ -240,7 +240,7 @@ final Map<String, String> enUs = {
   "msg_already_have_an2": "Already have an account ? ",
   "lbl_view_all": "View all",
   "msg_cancel_order_one": "cancel order One",
-  "msg_your_package_book": "Votre commande a été effectuée avec succès",
+  "msg_your_package_book": "Votre commande à été effectuée avec succès",
   "msg_your_order_has_been": "Your Order has been placed successfully",
   "msg_sed_sollicitudin":
       "Sed sollicitudin nisi mollis libero consectetur rutrum. Nam maximus mollis nisl quis facilisis. Integer fermentum commodo nibh. Ut mollis tincidunt hendrerit. Duis ipsum velit, maximus sed commodo imperdiet, dapibus id velit. Nullam in maximus enim. Pellentesque vulputate nisi sit amet lacus pulvinar finibus. Nullam sit amet enim id nibh volutpat gravida vitae in orci. Quisque nibh nisl, congue in ex a, ultricies ultrices metus. ",

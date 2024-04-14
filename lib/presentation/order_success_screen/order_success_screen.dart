@@ -74,13 +74,7 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   style: AppStyle.txtSFProTextBold22)),
-                          Container(
-                              width: getHorizontalSize(347),
-                              margin: getMargin(left: 18, top: 12, right: 23),
-                              child: Text("msg_you_have_successfully2".tr,
-                                  maxLines: null,
-                                  textAlign: TextAlign.center,
-                                  style: AppStyle.txtBody)),
+                          
                           CustomButton(
                               height: getVerticalSize(53),
                               width: getHorizontalSize(164),

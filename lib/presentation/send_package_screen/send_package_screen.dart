@@ -87,7 +87,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text("Date de ramassage".tr,
+          Text("Date de ramassage",
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.left,
               style: AppStyle.txtSubheadline),

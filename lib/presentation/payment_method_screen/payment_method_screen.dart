@@ -151,7 +151,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 ),
                 bottomNavigationBar: CustomButton(
                     height: getVerticalSize(54),
-                    text: "Payer".tr,
+                    text: "Payer",
                     margin: getMargin(left: 16, right: 16, bottom: 40),
                     onTap: () {
                       onTapPaynow();

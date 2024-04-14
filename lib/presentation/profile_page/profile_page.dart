@@ -92,7 +92,7 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(
-                width: double.maxFinite,
+                width: double.infinity,
                 child: Container(
                   padding: getPadding(
                     left: 167,
@@ -126,7 +126,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   width: 110,
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    
+                                                    border: Border.all(
+                                                      color: Colors.grey[200]!, // Couleur de la bordure
+                                                      width: 2, // Largeur de la bordure
+                                                    ),
                                                     color: Colors.grey[200],
                                                   ),
                                                   child: _imageFile != null
@@ -189,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           top: 3,
                         ),
                         child: Text(
-                          "Mon Compte".tr,
+                          "Mon Compte",
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtBody,

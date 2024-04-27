@@ -9,7 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mapbox_place_search/mapbox_place_search.dart';
+import 'package:intl/date_symbol_data_local.dart';
 //import 'package:mapbox_place_search/mapbox_place_search.dart';
 import 'controller/send_package_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,9 +22,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_places_autocomplete_flutter/google_places_autocomplete_flutter.dart';
 import 'package:google_places_autocomplete_flutter/model/prediction.dart';
 
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:mapbox_search/mapbox_search.dart';
+
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
 import 'package:intl/intl.dart';
@@ -71,36 +69,39 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
+      initializeDateFormatting('fr_FR', null); // Initialisez les données de localisation pour le français
+
   }
 
-  final controller = MapController();
   final searchController = TextEditingController();
 
   DateTime _selectedDateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    final String formattedDate = DateFormat.yMd().format(_selectedDateTime);
-    //final selectedText = Text('You selected: $formattedDate');
+    final String formattedDate = DateFormat.Md('fr_FR').format(_selectedDateTime);
 
-    final birthdayTile = new Material(
-      color: Colors.transparent,
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text("Date de ramassage",
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.left,
-              style: AppStyle.txtSubheadline),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 5.0),
-          ),
-          CupertinoDateTextBox(
-              initialValue: _selectedDateTime,
-              onDateChange: onBirthdayChange,
-              hintText: DateFormat.yMd().format(_selectedDateTime)),
-        ],
-      ),
-    );
+  final birthdayTile = Material(
+    color: Colors.transparent,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text("Date de ramassage",
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.left,
+            style: AppStyle.txtSubheadline),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 5.0),
+        ),
+        CupertinoDateTextBox(
+          initialValue: _selectedDateTime,
+          onDateChange: onBirthdayChange,
+          hintText: formattedDate,
+        ),
+      ],
+    ),
+  );
+
+  //return birthdayTile;
 
     return WillPopScope(
         onWillPop: () async {
@@ -241,12 +242,12 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text("Nom de la personne".tr,
+                                        Text("Personne en cas d'urgence".tr,
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.left,
                                             style: AppStyle.txtSubheadline),
                                         CustomTextFormField(
-                                          hintText: "Nom de la personne",
+                                          hintText: "En cas d'urgence",
                                           controller: _nomRecepteur,
                                           margin: getMargin(top: 9),
                                           textInputAction: TextInputAction.done,
@@ -317,6 +318,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           textInputAction: TextInputAction.done,
                                           variant: TextFormFieldVariant
                                               .OutlineGray300,
+                                          maxLines: 2, // Ajout de cette ligne pour permettre le champ sur deux lignes
+
                                         ),
                                       ],
                                     ),
@@ -556,67 +559,13 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                   SizedBox(width: 20), // Adjust as needed
                                   Expanded(
                                     child: Padding(
-                                      padding: getPadding(top: 19),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text("Taille".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtSubheadline),
-                                          CustomTextFormField(
-                                            hintText: "Taille",
-                                            suffix: Padding(
-                                              padding: getPadding(
-                                                  top: 16, bottom: 16),
-                                              child: Text(
-                                                "M",
-                                                style: AppStyle
-                                                    .txtSFProDisplayRegular16,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            controller: _taille,
-                                            margin: getMargin(top: 9),
-                                            textInputAction:
-                                                TextInputAction.done,
-                                            variant: TextFormFieldVariant
-                                                .OutlineGray300,
-                                            prefix: Container(
-                                                margin: getMargin(
-                                                    left: 16,
-                                                    top: 15,
-                                                    right: 16,
-                                                    bottom: 15),
-                                                child: CustomImageView(
-                                                    svgPath:
-                                                        ImageConstant.imgMail)),
-                                            prefixConstraints: BoxConstraints(
-                                                maxHeight: getVerticalSize(54)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Visibility(
-                              visible: useCompagnie,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: getPadding(top: 19, bottom: 19),
+                                      padding: getPadding(top: 5, bottom: 19),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
                                           //selectedText,
-                                          const SizedBox(height: 15.0),
+                                          const SizedBox(height: 5),
                                           birthdayTile
                                         ],
                                       ),
@@ -625,6 +574,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                 ],
                               ),
                             ),
+
+                            
                           ],
                         ),
                       ),
@@ -641,22 +592,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                     }))));
   }
 
-//   Future<void> _searchLocation(String query) async {
-//     final mapBox = MapBoxSearch(
-//       apiKey: 'pk.eyJ1Ijoia29kYWsxMCIsImEiOiJjbHRsaGoxN2IwbG4zMmpteTVkcnJ0amdrIn0.4fLrLLU399eoPCB7hE8b2g',
-//     );
-//     final response = await mapBox.search(
-//       query,
-//       limit: 5,
-//     );
-//     if (response != null && response.features != null && response.features.isNotEmpty) {
-//       final feature = response.features.first;
-//       final center = feature.center;
-//       controller.move(LatLng(center[1], center[0]), 10.0);
-//     } else {
-//       // Handle no results found
-//     }
-//   }
 
   void onBirthdayChange(DateTime birthday) {
     setState(() {
@@ -664,59 +599,35 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
     });
   }
 
-  // placesAutoCompleteTextField() {
-  //   return Container(
-  //     padding: EdgeInsets.symmetric(horizontal: 20),
-  //     child: GooglePlaceAutoCompleteFlutterTextField(
-  //         textEditingController: livrer_a,
-  //         googleAPIKey: "AIzaSyDz0tgBl1m2nUR1jM2RxhNnRNfA_K4d1sw",
-  //         inputDecoration: InputDecoration(hintText: "La destination"),
-  //         debounceTime: 800,
-  //         countries: ["in", "fr"],
-  //         types: ['country'],
-  //         language: 'en',
-  //         isLatLngRequired: true,
-  //         getPlaceDetailWithLatLng: (Prediction prediction) {
-  //           print("placeDetails" + prediction.lng.toString());
-  //         },
-  //         itmClick: (Prediction prediction) {
-  //           livrer_a.text = prediction.description!;
+ 
 
-  //           livrer_a.selection = TextSelection.fromPosition(
-  //               TextPosition(offset: prediction.description!.length));
-  //         }
-  //         // default 600 ms ,
-  //         ),
-  //   );
+  // void saveUserData() {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     String? name =
+  //         user.displayName; // Obtenez le nom de l'utilisateur connecté
+  //     String? contact =
+  //         user.phoneNumber; // Obtenez le contact de l'utilisateur connecté
+  //     if (name != null && contact != null) {
+  //       FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(user.uid)
+  //           .set({
+  //         'displayName': name,
+  //         'contact': contact,
+  //       }).then((value) {
+  //         print('Données utilisateur enregistrées avec succès');
+  //       }).catchError((error) {
+  //         print(
+  //             "Erreur lors de l'enregistrement des données utilisateur: $error");
+  //       });
+  //     } else {
+  //       print('Impossible de récupérer le nom ou le contact de l\'utilisateur');
+  //     }
+  //   } else {
+  //     print('Aucun utilisateur connecté');
+  //   }
   // }
-
-  void saveUserData() {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      String? name =
-          user.displayName; // Obtenez le nom de l'utilisateur connecté
-      String? contact =
-          user.phoneNumber; // Obtenez le contact de l'utilisateur connecté
-      if (name != null && contact != null) {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set({
-          'displayName': name,
-          'contact': contact,
-        }).then((value) {
-          print('Données utilisateur enregistrées avec succès');
-        }).catchError((error) {
-          print(
-              "Erreur lors de l'enregistrement des données utilisateur: $error");
-        });
-      } else {
-        print('Impossible de récupérer le nom ou le contact de l\'utilisateur');
-      }
-    } else {
-      print('Aucun utilisateur connecté');
-    }
-  }
 
   onTapDeliverto() {
     Get.toNamed(
@@ -734,8 +645,9 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
     // Collectez toutes les données de l'écran 1
     Map<String, dynamic> DataInfos = {
       'type_colis': _selectedOption,
-      'lieu_ramassage': _lieuRamassage.text,
-      'lieu_destination': _destinationRamassage.text,
+      // a changer pour api google maps
+      // 'lieu_ramassage': _lieuRamassage.text,
+      // 'lieu_destination': _destinationRamassage.text,
       'nom_receptioneur': _nomRecepteur.text,
       'telephone_receptioneur': _telephoneRecepteur.text,
       'infos_complementaire': _infosComplementaire.text,
@@ -745,10 +657,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
       'poids': _poids.text,
       'taille': _taille.text,
       'date_ramassage': _selectedDateTime,
-      'nom_client': name,
-      'contact_client': contact,
-
-      // Autres champs de saisie de l'écran 1
+      'name': name,
+      'phone': contact,
     };
 
     // Passez les données à l'écran suivant et naviguez

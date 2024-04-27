@@ -4,10 +4,8 @@ import 'package:elbara_express/presentation/payment_method_screen/models/payment
 class PaymentData {
   static List<PaymentMethodModel> getpaymentDAta() {
     return [
-      PaymentMethodModel(ImageConstant.imgPaypalIcon, "Wave"),
-      PaymentMethodModel(ImageConstant.imgMasterCardIcon, "Orange Money"),
-      PaymentMethodModel(ImageConstant.imgApplePayIcon, "Moov Monney"),
-      PaymentMethodModel(ImageConstant.imgGooglePayIcon, "MTN Money"),
+      PaymentMethodModel(ImageConstant.imgPaypalIcon, "Payer Maintenant"),
+      PaymentMethodModel(ImageConstant.imgMasterCardIcon, "Payer à la livraison"),
     ];
   }
 }

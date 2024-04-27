@@ -206,7 +206,7 @@ class _DashboardGestionnaireGareState extends State<DashboardGestionnaireGare> {
 
     // Maintenant que vous avez l'ID de la compagnie, vous pouvez interroger la collection de commandes
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('commande')
+      stream: FirebaseFirestore.instance.collection('orders')
           .where('id_compagny', isEqualTo: compagnieId)
           .where('gare', isEqualTo: gare)
           .snapshots(),

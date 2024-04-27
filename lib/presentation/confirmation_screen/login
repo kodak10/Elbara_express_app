@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,10 +6,8 @@ import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/custom_floating_edit_text.dart';
 import 'controller/log_in_controller.dart';
-
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({Key? key}) : super(key: key);
@@ -22,8 +19,6 @@ class LogInScreen extends StatefulWidget {
 class _LogInScreenState extends State<LogInScreen> {
   LogInController controller = Get.put(LogInController());
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = false; // Variable pour gérer l'état du chargement
-
 
   @override
   void initState() {
@@ -42,21 +37,12 @@ class _LogInScreenState extends State<LogInScreen> {
         closeApp();
         return true;
       },
-
-      child : Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/login_background.png"),
-            fit: BoxFit.cover, // Ajustez selon vos besoins, peut-être BoxFit.fill
-          ),
-        ),
-
-  child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-
-          child: Column(
-            children: [
-              Form(
+      child: ColorfulSafeArea(
+        color: ColorConstant.whiteA700,
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: ColorConstant.whiteA700,
+          body: Form(
             key: _formKey,
             child: Container(
               width: double.maxFinite,
@@ -65,9 +51,9 @@ class _LogInScreenState extends State<LogInScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: getPadding(top: 20),
+                    padding: getPadding(top: 5),
                     child: Text(
-                      "Content de vous revoir!",
+                      "Content de te revoir!",
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.left,
                       style: AppStyle.txtSFProTextBold28,
@@ -161,12 +147,7 @@ class _LogInScreenState extends State<LogInScreen> {
                     text: "Se Connecter",
                     margin: getMargin(top: 31),
                     onTap: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.setBool('isLoggedIn', true);
                       if (_formKey.currentState!.validate()) {
-                        setState(() {
-                              _isLoading = true; // Mettre à jour l'état de chargement
-                            });
                           // Effectuer l'authentification avec email et mot de passe
                           try {
                             UserCredential userCredential =
@@ -175,30 +156,7 @@ class _LogInScreenState extends State<LogInScreen> {
                               password: controller.passwordController.text,
                             );
                             // L'utilisateur est connecté avec succès
-                            //onTapLogin();
-                            User? user = FirebaseAuth.instance.currentUser;
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(user!.uid)
-                                .get()
-                                .then((DocumentSnapshot documentSnapshot) {
-                              if (documentSnapshot.exists) {
-                                if (documentSnapshot.get('role') == "user") {
-                                   Get.toNamed(
-                                      AppRoutes.homeContainer1Screen,
-                                    );
-                                } else {
-                                  Get.toNamed(
-                                      AppRoutes.homeGestionnaireScreen,
-                                    );
-                                }
-                              } else {
-                                print('Une erreur est survenue, veuillez contactez le service client.');
-                              }
-                            });
-
-                            
-                            
+                            onTapLogin();
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
                               _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
@@ -248,12 +206,8 @@ class _LogInScreenState extends State<LogInScreen> {
               ),
             ),
           ),
-            ],
-          )
-         
         ),
-      )
-      
+      ),
     );
   }
 
@@ -268,12 +222,6 @@ _showSnackBar(String message) {
   );
 }
 
-
-  homeGestionnaireScreen() {
-    Get.toNamed(
-      AppRoutes.homeGestionnaireScreen,
-    );
-  }
 
   onTapTxtForgotpassword() {
     Get.toNamed(

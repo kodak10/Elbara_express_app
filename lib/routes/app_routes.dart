@@ -18,6 +18,7 @@ import 'package:elbara_express/presentation/cancel_order_screen/binding/cancel_o
 import 'package:elbara_express/presentation/cancel_order_screen/cancel_order_screen.dart';
 import 'package:elbara_express/presentation/city_selection_screen/binding/city_selection_binding.dart';
 import 'package:elbara_express/presentation/city_selection_screen/city_selection_screen.dart';
+import 'package:elbara_express/presentation/confirmation_screen/ConfirmationPhoneScreen.dart';
 import 'package:elbara_express/presentation/courier_services_screen/binding/courier_services_binding.dart';
 import 'package:elbara_express/presentation/courier_services_screen/courier_services_screen.dart';
 import 'package:elbara_express/presentation/customer_support_screen/binding/customer_support_binding.dart';
@@ -244,8 +245,18 @@ class AppRoutes {
 //Gestionnaire
   static const String gestionnaireOrderDetailPage = '/gestionaire_order_details';
 
+  static const String confirmationPhoneScreen = '/confirmation_phone_screen';
+
 
   static List<GetPage> pages = [
+
+    GetPage(
+      name: confirmationPhoneScreen,
+      page: () => ConfirmationPhoneScreen('verificationId'),
+      // bindings: [
+      //   SplashBinding(),
+      // ],
+    ),
 
     // Gestionnaire gare
     GetPage(

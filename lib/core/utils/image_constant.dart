@@ -1,4 +1,7 @@
 class ImageConstant {
+    static String bgImage = 'assets/images/login_background.png';
+
+
   static String imgVector4 = 'assets/images/img_vector4.svg';
   static String imgdropDownIcon = 'assets/images/drop_down_icon.svg';
 

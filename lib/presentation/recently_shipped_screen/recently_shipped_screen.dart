@@ -64,8 +64,8 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                   styleType: Style.bgFillWhiteA700),
               body: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('commande')
-                    .where('userID', isEqualTo: user?.uid)
+                    .collection('orders')
+                    .where('userId', isEqualTo: user?.uid)
                     // Filtrer par statut de la commande
                     //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
                     .snapshots(),
@@ -90,10 +90,10 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                       var orderId = document.id;
                       var data = document.data() as Map<String, dynamic>;
                       String name = documents[index].get('nom_receptioneur');
-                      Timestamp timestamp = document.get('date');
+                      Timestamp timestamp = document.get('dateRegister');
                       DateTime date = timestamp.toDate();
                      
-                      String status = documents[index].get('status');
+                      String status = documents[index].get('deliveryStatus');
                      
 
                       return Padding(
@@ -138,7 +138,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                                 Row(
                                                   children: [
                                                     Text(
-                                                      "Envoyer à".tr,
+                                                      "Commande N° :",
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       textAlign:
@@ -152,8 +152,8 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                                     Padding(
                                                       padding:
                                                           getPadding(top: 0),
-                                                      child: Text(
-                                                        name,
+                                                      child: Text("${data['orderId']}"
+                                                        ,
                                                         overflow: TextOverflow
                                                             .ellipsis,
                                                         textAlign:
@@ -167,13 +167,19 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                               ]))
                                     ]),
                                 SizedBox(height: 12),
-                                 Text("N° de commande : $orderId",
+                                 Text("Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.left,
                                   style: AppStyle.txtSFProTextRegular14),
                                 Padding(
                                 padding: getPadding(top: 16),
-                                child: Text("Date: ${DateFormat("d MMMM y à HH:mm:ss").format(date)}",
+                                child: Text("Depart: ${data['lieu_depart']}",
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.left,
+                                    style: AppStyle.txtFootnote)),
+                                 Padding(
+                                padding: getPadding(top: 16),
+                                child: Text("Destination:${data['lieu_arrive']}",
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.left,
                                     style: AppStyle.txtFootnote)),
@@ -193,7 +199,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                                 'name': data['nom_receptioneur'], // Nom de la personne
                                                 'orderID': orderId, // Numéro de commande
                                                 'status': data['status'], // Statut de la commande
-                                                'date': data['date'].toDate(), // Date de la commande
+                                                'date': data['dateRegister'].toDate(), // Date de la commande
                                                 // Vous pouvez ajouter d'autres informations de la commande ici
                                               },);
                                           },

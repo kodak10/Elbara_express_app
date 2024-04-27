@@ -12,16 +12,16 @@ class OnboardingOneModel {
     return [
       SlidertrackyourItemModel(
           ImageConstant.imgOnboarding1st,
-          "Suivez votre colis où que vous soyez",
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut"),
+          "Suivez votre colis en temps réel, où que vous soyez.",
+          "Restez connecté à votre livraison où que vous soyez, avec des mises à jour en temps réel."),
       SlidertrackyourItemModel(
           ImageConstant.imgOnboarding2nd,
-          "La meilleure livraison de colis rien que pour vous",
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut"),
+          "Une livraison de colis personnalisée, juste pour vous.",
+          "Recevez vos colis selon vos préférences, pour une expérience de livraison unique."),
       SlidertrackyourItemModel(
           ImageConstant.imgOnboarding3rd,
-          "Apportez du bonheur avec la livraison la plus sur",
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ut"),
+          "Propagez le bonheur avec notre service de livraison fiable et sûr.",
+          "Une livraison sûre, un sourire assuré : notre engagement envers votre bonheur."),
     ];
   }
 }

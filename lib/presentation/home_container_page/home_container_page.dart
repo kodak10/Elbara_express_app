@@ -1,6 +1,7 @@
 import 'package:elbara_express/presentation/home_container_page/models/home_slider_model.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import '../home_container_page/widgets/slidermaskgroup_item_widget.dart';
 import 'controller/home_container_controller.dart';
 import 'models/corier_service_model.dart';
@@ -15,9 +16,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
-
-
 
 class CourierService {
   String name;
@@ -36,9 +34,7 @@ class CourierService {
   }
 }
 
-
 class HomeContainerPage extends StatelessWidget {
-  
   HomeContainerPage({Key? key}) : super(key: key);
 
   HomeContainerController controller = Get.put(HomeContainerController());
@@ -47,39 +43,15 @@ class HomeContainerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     User? user = FirebaseAuth.instance.currentUser;
 
     return Container(
       decoration: AppDecoration.white,
       child: Column(
         children: [
-          Padding(
-            padding: getPadding(top: 13),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    AppbarImage(
-                        height: getSize(20),
-                        width: getSize(20),
-                        svgPath: ImageConstant.imgUSerIcon,
-                        margin: getMargin(left: 16, top: 18, bottom: 18)),
-                    SizedBox(
-                      width: getHorizontalSize(12),
-                    ),
-                    Text(
-                      user != null ? user.displayName ?? "" : "",
-                      style: AppStyle.txtSFProTextBold28,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          
           SizedBox(
-            height: getVerticalSize(10),
+            height: getVerticalSize(15),
           ),
           Expanded(
             child: ListView(
@@ -106,20 +78,18 @@ class HomeContainerPage extends StatelessWidget {
                 Obx(
                   () => Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(controller.sliderData.length,
-                        (index) {
+                    children:
+                        List.generate(controller.sliderData.length, (index) {
                       return AnimatedContainer(
-                        margin: getMargin(
-                            left: 4, top: 16, bottom: 16, right: 4),
+                        margin:
+                            getMargin(left: 4, top: 16, bottom: 16, right: 4),
                         duration: const Duration(milliseconds: 300),
                         height: getVerticalSize(6),
-                        width: getHorizontalSize(index ==
-                                controller.sliderIndex.value
-                            ? 16
-                            : 6),
+                        width: getHorizontalSize(
+                            index == controller.sliderIndex.value ? 16 : 6),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                              getHorizontalSize(12)),
+                          borderRadius:
+                              BorderRadius.circular(getHorizontalSize(12)),
                           color: (index == controller.sliderIndex.value)
                               ? ColorConstant.black900
                               : ColorConstant.black900.withOpacity(0.10),
@@ -212,8 +182,7 @@ class HomeContainerPage extends StatelessWidget {
                         .limit(4)
                         .get(),
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
@@ -223,40 +192,37 @@ class HomeContainerPage extends StatelessWidget {
                           child: Text('Error: ${snapshot.error}'),
                         );
                       }
-                      List<DocumentSnapshot> documents =
-                          snapshot.data!.docs;
+                      List<DocumentSnapshot> documents = snapshot.data!.docs;
                       return ListView.builder(
                         padding: getPadding(left: 8, right: 8),
                         itemCount: documents.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          CourierService data =
-                              CourierService.fromMap(documents[index]
-                                  .data() as Map<String, dynamic>);
+                          CourierService data = CourierService.fromMap(
+                              documents[index].data() as Map<String, dynamic>);
                           return Padding(
-                            padding:
-                                getPadding(left: 8, right: 8),
+                            padding: getPadding(left: 8, right: 8),
                             child: Container(
                               width: getSize(236),
                               decoration: BoxDecoration(
                                 color: ColorConstant.gray50,
-                                borderRadius: BorderRadius.circular(
-                                    getHorizontalSize(8)),
+                                borderRadius:
+                                    BorderRadius.circular(getHorizontalSize(8)),
                               ),
                               child: Padding(
-                                padding: getPadding(
-                                    left: 16, right: 16),
+                                padding: getPadding(left: 16, right: 16),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         CircleAvatar(
-                                          backgroundImage: NetworkImage(data.logo,),
+                                          backgroundImage: NetworkImage(
+                                            data.logo,
+                                          ),
                                         ),
                                         // SvgPicture.network(
                                         //   data.logo,
@@ -327,95 +293,121 @@ class HomeContainerPage extends StatelessWidget {
                   height: getVerticalSize(16),
                 ),
                 SizedBox(
-  height: getSize(194),
-  child: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('commande')
-            .where('userID', isEqualTo: user?.uid)
-            //.where('status', isNotEqualTo: "terminer")
-            //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
-            .limit(5) // parfait
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-      return ListView.builder(
-        padding: getPadding(left: 8, right: 8),
-        scrollDirection: Axis.horizontal,
-        itemCount: snapshot.data!.docs.length,
-        itemBuilder: (context, index) {
-          var document = snapshot.data!.docs[index];
-          var orderId = document.id;
-          var data = document.data() as Map<String, dynamic>;
-          return Padding(
-            padding: getPadding(left: 8, right: 8),
-            child: Container(
-              width: getSize(308),
-              decoration: BoxDecoration(
-                color: ColorConstant.gray50,
-                borderRadius: BorderRadius.circular(getHorizontalSize(8)),
-              ),
-              child: Padding(
-                padding: getPadding(top: 16, left: 16, right: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Expédiés à: ${data['nom_receptioneur']}",
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtSubheadline,
-                    ),
-                    SizedBox(height: getVerticalSize(15)),
-                    Text(
-                      "N° de commande: $orderId",
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtSFProTextRegular14,
-                    ),
-                    Padding(
-                      padding: getPadding(top: 4),
-                      child: Text(
-                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['date'].toDate())}",
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: AppStyle.txtFootnote,
-                      ),
-                      
-                    ),
-                    SizedBox(height: getVerticalSize(15)),
-                    CustomButton(
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutes.trackingDetailsScreen,
-                         arguments: {
-                            'name': data['nom_receptioneur'], // Nom de la personne
-                            'orderID': orderId, // Numéro de commande
-                            'status': data['status'], // Statut de la commande
-                            'date': data['date'].toDate(), // Date de la commande
-                            // Vous pouvez ajouter d'autres informations de la commande ici
-                          },
+                  height: getSize(194),
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('orders')
+                        .where('userId', isEqualTo: user?.uid)
+                        .limit(5) // parfait
+                        .snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.red,
+                            highlightColor: Colors.yellow,
+                            child: Text(
+                              'Shimmer',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 40.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         );
-                      },
-                      height: getSize(40),
-                      text: "Suivre la commande",
-                      fontStyle: ButtonFontStyle.SFProTextBold15WhiteA700,
-                      padding: ButtonPadding.PaddingT0,
-                    ),
-                  ],
+                      }
+                      ;
+                      return ListView.builder(
+                        padding: getPadding(left: 8, right: 8),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          var document = snapshot.data!.docs[index];
+
+                          var data = document.data() as Map<String, dynamic>;
+                          return Padding(
+                            padding: getPadding(left: 8, right: 8),
+                            child: Container(
+                              width: getSize(308),
+                              decoration: BoxDecoration(
+                                color: ColorConstant.gray50,
+                                borderRadius:
+                                    BorderRadius.circular(getHorizontalSize(8)),
+                              ),
+                              child: Padding(
+                                padding:
+                                    getPadding(top: 16, left: 16, right: 16),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Commande N°:  ${data['orderId']}",
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.left,
+                                      style: AppStyle.txtSubheadline,
+                                    ),
+                                    SizedBox(height: getVerticalSize(15)),
+                                    Text(
+                                      "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.left,
+                                      style: AppStyle.txtSFProTextRegular14,
+                                    ),
+                                    Padding(
+                                      padding: getPadding(top: 4),
+                                      child: Text(
+                                        "Depart: ${data['lieu_depart']}",
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.left,
+                                        style: AppStyle.txtFootnote,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: getPadding(top: 4),
+                                      child: Text(
+                                        "Destination: ${data['lieu_arrive']}",
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.left,
+                                        style: AppStyle.txtFootnote,
+                                      ),
+                                    ),
+                                    SizedBox(height: getVerticalSize(15)),
+                                    CustomButton(
+                                      onTap: () {
+                                        Get.toNamed(
+                                          AppRoutes.trackingDetailsScreen,
+                                          arguments: {
+                                            'orderID': data[
+                                                'orderiD'], // Numéro de commande
+                                            'date': data['dateRegister']
+                                                .toDate(), // Date de la commande
+                                            'name': data[
+                                                'nom_receptioneur'], // Nom de la personne
+                                            'status': data[
+                                                'deliveryStatus'], // Statut de la commande
+
+                                            // Vous pouvez ajouter d'autres informations de la commande ici
+                                          },
+                                        );
+                                      },
+                                      height: getSize(40),
+                                      text: "Suivre la commande",
+                                      fontStyle: ButtonFontStyle
+                                          .SFProTextBold15WhiteA700,
+                                      padding: ButtonPadding.PaddingT0,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
-      );
-    },
-  ),
-),
 
                 SizedBox(
                   height: getVerticalSize(20),
@@ -446,8 +438,7 @@ class HomeContainerPage extends StatelessWidget {
         onTap: function,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(
-                getHorizontalSize(8)),
+            borderRadius: BorderRadius.circular(getHorizontalSize(8)),
             color: ColorConstant.gray50,
           ),
           height: getSize(70),
@@ -475,6 +466,4 @@ class HomeContainerPage extends StatelessWidget {
       ),
     );
   }
-
-  
 }

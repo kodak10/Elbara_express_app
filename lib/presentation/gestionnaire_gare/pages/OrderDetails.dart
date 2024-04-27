@@ -45,7 +45,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage > {
     try {
       if (widget.orderId.isNotEmpty) { // Vérifiez si orderId n'est pas vide avant de faire la requête Firestore
         DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-            .collection('commande')
+            .collection('orders')
             .doc(widget.orderId)
             .get();
 
@@ -462,7 +462,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage > {
                                         try {
                                           if (widget.orderId.isNotEmpty) {
                                             await FirebaseFirestore.instance
-                                              .collection('commande')
+                                              .collection('orders')
                                               .doc(widget.orderId)
                                               .update({'status': newValue ? "en cours" : "en transit"});
                                             print('Mise à jour réussie');

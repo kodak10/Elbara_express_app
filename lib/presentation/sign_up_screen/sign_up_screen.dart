@@ -21,14 +21,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   SignUpController controller = Get.put(SignUpController());
   static const String defaultRole = 'user'; // Définir le rôle par défaut
-  static const String compagnie = ''; // Définir le rôle par défaut
-  static const String gare = ''; // Définir le rôle par défaut
-  static const String imagepath = ''; // Définir le rôle par défaut
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
-
-
 
   @override
   void initState() {
@@ -69,7 +64,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       style: AppStyle.txtSFProTextBold28)),
                               Padding(
                                   padding: getPadding(top: 22),
-                                  child: Text("Créez un compte en utilisant le formulaire ci-dessous.".tr,
+                                  child: Text(
+                                      "Créez un compte en utilisant le formulaire ci-dessous."
+                                          .tr,
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: AppStyle.txtBody)),
@@ -109,12 +106,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 height: getVerticalSize(16),
                               ),
                               phone_number_field(
-                                  controller.phoneNumberController, (p0) {
-                                if (p0 == null || p0.number.isEmpty) {
-                                  return "Entrez un numéro valide";
-                                }
-                                return null;
-                              }),
+                                controller.phoneNumberController,
+                                (p0) {
+                                  if (p0 == null || p0.number.isEmpty) {
+                                    return "Entrez un numéro valide";
+                                  }
+                                  return null;
+                                },
+                              ),
                               Obx(
                                 () => CustomFloatingEditText(
                                     controller: controller.passwordController,
@@ -170,7 +169,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   child: RichText(
                                       text: TextSpan(children: [
                                         TextSpan(
-                                            text: "Vous avez déjà un compte ? ".tr,
+                                            text: "Vous avez déjà un compte ? "
+                                                .tr,
                                             style: TextStyle(
                                                 color: ColorConstant.black900,
                                                 fontSize: getFontSize(16),
@@ -189,13 +189,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ]))))));
   }
 
+  
+
+  
+
   onTapSignup() async {
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: controller.emailController.text,
           password: controller.passwordController.text,
-          
+
         );
         // Call function to post user details to Firestore
         //await postDetailsToFirestore(controller.emailController.text, defaultRole );
@@ -220,24 +224,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  postDetailsToFirestore(String email, String name, String role, String phoneNumber,) async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    var user = FirebaseAuth.instance.currentUser;
-    CollectionReference ref = firebaseFirestore.collection('users');
-    await ref.doc(user!.uid).set({
-      'email': email,
-      'displayName': name,
-      'role': defaultRole,
-      'contact' : phoneNumber,
-      'compagnie' : compagnie,
-      'gare' : gare,
-      'imagepath' : imagepath,
-      
-    }); // Utiliser le rôle par défaut
-    Get.toNamed(AppRoutes.logInScreen); // Remplacez AppRoutes.login par le nom de votre route de connexion
-  }
+  postDetailsToFirestore(
+  String email,
+  String name,
+  String role,
+  String phoneNumber,
+) async {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  var user = FirebaseAuth.instance.currentUser;
+  CollectionReference ref = firebaseFirestore.collection('users');
+  DocumentReference docRef = ref.doc(); // Créez une référence de document sans ID
 
- 
+  // Ajoutez le document à Firestore et récupérez l'ID généré
+  await docRef.set({
+    'email': email,
+    'name': name,
+    'role': defaultRole,
+    'phone':  '+225${controller.phoneNumberController.text}',
+    'image': '',
+  });
+
+  // Récupérez l'ID généré par Firebase
+  String documentId = docRef.id;
+
+  // Mettez à jour le document avec l'ID généré
+  await docRef.update({'id': documentId});
+
+  // Redirigez vers la page de connexion
+  Get.toNamed(AppRoutes.logInScreen);
+}
+
 
   onTapTxtAlreadyhavean() {
     Get.back();

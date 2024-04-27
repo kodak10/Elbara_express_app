@@ -1,0 +1,181 @@
+{
+  "project_info": {
+    "project_number": "998391121356",
+    "project_id": "elbaraexpress-9b834",
+    "storage_bucket": "elbaraexpress-9b834.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:34e4b367b7155af8ee8969",
+        "android_client_info": {
+          "package_name": "com.appzler.deliverzler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:c6ff7ee4a3c47355ee8969",
+        "android_client_info": {
+          "package_name": "com.example.deliverzler"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:5a1f9f942c51519aee8969",
+        "android_client_info": {
+          "package_name": "com.example.elbara_express"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:72da80fde0c6eee8ee8969",
+        "android_client_info": {
+          "package_name": "com.example.elbara_express_administration"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:fe31b5939f7858f3ee8969",
+        "android_client_info": {
+          "package_name": "com.example.elbara_express_delivery_man"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:ce3b8e3e65ff3e5fee8969",
+        "android_client_info": {
+          "package_name": "com.example.elbara_express_livreur"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:c2551705aed701fcee8969",
+        "android_client_info": {
+          "package_name": "com.example.qaswa_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:9f7d393a108e2ab1ee8969",
+        "android_client_info": {
+          "package_name": "com.example.test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:d5d0922efa1bb56fee8969",
+        "android_client_info": {
+          "package_name": "com.inilabs.foodking.delivery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

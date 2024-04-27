@@ -15,14 +15,34 @@ class SplashController extends GetxController {
     _redirectToScreen();
   }
 
-  void _redirectToScreen() async {
-  await Future.delayed(const Duration(milliseconds: 3000));
+//   void _redirectToScreen() async {
+//   await Future.delayed(const Duration(milliseconds: 3000));
+//   final User? user = FirebaseAuth.instance.currentUser;
+  
+//   if (await _isIntroSeen()) {
+//     _goToOnboardingScreen();
+//   } else if (user != null) {
+//     // Get user type from Firestore
+//     String? userRole = await _getUserRole(user.uid);
+//     if (userRole == "user") {
+//       _goToHomeScreen();
+//     } else if (userRole == "gare") {
+//       _goToGareScreen();
+//     } else {
+//       // Handle other user types or scenarios
+//     }
+//   } else {
+//     _goToLoginScreen();
+//   }
+// }
+
+void _redirectToScreen() async {
   final User? user = FirebaseAuth.instance.currentUser;
   
   if (await _isIntroSeen()) {
     _goToOnboardingScreen();
   } else if (user != null) {
-    // Get user type from Firestore
+    // Get user type from Firestore asynchronously
     String? userRole = await _getUserRole(user.uid);
     if (userRole == "user") {
       _goToHomeScreen();
@@ -35,6 +55,7 @@ class SplashController extends GetxController {
     _goToLoginScreen();
   }
 }
+
 
 Future<String?> _getUserRole(String userId) async {
   try {

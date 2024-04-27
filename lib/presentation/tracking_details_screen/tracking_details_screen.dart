@@ -40,7 +40,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   void fetchOrderDetails() async {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-          .collection('commande')
+          .collection('orders')
           .doc(widget.orderId)
           .get();
 
@@ -56,11 +56,11 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = Get.arguments ?? {};
     final String name = args['name'] ?? '';
-    final String orderID = args['orderID'] ?? '';
-    final String status = args['status'] ?? '';
+    final String orderID = args['orderId'] ?? '';
+    final String status = args['deliveryStatus'] ?? '';
     //final String dateCommande = args['date'] ?? '';
-    final DateTime dateCommandeDateTime = args['date'];
-    final String dateCommande = dateCommandeDateTime != null ? dateCommandeDateTime.toString() : '';
+    final DateTime dateCommandeDateTime = args['dateRegister'];
+    //final String dateCommande = dateCommandeDateTime != null ? dateCommandeDateTime.toString() : '';
 
     //final String dateCommande = args['date'] ?? ''; // Utiliser la clé 'date'
 
@@ -135,7 +135,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                             alignment: Alignment
                                                                 .center,
                                                             child: Text(
-                                                                "Date: $dateCommande",
+                                                                "Date: Date", // "Date: $dateCommande",
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -182,7 +182,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                 getHorizontalSize(8)),
                                             alignment: Alignment.center),
                                         Visibility(
-                                          visible: status == "livraison",
+                                          visible: status == "onTheWay",
                                           child: Padding(
                                             padding:
                                                 getPadding(left: 8, right: 8),
@@ -324,7 +324,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                               // ),
                               StreamBuilder<DocumentSnapshot>(
                                 stream: FirebaseFirestore.instance
-                                    .collection('commande')
+                                    .collection('orders')
                                     .doc(orderID)
                                     .snapshots(),
                                 builder: (context, snapshot) {
@@ -342,7 +342,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
 
                                   final data = snapshot.data!.data()
                                       as Map<String, dynamic>;
-                                  final status = data['status'];
+                                  final status = data['deliveryStatus'];
 
                                   return Row(
                                     children: [
@@ -364,18 +364,18 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                           _buildDashedLine(),
                                           _buildTimelineItem(
                                               "En attente de livreur",
-                                              status == "attente",
-                                              status != "attente"),
+                                              status == "pending",
+                                              status != "pending"),
                                           _buildDashedLine(),
                                           _buildTimelineItem(
                                               "En cours de livraison",
-                                              status == "livraison",
-                                              status != "livraison"),
+                                              status == "onTheWay",
+                                              status != "onTheWay"),
                                           _buildDashedLine(),
                                           _buildTimelineItem(
                                               "Commande terminée",
-                                              status == "livrer",
-                                              status != "livrer"),
+                                              status == "delivered",
+                                              status != "delivered"),
                                         ],
                                       ),
                                     ],

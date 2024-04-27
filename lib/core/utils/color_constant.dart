@@ -24,7 +24,7 @@ class ColorConstant {
 
   static Color deepPurple60075 = fromHex('#75663ba5');
 
-  static Color deepPurple600 = fromHex('#663ba5');
+  static Color deepPurple600 = fromHex('#11078c');
 
   static Color gray200 = fromHex('#f0f0f0');
 
@@ -130,7 +130,7 @@ Widget phone_number_field(
       //   fontFamily: 'Outfit',
       //   fontWeight: FontWeight.w400,
       // ),
-      labelText: "Phone number",
+      labelText: "Indicatif",
       // label: Text(
       //   "Phone number",
       //   style: TextStyle(
@@ -185,7 +185,7 @@ Widget phone_number_field(
         borderSide: BorderSide(),
       ),
     ),
-    initialCountryCode: 'IN',
+    initialCountryCode: 'CI',
     onChanged: (phone) {
       print(phone.completeNumber);
     },

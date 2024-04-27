@@ -1,12 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/utils/color_constant.dart';
+import 'package:elbara_express/core/utils/image_constant.dart';
 import 'package:elbara_express/core/utils/size_utils.dart';
+import 'package:elbara_express/presentation/payment_method_screen/controller/payment_method_controller.dart';
+import 'package:elbara_express/presentation/payment_method_screen/models/payment_method_model.dart';
 import 'package:elbara_express/routes/app_routes.dart';
+import 'package:elbara_express/theme/app_decoration.dart';
+import 'package:elbara_express/theme/app_style.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:elbara_express/widgets/custom_image_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'dart:math';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 // Récupérer la date et l'heure actuelles
 DateTime date = DateTime.now();
@@ -25,8 +36,22 @@ class _SelectCourierServiceScreenState
   static const String screen2Route = '/screen2';
 
   String selectedVehicle = 'Moto';
-  String selectedButton = ''; // Ajout de la variable selectedButton
+  String mode_paiement = ''; // Définir une variable pour stocker la valeur sélectionnée
   double selectedPrice = 0.0;
+  GeoPoint geoPoint =
+      GeoPoint(37.4219983, -122.084); // en attente de api google maps
+
+
+      String generateOrderId() {
+  const String chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  Random random = Random();
+  String orderId = '';
+  for (int i = 0; i < 11; i++) {
+    orderId += chars[random.nextInt(chars.length)];
+  }
+  return orderId;
+}
+      
 
   //late Map<String, dynamic> DataInfos;
   Map<String, dynamic>? DataInfos;
@@ -63,31 +88,141 @@ class _SelectCourierServiceScreenState
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-// Lorsque toutes les données sont collectées sur l'écran 2
-  void saveCommande() {
-    // Collectez toutes les données de l'écran 2
-    Map<String, dynamic> screen2Data = {
-      'status': 'accepte',
-      'selectedVehicle': selectedVehicle,
-      'userID': user?.uid,
-      'date': date,
-      'selectedPrice': selectedPrice,
+Future<void> saveCommande() async {
+  String orderId = generateOrderId();
+print(orderId); // Affiche un identifiant aléatoire de 11 caractères
 
-      //'selectedButton': selectedButton,
-      // Autres données de l'écran 2
+  // Collectez toutes les données de l'écran 2
+  Map<String, dynamic> screen2Data = {
+    'dateRegister': date,
+    'date': 57755,
+    'deliveryGeoPoint': geoPoint,
+    //'deliveryId': user?.uid,
+    'deliveryStatus': 'pending',
+    'employeeCancelNote': "",
+    'geoPoint': geoPoint,
+    'orderId': orderId,
+    'order_confirm': true,
+    'order_delivered': false,
+    'order_on_delivery': false,
+    'paymentMethod': 'Cash',
+    'pickupOption': "delivery",
+    'userId': user?.uid,
+    'userImage': "",
+    'userNote': "",
+    'selectedVehicle': selectedVehicle,
+    'price': selectedPrice,
+    'status': 'accepte',
+    'lieu_depart': 'Abidjan, Abobo',
+    'lieu_arrive' : 'Abidjan, Cocody',
+  };
+
+  Map<String, dynamic> addressModel = {
+    'city': 'Abidjan',
+    'geoPoint': GeoPoint(5.3518078, 4.0204716),
+    'mobile': '0103810998',
+    'state': 'Angré',
+    'street': 'Terminus 81/82',
+  };
+
+  // Combinez les données de l'écran 1 et de l'écran 2
+  Map<String, dynamic> combinedData = {
+    ...?DataInfos,
+    ...screen2Data,
+    'addressModel': addressModel,
+  };
+
+  // // Enregistrez toutes ces données dans la collection Firestore
+  // _firestore.collection('orders').add(combinedData).then((value) {
+  
+  //  String orderId = value.id;
+
+  // // Mettez à jour 'orderId' dans combinedData avec l'ID du document ajouté
+  // combinedData['orderId'] = orderId;
+
+  //   print('Données enregistrées avec succès');
+  //   // Naviguez vers l'écran suivant si nécessaire
+  // }).catchError((error) {
+  //   print('Erreur lors de l\'enregistrement des données: $error');
+  //   // Gérez les erreurs ici si nécessaire
+  // });
+
+ try {
+  // Enregistrez toutes ces données dans la collection Firestore
+  DocumentReference documentReference = await _firestore.collection('orders').add(combinedData);
+    
+  print('Données enregistrées avec succès avec l\'ID du document ajouté: $orderId');
+  // Naviguez vers l'écran suivant si nécessaire
+} catch (error) {
+  print('Erreur lors de l\'enregistrement des données: $error');
+  // Gérez les erreurs ici si nécessaire
+}
+
+}
+
+
+
+
+  Future<void> initiatePayment(BuildContext context) async {
+    // Remplacez ces valeurs par vos véritables identifiants API PayDunya
+    String masterKey = 'fhRrUGWg-Upkg-0r3x-Z7DI-d8fR0aIHgxc2';
+    // TEST
+    //String privatekey = 'test_private_SbiMC3CevM2M7CwG9InuuKJCugA';
+    //String token = 'U2VG53YZyOhonBVvKuw7';
+
+    // PRODUCTION
+    String privatekey = 'live_private_tvQxERrcZFOVXgpi3NyUckcWDDL';
+    String token = 'vI7BDJAJvpWDY8Y4rjBL';
+
+    // Point de terminaison de l'API pour initier le paiement
+    //String url ='https://app.paydunya.com/sandbox-api/v1/checkout-invoice/create'; // test
+    String url =
+        'https://app.paydunya.com/api/v1/checkout-invoice/create'; // production
+
+    // Payload pour initier le paiement (remplacez-le par les données réelles de votre paiement)
+    Map<String, dynamic> payload = {
+      "invoice": {"total_amount": selectedPrice, "description": "Livraison"},
+      "store": {"name": "Elbara Express"}
     };
 
-    // Combinez les données de l'écran 1 et de l'écran 2
-    Map<String, dynamic> combinedData = {...?DataInfos, ...screen2Data};
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'PAYDUNYA-MASTER-KEY': masterKey,
+          'PAYDUNYA-PRIVATE-KEY': privatekey,
+          'PAYDUNYA-TOKEN': token,
+        },
+        body: jsonEncode(payload),
+      );
 
-    // Enregistrez toutes ces données dans la collection Firestore
-    _firestore.collection('commande').add(combinedData).then((value) {
-      print('Données enregistrées avec succès');
-      // Naviguez vers l'écran suivant si nécessaire
-    }).catchError((error) {
-      print('Erreur lors de lenregistrement des données: $error');
-      // Gérez les erreurs ici si nécessaire
-    });
+      if (response.statusCode == 200) {
+        // Initiation de paiement réussie
+        // Récupérer l'URL de paiement à partir de la réponse
+        var responseData = jsonDecode(response.body);
+        var paymentUrl = responseData['response_text'];
+
+        // Ouvrir l'URL de paiement dans le navigateur par défaut
+        launch(paymentUrl);
+        //launchUrl(paymentUrl);
+      } else {
+        // Echec de l'initiation de paiement
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Echec de l\'initiation de paiement: ${response.statusCode}'),
+          ),
+        );
+      }
+    } catch (error) {
+      // Gérez toutes les erreurs survenues pendant le processus
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $error'),
+        ),
+      );
+    }
   }
 
   @override
@@ -98,7 +233,7 @@ class _SelectCourierServiceScreenState
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Prix & Mode de payement',
+            'Prix & Mode de paiement',
             style: TextStyle(
               fontWeight: FontWeight.bold, // Utilisation du style en gras
             ),
@@ -271,88 +406,193 @@ class _SelectCourierServiceScreenState
                   ),
                 ),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 20),
 
-              // Nouvelle rangée de boutons personnalisés
+            GetBuilder<PaymentMethodController>(
+                  init: PaymentMethodController(),
+                  builder: (controller) => Container(
+                      width: double.maxFinite,
+                      padding: getPadding(top: 21, bottom: 21),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: getPadding(left: 16, right: 16),
+                              child: Text("Mode de paiement".tr,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                  style: AppStyle.txtSFProTextBold20),
+                            ),
+                            ListView.builder(
+                              padding: getPadding(left: 16, right: 16, top: 8),
+                              primary: false,
+                              shrinkWrap: true,
+                              itemCount: controller.paymentMethods.length,
+                              itemBuilder: (context, index) {
+                                PaymentMethodModel data =
+                                    controller.paymentMethods[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    controller.setCurrentPaymentMethod(index);
+                                    setState(() {
+                                      mode_paiement = data.title!; // Mettre à jour la valeur sélectionnée
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: getPadding(top: 8, bottom: 8),
+                                    child: Container(
+                                      decoration: AppDecoration.fillGray50
+                                          .copyWith(
+                                              borderRadius: BorderRadiusStyle
+                                                  .roundedBorder16,
+                                              color:
+                                                  controller.currentPayment ==
+                                                          index
+                                                      ? ColorConstant
+                                                          .deepPurple50
+                                                      : ColorConstant.gray50,
+                                              border: Border.all(
+                                                  color: controller
+                                                              .currentPayment ==
+                                                          index
+                                                      ? ColorConstant
+                                                          .deepPurple600
+                                                      : ColorConstant.gray50)),
+                                      child: Padding(
+                                        padding: getPadding(
+                                            top: 20,
+                                            bottom: 20,
+                                            left: 16,
+                                            right: 16),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(data.title!,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style: AppStyle.txtHeadline)
+                                              ],
+                                            ),
+                                            CustomImageView(
+                                              svgPath: controller
+                                                          .currentPayment ==
+                                                      index
+                                                  ? ImageConstant.imgEyeBlack900
+                                                  : ImageConstant
+                                                      .imgIcRadioButton,
+                                            )
+                                            //ImageConstant.imgIcRadioButton,
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ])),
+                ),
+
+                
+                
               // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
               //   children: [
-              //     CustomButtonSelect(
-              //       buttonText: 'Payer Maintenant',
-              //       isSelected: selectedButton == 'now',
-              //       onPressed: () {
-              //         setState(() {
-              //           selectedButton = 'now';
-              //         });
-              //       },
+              //     Expanded(
+              //       child: Container(
+              //         padding: EdgeInsets.all(8),
+              //         decoration: BoxDecoration(
+              //           borderRadius: BorderRadius.circular(8),
+              //         ),
+              //         child: CustomButtonSelect(
+              //           buttonText: 'Payer Maintenant',
+              //           isSelected: selectedButton == 'now',
+              //           onPressed: () {
+              //             setState(() {
+              //               selectedButton = 'now';
+              //             });
+              //           },
+              //         ),
+              //       ),
               //     ),
               //     SizedBox(width: 20),
-              //     CustomButtonSelect(
-              //       buttonText: 'Payer à la Livraison',
-              //       isSelected: selectedButton == 'delivery',
-              //       onPressed: () {
-              //         setState(() {
-              //           selectedButton = 'delivery';
-              //         });
-              //       },
+              //     Expanded(
+              //       child: Container(
+              //         padding: EdgeInsets.all(8),
+              //         decoration: BoxDecoration(
+              //           borderRadius: BorderRadius.circular(8),
+              //         ),
+              //         child: CustomButtonSelect(
+              //           buttonText: 'Payer à la Livraison',
+              //           isSelected: selectedButton == 'delivery',
+              //           onPressed: () {
+              //             setState(() {
+              //               selectedButton = 'delivery';
+              //             });
+              //           },
+              //         ),
+              //       ),
               //     ),
               //   ],
               // ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: CustomButtonSelect(
-                        buttonText: 'Payer Maintenant',
-                        isSelected: selectedButton == 'now',
-                        onPressed: () {
-                          setState(() {
-                            selectedButton = 'now';
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: CustomButtonSelect(
-                        buttonText: 'Payer à la Livraison',
-                        isSelected: selectedButton == 'delivery',
-                        onPressed: () {
-                          setState(() {
-                            selectedButton = 'delivery';
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ]),
+        // bottomNavigationBar: CustomButton(
+        //   height: getVerticalSize(54),
+        //   text: "Suivant".tr,
+        //   margin: getMargin(left: 16, right: 16, bottom: 40),
+        //   onTap: () {
+        //     if (mode_paiement == 'Payer Maintenant') {
+        //       initiatePayment(context);
+        //       saveCommande();
+        //       // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
+        //     } else if (mode_paiement == 'Payer à la livraison') {
+        //       saveCommande();
+
+        //       this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
+        //     } else {
+        //       // Echec de l'initiation de paiement
+        //       ScaffoldMessenger.of(context).showSnackBar(
+        //         SnackBar(
+        //           content: Text('Erreur survenue'),
+        //         ),
+        //       );
+
+        //       // printError(info: 'Veuillez choisir un mode de paiement');
+        //     }
+        //   },
+        // )
+
         bottomNavigationBar: CustomButton(
           height: getVerticalSize(54),
           text: "Suivant".tr,
           margin: getMargin(left: 16, right: 16, bottom: 40),
           onTap: () {
-            if (selectedButton == 'now') {
-              this.selectNow(); // Utilisez this pour appeler les méthodes de classe
-            } else if (selectedButton == 'delivery') {
+            if (mode_paiement == 'Payer Maintenant') {
+              initiatePayment(context);
               saveCommande();
+              // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
+            } else if (mode_paiement == 'Payer à la livraison') {
+              saveCommande();
+
               this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
             } else {
-              printError(info: 'Veuillez choisir un mode de paiement');
+              // Echec de l'initiation de paiement
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Erreur survenue'),
+                ),
+              );
+
+              // printError(info: 'Veuillez choisir un mode de paiement');
             }
           },
         ));
+
+        
   }
 
   void selectNow() {

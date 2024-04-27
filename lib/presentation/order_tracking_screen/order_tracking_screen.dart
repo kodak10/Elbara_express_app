@@ -69,8 +69,8 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
-                          .collection('commande')
-                          .where('userID', isEqualTo: user?.uid)
+                          .collection('orders')
+                          .where('userId', isEqualTo: user?.uid)
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
@@ -103,8 +103,8 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                               arguments: {
                                                 'name': data['nom_receptioneur'], // Nom de la personne
                                                 'orderID': orderId, // Numéro de commande
-                                                'status': data['status'], // Statut de la commande
-                                                'date': data['date'].toDate(), // Date de la commande
+                                                'status': data['deliveryStatus'], // Statut de la commande
+                                                'date': data['deliveryStatus'].toDate(), // Date de la commande
                                                 // Vous pouvez ajouter d'autres informations de la commande ici
                                               },);
                                   // Naviguer vers les détails de la commande

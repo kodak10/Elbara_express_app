@@ -6,6 +6,7 @@ import 'package:elbara_express/presentation/profile_page/profile_page.dart';
 import 'package:elbara_express/widgets/custom_bottom_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 // ignore_for_file: must_be_immutable
 class EmptyMyOrdersScreen extends GetWidget<EmptyMyOrdersController> {
@@ -42,7 +43,7 @@ class EmptyMyOrdersScreen extends GetWidget<EmptyMyOrdersController> {
                           top: 5,
                         ),
                         child: Text(
-                          "Mes commandes".tr,
+                          "Mes commandes555".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtSFProTextBold28,
@@ -139,7 +140,51 @@ class EmptyMyOrdersScreen extends GetWidget<EmptyMyOrdersController> {
       ),
     );
   }
-
+  
+Shimmer ordersShimmer() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Padding(
+        padding: getPadding(top: 16, left: 16, right: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(15)),
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(4)),
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(4)),
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(15)),
+            Container(
+              width: getSize(150), // Largeur simulant la taille du bouton
+              height: getSize(40), // Hauteur simulant la taille du bouton
+              color: Colors.white, // Couleur simulant le fond du bouton
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   ///Handling route based on bottom click actions
   String getCurrentRoute(BottomBarEnum type) {
     switch (type) {
@@ -169,4 +214,6 @@ class EmptyMyOrdersScreen extends GetWidget<EmptyMyOrdersController> {
         return DefaultWidget();
     }
   }
+
+  
 }

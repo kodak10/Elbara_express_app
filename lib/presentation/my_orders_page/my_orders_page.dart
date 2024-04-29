@@ -1,291 +1,438 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
-import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
-import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
-import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
+import 'package:elbara_express/presentation/order_details_in_transit_screen/order_details_in_transit_screen.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../home_container_page/controller/home_container_controller.dart';
+import '../home_container_page/models/recently_shipped_data_model.dart';
+import '../my_orders_page/widgets/my_orders_item_widget.dart';
+import 'controller/my_orders_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
 
 class MyOrdersPage extends StatefulWidget {
-  const MyOrdersPage({Key? key}) : super(key: key);
+  const MyOrdersPage({Key? key})
+      : super(
+          key: key,
+        );
 
   @override
   State<MyOrdersPage> createState() => _MyOrdersPageState();
 }
 
-class _MyOrdersPageState extends State<MyOrdersPage> {
-  final User? user = FirebaseAuth.instance.currentUser;
+final User? user = FirebaseAuth.instance.currentUser;
 
+class _MyOrdersPageState extends State<MyOrdersPage> {
+  MyOrdersController myOrdersController = Get.put(MyOrdersController());
+  HomeContainerController controller = Get.put(HomeContainerController());
   @override
   Widget build(BuildContext context) {
-    User? user = FirebaseAuth.instance.currentUser;
-    //User? user = FirebaseAuth.instance.currentUser;
-    return WillPopScope(
-        onWillPop: () async {
-          Get.back();
-          return true;
-        },
-        child: ColorfulSafeArea(
-            color: ColorConstant.whiteA700,
-            child: Scaffold(
-              backgroundColor: ColorConstant.whiteA700,
-              appBar: CustomAppBar(
-                  height: getVerticalSize(79),
-                  leadingWidth: 42,
-                  leading: AppbarImage(
-                      height: getSize(24),
-                      width: getSize(24),
-                      svgPath: ImageConstant.imgArrowleft,
-                      margin: getMargin(left: 18, top: 29, bottom: 26),
-                      onTap: () {
-                        //onTapArrowleft15();
-                      }),
-                  centerTitle: true,
-                  title: AppbarSubtitle1(text: "Mes commandes"),
-                  styleType: Style.bgFillWhiteA700),
-              body: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('orders')
-                      .where('userId', isEqualTo: user?.uid)
-                      //.orderBy('date', descending: true) // Trier par date de commande, les plus récents en premier
-                      //.limit(5) // Limiter à 5 commandes
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return ListView.builder(
-                        padding: getPadding(left: 8, right: 8),
-                        itemCount:
-                            4, // Afficher 4 shimmers pendant le chargement
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: getPadding(left: 8, right: 8),
-                            child: Container(
-                              width: getSize(236),
-                              decoration: BoxDecoration(
-                                color: ColorConstant.gray50,
-                                borderRadius:
-                                    BorderRadius.circular(getHorizontalSize(8)),
-                              ),
-                              child: ordersShimmer(),
-                            ),
-                          );
-                        },
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('Erreur de chargement des données');
-                    } else {
-                      List<DocumentSnapshot> documents = snapshot.data!.docs;
+    return controller.recentlyShipped.isEmpty
+        ? SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: double.maxFinite,
+                  child: Container(
+                    padding: getPadding(
+                      left: 142,
+                      top: 19,
+                      right: 142,
+                      bottom: 19,
+                    ),
+                    decoration: AppDecoration.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: getPadding(
+                            top: 5,
+                          ),
+                          child: Text(
+                            "Mes Commandes",
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.left,
+                            style: AppStyle.txtSFProTextBold28,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 0,
+                  margin: EdgeInsets.all(0),
+                  color: ColorConstant.deepPurple50,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusStyle.circleBorder70,
+                  ),
+                  child: Container(
+                    height: getSize(
+                      140,
+                    ),
+                    width: getSize(
+                      140,
+                    ),
+                    padding: getPadding(
+                      all: 30,
+                    ),
+                    decoration: AppDecoration.fillDeeppurple50.copyWith(
+                      borderRadius: BorderRadiusStyle.circleBorder70,
+                    ),
+                    child: Stack(
+                      children: [
+                        CustomImageView(
+                          svgPath: ImageConstant.imgPackage11,
+                          height: getSize(
+                            80,
+                          ),
+                          width: getSize(
+                            80,
+                          ),
+                          alignment: Alignment.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: getPadding(
+                    top: 21,
+                  ),
+                  child: Text(
+                    "lbl_no_order_yet".tr,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left,
+                    style: AppStyle.txtSFProTextBold22,
+                  ),
+                ),
+                Container(
+                  width: getHorizontalSize(
+                    270,
+                  ),
+                  margin: getMargin(
+                    top: 12,
+                  ),
+                  child: Text(
+                    "msg_pellentesque_eu".tr,
+                    maxLines: null,
+                    textAlign: TextAlign.center,
+                    style: AppStyle.txtBody,
+                  ),
+                ),
+                CustomButton(
+                  height: getVerticalSize(
+                    53,
+                  ),
+                  width: getHorizontalSize(
+                    178,
+                  ),
+                  text: "lbl_add".tr,
+                  margin: getMargin(
+                    top: 41,
+                    bottom: 194,
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Container(
+            decoration: AppDecoration.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: double.maxFinite,
+                  child: Container(
+                    padding: getPadding(
+                      //left: 142,
+                      top: 19,
+                      //right: 142,
+                      bottom: 19,
+                    ),
+                    decoration: AppDecoration.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: getPadding(
+                            top: 5,
+                          ),
+                          child: Text(
+                            "Mes Commandes".tr,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.left,
+                            style: AppStyle.txtSFProTextBold28,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: getPadding(bottom: 20),
+                    child: GestureDetector(
+                        // onTap: () {
+                        //   Get.to(OrderDetailsInTransitScreen(
+                        //     orderData: ordertest,
+                        //   ));
+                        //   // Get.toNamed(AppRoutes.orderDetailsInTransitScreen);
+                        // },
 
-                      return ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        itemCount: documents.length,
-                        itemBuilder: (context, index) {
-                          var document = snapshot.data!.docs[index];
-                          var orderId = document.id;
-                          var data = document.data() as Map<String, dynamic>;
-                          String name =
-                              documents[index].get('nom_receptioneur');
-                          Timestamp timestamp = document.get('dateRegister');
-                          DateTime date = timestamp.toDate();
-
-                          String status =
-                              documents[index].get('deliveryStatus');
-
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
+                        child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('orders')
+                          .where('userId', isEqualTo: user?.uid)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+                        if (snapshot.hasError) {
+                          return Text('Something went wrong');
+                        }
+                        return ListView(
+                          children: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            Map<String, dynamic> data =
+                                document.data() as Map<String, dynamic>;
+                            return SizedBox(
+                              width: double.maxFinite,
+                              child: Container(
+                                padding: getPadding(
+                                  left: 30,
+                                  top: 35,
+                                  right: 26,
+                                  bottom: 15,
+                                ),
+                                decoration: AppDecoration.fillGray50.copyWith(
+                                  borderRadius:
+                                      BorderRadiusStyle.roundedBorder8,
+                                ),
                                 child: Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CustomIconButton(
-                                              height: 42,
-                                              width: 42,
-                                              shape: IconButtonShape
-                                                  .CircleBorder20,
-                                              child: CustomImageView(
-                                                  svgPath: ImageConstant
-                                                      .imgArrowdownDeepPurple600)),
-                                          SizedBox(
-                                            width: getHorizontalSize(8),
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        CustomIconButton(
+                                          height: 42,
+                                          width: 42,
+                                          margin: getMargin(
+                                            bottom: 1,
                                           ),
-                                          Container(
-                                              margin:
-                                                  getMargin(left: 8, top: 3),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadiusStyle
-                                                          .roundedBorder8),
-                                              child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Commande N°:".tr,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: AppStyle
-                                                              .txtSubheadlineGray600,
+                                          shape: IconButtonShape.CircleBorder20,
+                                          child: CustomImageView(
+                                            svgPath: ImageConstant
+                                                .imgArrowdownDeepPurple600,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: getPadding(
+                                            left: 8,
+                                            top: 5,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Référence N°:",
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle
+                                                    .txtSubheadlineGray600,
+                                              ),
+                                              Padding(
+                                                padding: getPadding(
+                                                  top: 4,
+                                                ),
+                                                child: Text(
+                                                  data['orderId'],
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style:
+                                                      AppStyle.txtSubheadline,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Container(
+                                          height: getSize(32),
+                                          width: getSize(102),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      getHorizontalSize(16)),
+                                              border: Border.all(
+                                                  color: data['deliveryStatus']!
+                                                              .toLowerCase() ==
+                                                          "delivered"
+                                                      ? ColorConstant.greenA700
+
+                                                      : data['deliveryStatus']!
+                                                              .toLowerCase() ==
+                                                          "canceled"
+                                                      ? ColorConstant.greenA700
+
+                                                      : data['deliveryStatus']!
+                                                              .toLowerCase() ==
+                                                          "upcomming"
+                                                      ? ColorConstant.greenA700
+
+                                                      : data['deliveryStatus']!
+                                                                  .toLowerCase() ==
+                                                              "Colis livré"
+                                                          ? ColorConstant
+                                                              .amber700
+                                                          : ColorConstant.red
+                                                          
+                                                          )
                                                         ),
-                                                        SizedBox(
-                                                            width:
-                                                                4), // Ajoutez un espace entre les deux Text widgets
-                                                        Padding(
-                                                          padding: getPadding(
-                                                              top: 0),
-                                                          child: Text(
-                                                            "${data['orderId']}",
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            style: AppStyle
-                                                                .txtSubheadline,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                  ]))
-                                        ]),
-                                    SizedBox(height: 12),
-                                    Text(
-                                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
+                                          child: Center(
+                                              child: Text(
+                                           data['deliveryStatus']!,
+                                            style: data['deliveryStatus']!
+                                                        .toLowerCase() ==
+                                                    "onTheWay"
+                                                ? AppStyle
+                                                    .txtOutfitRegular14Green
+                                                : data['deliveryStatus']!
+                                                            .toLowerCase() ==
+                                                        "Livreur en chemin"
+                                                    ? AppStyle
+                                                        .txtOutfitRegular14Amber
+                                                    : AppStyle
+                                                        .txtOutfitRegular14Red,
+                                                  
+                                          )),
+                                        )
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: getPadding(
+                                        top: 14,
+                                        bottom: 1,
+                                      ),
+                                      child: Text(
+                                        "Date: ${data['dateRegister']}",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtSFProTextRegular14),
-                                    Padding(
-                                        padding: getPadding(top: 16),
-                                        child: Text(
-                                            "Depart: ${data['lieu_depart']}",
-                                            overflow: TextOverflow.ellipsis,
-                                            textAlign: TextAlign.left,
-                                            style: AppStyle.txtFootnote)),
-                                    Padding(
-                                        padding: getPadding(top: 16),
-                                        child: Text(
-                                            "Destination: ${data['lieu_arrive']}",
-                                            overflow: TextOverflow.ellipsis,
-                                            textAlign: TextAlign.left,
-                                            style: AppStyle.txtFootnote)),
-                                    SizedBox(
-                                      height: getVerticalSize(15),
-                                    ),
-                                    Visibility(
-                                      visible: status != "onTheWay",
-                                      child: Padding(
-                                        padding: getPadding(left: 8, right: 8),
-                                        child: CustomButton(
-                                          onTap: () {
-                                            Get.toNamed(
-                                              AppRoutes.trackingDetailsScreen,
-                                              arguments: {
-                                                'name': data[
-                                                    'nom_receptioneur'], // Nom de la personne
-                                                'orderID':
-                                                    orderId, // Numéro de commande
-                                                'status': data[
-                                                    'deliveryStatus'], // Statut de la commande
-                                                'date': data['dateRegister']
-                                                    .toDate(), // Date de la commande
-                                                // Vous pouvez ajouter d'autres informations de la commande ici
-                                              },
-                                            );
-                                          },
-                                          height: getSize(40),
-                                          text: "Suivre la commande",
-                                          fontStyle: ButtonFontStyle
-                                              .SFProTextBold15WhiteA700,
-                                          padding: ButtonPadding.PaddingT0,
-                                        ),
+                                        style: AppStyle.txtFootnote,
                                       ),
-                                    )
+
+                                    ),
                                   ],
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  }),
-            )));
-  }
-
-  Shimmer ordersShimmer() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Padding(
-        padding: getPadding(top: 16, left: 16, right: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              height: getSize(18), // Hauteur simulant la taille du texte
-              color: Colors.white, // Couleur simulant le fond du texte
+                            );
+                            // return Padding(
+                            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            //   child: Container(
+                            //     padding: const EdgeInsets.all(16),
+                            //     decoration: BoxDecoration(
+                            //       borderRadius: BorderRadius.circular(8),
+                            //       color: Colors.grey[200],
+                            //     ),
+                            //     child: Column(
+                            //       crossAxisAlignment: CrossAxisAlignment.start,
+                            //       children: [
+                            //         Row(
+                            //           crossAxisAlignment: CrossAxisAlignment.end,
+                            //           children: [
+                            //             CustomIconButton(
+                            //               height: 42,
+                            //               width: 42,
+                            //               margin: EdgeInsets.only(bottom: 1),
+                            //               shape: IconButtonShape.CircleBorder20,
+                            //               child: CustomImageView(
+                            //                 svgPath: ImageConstant.imgArrowdownDeepPurple600,
+                            //               ),
+                            //             ),
+                            //             SizedBox(width: 8),
+                            //             Column(
+                            //               crossAxisAlignment: CrossAxisAlignment.start,
+                            //               mainAxisAlignment: MainAxisAlignment.start,
+                            //               children: [
+                            //                 Text(
+                            //                   "Référence N°:",
+                            //                   overflow: TextOverflow.ellipsis,
+                            //                   textAlign: TextAlign.left,
+                            //                   style: AppStyle.txtSubheadlineGray600,
+                            //                 ),
+                            //                 SizedBox(height: 4),
+                            //                 Text(
+                            //                   data['orderId'] ?? 'N/A',
+                            //                   overflow: TextOverflow.ellipsis,
+                            //                   textAlign: TextAlign.left,
+                            //                   style: AppStyle.txtSubheadline,
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //             Spacer(),
+                            //             Container(
+                            //               height: 32,
+                            //               width: 102,
+                            //               decoration: BoxDecoration(
+                            //                 borderRadius: BorderRadius.circular(16),
+                            //                 border: Border.all(
+                            //                   color: data['deliveryStatus']?.toLowerCase() == "onTheWay"
+                            //                       ? ColorConstant.greenA700
+                            //                       : data['deliveryStatus']?.toLowerCase() == "Livreur en chemin"
+                            //                           ? ColorConstant.amber700
+                            //                           : ColorConstant.red,
+                            //                 ),
+                            //               ),
+                            //               child: Center(
+                            //                 child: Text(
+                            //                   data['status'] ?? 'N/A',
+                            //                   style: TextStyle(
+                            //                     color: data['deliveryStatus']?.toLowerCase() == "upcomming"
+                            //                         ? ColorConstant.greenA700
+                            //                         : data['deliveryStatus']?.toLowerCase() == "Commande en attente"
+                            //                             ? ColorConstant.amber700
+                            //                             : ColorConstant.red,
+                            //                   ),
+                            //                 ),
+                            //               ),
+                            //             )
+                            //           ],
+                            //         ),
+                            //         SizedBox(height: 14),
+                            //         Text(
+                            //           "Date: ${data['dateRegister'] ?? 'N/A'}",
+                            //           overflow: TextOverflow.ellipsis,
+                            //           textAlign: TextAlign.left,
+                            //           style: AppStyle.txtFootnote,
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // );
+                          }).toList(),
+                        );
+                      },
+                    )),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: getVerticalSize(15)),
-            Container(
-              width: double.infinity,
-              height: getSize(18), // Hauteur simulant la taille du texte
-              color: Colors.white, // Couleur simulant le fond du texte
-            ),
-            SizedBox(height: getVerticalSize(4)),
-            Container(
-              width: double.infinity,
-              height: getSize(18), // Hauteur simulant la taille du texte
-              color: Colors.white, // Couleur simulant le fond du texte
-            ),
-            SizedBox(height: getVerticalSize(4)),
-            Container(
-              width: double.infinity,
-              height: getSize(18), // Hauteur simulant la taille du texte
-              color: Colors.white, // Couleur simulant le fond du texte
-            ),
-            SizedBox(height: getVerticalSize(15)),
-            Container(
-              width: getSize(150), // Largeur simulant la taille du bouton
-              height: getSize(40), // Hauteur simulant la taille du bouton
-              color: Colors.white, // Couleur simulant le fond du bouton
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  onTapTrackpackage() {
-    Get.toNamed(AppRoutes.trackingDetailsTwoScreen);
-  }
-
-  onTapArrowleft15() {
-    Get.back();
+          );
   }
 }

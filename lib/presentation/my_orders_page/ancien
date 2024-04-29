@@ -1,46 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_icon_button.dart';
-import '../home_container_page/controller/home_container_controller.dart';
-import '../home_container_page/models/recently_shipped_data_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
-
-class RecentlyShippedScreen extends StatefulWidget {
-  const RecentlyShippedScreen({Key? key}) : super(key: key);
+class MyOrdersPage extends StatefulWidget {
+  const MyOrdersPage({Key? key}) : super(key: key);
 
   @override
-  State<RecentlyShippedScreen> createState() => _RecentlyShippedScreenState();
+  State<MyOrdersPage> createState() => _MyOrdersPageState();
 }
 
-class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
-  HomeContainerController controller = Get.put(HomeContainerController());
-
-  @override
-  void initState() {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-          statusBarColor: ColorConstant.whiteA700,
-          statusBarIconBrightness: Brightness.dark),
-    );
-    super.initState();
-  }
-
+class _MyOrdersPageState extends State<MyOrdersPage> {
   final User? user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
+    //User? user = FirebaseAuth.instance.currentUser;
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -59,10 +43,10 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                       svgPath: ImageConstant.imgArrowleft,
                       margin: getMargin(left: 18, top: 29, bottom: 26),
                       onTap: () {
-                        onTapArrowleft15();
+                        //onTapArrowleft15();
                       }),
                   centerTitle: true,
-                  title: AppbarSubtitle1(text: "Commandes récentes00"),
+                  title: AppbarSubtitle1(text: "Mes commandes"),
                   styleType: Style.bgFillWhiteA700),
               body: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -248,8 +232,6 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                     }
                   }),
             )));
-
-   
   }
 
   Shimmer ordersShimmer() {
@@ -296,7 +278,6 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
       ),
     );
   }
-
 
   onTapTrackpackage() {
     Get.toNamed(AppRoutes.trackingDetailsTwoScreen);

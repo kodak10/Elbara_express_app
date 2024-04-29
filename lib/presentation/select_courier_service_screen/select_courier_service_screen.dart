@@ -18,6 +18,7 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lottie/lottie.dart';
 
 // Récupérer la date et l'heure actuelles
 DateTime date = DateTime.now();
@@ -42,19 +43,50 @@ class _SelectCourierServiceScreenState
       GeoPoint(37.4219983, -122.084); // en attente de api google maps
 
 
-      String generateOrderId() {
+    String generateOrderId() {
   const String chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
   Random random = Random();
   String orderId = '';
   for (int i = 0; i < 11; i++) {
-    orderId += chars[random.nextInt(chars.length)];
+    String randomChar = chars[random.nextInt(chars.length)];
+    orderId += randomChar.toUpperCase(); // Convertir en majuscule
   }
   return orderId;
 }
+
       
 
   //late Map<String, dynamic> DataInfos;
   Map<String, dynamic>? DataInfos;
+
+ void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Lottie.asset(
+                'assets/images/loading_1.json',
+                height: 150,
+                width: 150,
+              ),
+              ],
+            ),
+
+            // SizedBox(height: 16),
+            // Text('Traitement en cours...'), // Texte de chargement
+          ],
+        ),
+      );
+    },
+  );
+}
 
   @override
   void initState() {
@@ -90,7 +122,6 @@ class _SelectCourierServiceScreenState
 
 Future<void> saveCommande() async {
   String orderId = generateOrderId();
-print(orderId); // Affiche un identifiant aléatoire de 11 caractères
 
   // Collectez toutes les données de l'écran 2
   Map<String, dynamic> screen2Data = {
@@ -572,10 +603,12 @@ print(orderId); // Affiche un identifiant aléatoire de 11 caractères
           margin: getMargin(left: 16, right: 16, bottom: 40),
           onTap: () {
             if (mode_paiement == 'Payer Maintenant') {
+               _showLoadingDialog(); // Afficher le modal de chargement
               initiatePayment(context);
               saveCommande();
               // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
             } else if (mode_paiement == 'Payer à la livraison') {
+               _showLoadingDialog(); // Afficher le modal de chargement
               saveCommande();
 
               this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe

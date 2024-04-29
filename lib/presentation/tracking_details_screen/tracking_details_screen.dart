@@ -8,8 +8,6 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TrackingDetailsScreen extends StatefulWidget {
@@ -85,7 +83,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                           onTapArrowleft12();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "Suivi de commande"),
+                    title: AppbarSubtitle1(text: "Suivi de commandesss"),
                     styleType: Style.bgFillWhiteA700),
                 body: Container(
                     width: double.maxFinite,
@@ -125,7 +123,6 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                   textAlign: TextAlign.center,
                                                   style: AppStyle.txtHeadline),
                                               Container(
-                                                  
                                                   margin: getMargin(top: 12),
                                                   child: Stack(
                                                       alignment:
@@ -213,115 +210,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                               SizedBox(
                                 height: getVerticalSize(16),
                               ),
-                              // Row(
-                              //   children: [
-                              //     CustomImageView(
-                              //       svgPath: ImageConstant.imgTrackingOrder,
-                              //       height: getSize(318),
-                              //     ),
-                              //     SizedBox(width: getHorizontalSize(14)),
-                              //     Column(
-                              //       crossAxisAlignment:
-                              //           CrossAxisAlignment.start,
-                              //       mainAxisAlignment: MainAxisAlignment.start,
-                              //       children: [
-                              //         Column(
-                              //             mainAxisSize: MainAxisSize.min,
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.start,
-                              //             mainAxisAlignment:
-                              //                 MainAxisAlignment.start,
-                              //             children: [
-                              //               Text("Vérification".tr,
-                              //                   overflow: TextOverflow.ellipsis,
-                              //                   textAlign: TextAlign.left,
-                              //                   style: AppStyle.txtHeadline),
-                              //               Padding(
-                              //                   padding: getPadding(top:13),
-                              //                   child: Text(
-                              //                       "",
-                              //                       overflow:
-                              //                           TextOverflow.ellipsis,
-                              //                       textAlign: TextAlign.left,
-                              //                       style:
-                              //                           AppStyle.txtFootnote))
-                              //             ]),
-                              //         SizedBox(
-                              //           height: getVerticalSize(40),
-                              //         ),
-                              //         Column(
-                              //             mainAxisSize: MainAxisSize.min,
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.start,
-                              //             mainAxisAlignment:
-                              //                 MainAxisAlignment.start,
-                              //             children: [
-                              //               Text("En transit",
-                              //                   overflow: TextOverflow.ellipsis,
-                              //                   textAlign: TextAlign.left,
-                              //                   style: AppStyle.txtHeadline),
-                              //               Padding(
-                              //                   padding: getPadding(top: 13),
-                              //                   child: Text(
-                              //                       "",
-                              //                       overflow:
-                              //                           TextOverflow.ellipsis,
-                              //                       textAlign: TextAlign.left,
-                              //                       style:
-                              //                           AppStyle.txtFootnote))
-                              //             ]),
-                              //         SizedBox(
-                              //           height: getVerticalSize(40),
-                              //         ),
-                              //         Column(
-                              //             mainAxisSize: MainAxisSize.min,
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.start,
-                              //             mainAxisAlignment:
-                              //                 MainAxisAlignment.start,
-                              //             children: [
-                              //               Text("Livraison en cours",
-                              //                   overflow: TextOverflow.ellipsis,
-                              //                   textAlign: TextAlign.left,
-                              //                   style: AppStyle.txtHeadline),
-                              //               Padding(
-                              //                   padding: getPadding(top: 13),
-                              //                   child: Text(
-                              //                       "",
-                              //                       overflow:
-                              //                           TextOverflow.ellipsis,
-                              //                       textAlign: TextAlign.left,
-                              //                       style:
-                              //                           AppStyle.txtFootnote))
-                              //             ]),
-                              //         SizedBox(
-                              //           height: getVerticalSize(40),
-                              //         ),
-                              //         Column(
-                              //             mainAxisSize: MainAxisSize.min,
-                              //             crossAxisAlignment:
-                              //                 CrossAxisAlignment.start,
-                              //             mainAxisAlignment:
-                              //                 MainAxisAlignment.start,
-                              //             children: [
-                              //               Text("Colis livré",
-                              //                   overflow: TextOverflow.ellipsis,
-                              //                   textAlign: TextAlign.left,
-                              //                   style: AppStyle.txtHeadline),
-                              //               Padding(
-                              //                   padding: getPadding(top: 13),
-                              //                   child: Text(
-                              //                       "",
-                              //                       overflow:
-                              //                           TextOverflow.ellipsis,
-                              //                       textAlign: TextAlign.left,
-                              //                       style:
-                              //                           AppStyle.txtFootnote))
-                              //             ])
-                              //       ],
-                              //     )
-                              //   ],
-                              // ),
+
                               StreamBuilder<DocumentSnapshot>(
                                 stream: FirebaseFirestore.instance
                                     .collection('orders')
@@ -390,7 +279,8 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
 
   Widget _buildTimelineItem(String title, bool isActive, bool isCompleted) {
     Color iconColor = Colors.grey;
-      print('isActive: $isActive, isCompleted: $isCompleted'); // Ajoutez cette ligne pour vérifier les valeurs
+    print(
+        'isActive: $isActive, isCompleted: $isCompleted'); // Ajoutez cette ligne pour vérifier les valeurs
 
     if (isCompleted) {
       iconColor = Colors

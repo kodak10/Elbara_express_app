@@ -26,6 +26,8 @@ import 'package:google_places_autocomplete_flutter/model/prediction.dart';
 import 'package:bottom_picker/bottom_picker.dart';
 import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
+
 
 class SendPackageScreen extends StatefulWidget {
   SendPackageScreen({Key? key}) : super(key: key);
@@ -72,6 +74,35 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
       initializeDateFormatting('fr_FR', null); // Initialisez les données de localisation pour le français
 
   }
+
+  void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Lottie.asset(
+                'assets/images/loading_1.json',
+                height: 150,
+                width: 150,
+              ),
+              ],
+            ),
+
+            // SizedBox(height: 16),
+            // Text('Traitement en cours...'), // Texte de chargement
+          ],
+        ),
+      );
+    },
+  );
+}
 
   final searchController = TextEditingController();
 
@@ -587,6 +618,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                     text: "Suivant".tr,
                     margin: getMargin(left: 16, right: 16, bottom: 40),
                     onTap: () {
+                       //_showLoadingDialog(); // Afficher le modal de chargement
                       //saveDataToFirebase();
                       onTapNext();
                     }))));

@@ -17,6 +17,7 @@ Future main() async {
         appId: '1:998391121356:android:5a1f9f942c51519aee8969',
         messagingSenderId: '998391121356',
         projectId: 'elbaraexpress-9b834',
+        storageBucket: "elbaraexpress-9b834.appspot.com", // Nom du bucket uniquement
       ),
     );
 

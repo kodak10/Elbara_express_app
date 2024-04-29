@@ -36,6 +36,8 @@ class CourierService {
   }
 }
 
+
+
 bool isLoaded = false;
 
 class HomeContainerPage extends StatelessWidget {
@@ -312,9 +314,11 @@ class HomeContainerPage extends StatelessWidget {
     stream: FirebaseFirestore.instance
         .collection('orders')
         .where('userId', isEqualTo: user?.uid)
+
         .limit(5)
         .snapshots(),
     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      
       if (snapshot.connectionState == ConnectionState.waiting) {
         return ListView.builder(
           padding: getPadding(left: 8, right: 8),
@@ -359,7 +363,7 @@ class HomeContainerPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Commande N°:  ${data['orderId']}",
+                        "Référence N°:  ${data['orderId']}",
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                         style: AppStyle.txtSubheadline,

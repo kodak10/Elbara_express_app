@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../log_out_screen/log_out_screen.dart';
 import 'controller/profile_controller.dart';
@@ -7,11 +9,10 @@ import 'models/profile_model.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -23,63 +24,43 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   ProfileController controller = Get.put(ProfileController(ProfileModel().obs));
 
-  File? _imageFile;
+  String? _imageUrl; // URL de l'image téléchargée
 
   @override
   void initState() {
-   
-    _loadImage();
-
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: ColorConstant.whiteA700,
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+    _getUserImage(); // Appel de la fonction pour récupérer l'image de l'utilisateur
+
   }
 
+// Fonction pour récupérer l'image de l'utilisateur
+  Future<void> _getUserImage() async {
+    // Récupérer l'utilisateur actuellement connecté
+    User? user = FirebaseAuth.instance.currentUser;
 
- Future<void> _loadImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      setState(() {
-        _imageFile = File(imagePath);
-      });
-    }
-  }
+    if (user != null) {
+      // Récupérer le document de l'utilisateur dans Firestore
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-  
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: source);
-
-    if (pickedImage != null) {
-      setState(() {
-        _imageFile = File(pickedImage.path);
-      });
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('imagePath', pickedImage.path);
-    }
-  }
-
-  Future<void> _saveImageToDevice() async {
-    if (_imageFile != null) {
-      final Directory appDocumentsDirectory =
-          await getApplicationDocumentsDirectory();
-      final String imagePath =
-          '${appDocumentsDirectory.path}/mon_image.jpg';
-
-      try {
-        await _imageFile!.copy(imagePath);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('imagePath', imagePath);
-        print('Image enregistrée avec succès à $imagePath');
-      } catch (e) {
-        print('Erreur lors de l\'enregistrement de l\'image : $e');
+      // Vérifier si le champ 'image' existe dans le document
+      if (snapshot.exists && snapshot.data() != null && snapshot.data()!['image'] != null) {
+        // Récupérer l'URL de l'image à partir du champ 'image' du document
+        setState(() {
+          _imageUrl = snapshot.data()!['image'];
+        });
       }
     }
   }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -92,72 +73,76 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(
-  width: double.infinity,
-  child: Container(
-    padding: getPadding(
-      left: 0,
-      top: 22,
-      right: 0,
-      bottom: 22,
-    ),
-    decoration: AppDecoration.white,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Text(
-            "Mon Profil",
-            textAlign: TextAlign.center,
-            style: AppStyle.txtSFProTextBold28,
-          ),
-        ),
-      ],
-    ),
-  ),
-),
+                width: double.infinity,
+                child: Container(
+                  padding: getPadding(
+                    left: 0,
+                    top: 22,
+                    right: 0,
+                    bottom: 22,
+                  ),
+                  decoration: AppDecoration.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Mon Profil",
+                          textAlign: TextAlign.center,
+                          style: AppStyle.txtSFProTextBold28,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
-              
-                                       GestureDetector(
-                                            onTap: () async {
-                                              //await _pickImage(ImageSource.gallery);
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                Container(
-                                                  height: 110,
-                                                  width: 110,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: Colors.grey[200]!, // Couleur de la bordure
-                                                      width: 2, // Largeur de la bordure
-                                                    ),
-                                                    color: Colors.grey[200],
-                                                  ),
-                                                  child: _imageFile != null
-                                                      ? Image.file(
-                                                          _imageFile!,
-                                                          fit: BoxFit.cover,
-                                                          width: double.infinity,
-                                                          height: double.infinity,
-                                                        )
-                                                      : Icon(
-                                                          Icons.person,
-                                                          size: 50,
-                                                          color: Colors.grey,
-                                                        ),
-                                                ),
-                                                // Positioned(
-                                                //   bottom: 0,
-                                                //   right: 0,
-                                                //   child: CircleAvatar(
-                                                //     backgroundColor: Colors.grey[200],
-                                                //     child: Icon(Icons.camera_alt),
-                                                //   ),
-                                                // ),
-                                              ],
-                                            ),
-                                          ),
+              GestureDetector(
+                
+                child: Stack(
+                  children: [
+                    
+
+                    Container(
+      height: 110,
+      width: 110,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.grey[200]!, // Couleur de la bordure
+          width: 2, // Largeur de la bordure
+        ),
+        color: Colors.grey[200],
+        image: _imageUrl != null
+            ? DecorationImage(
+                image: NetworkImage(_imageUrl!),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: _imageUrl == null
+          ? Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                 height: 110,
+                 width: 110,
+                //color: Colors.white,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.grey[200]!, // Couleur de la bordure
+                    width: 2, // Largeur de la bordure
+                  ),
+                ) // Couleur du shimmer
+              ),
+            )
+          : null, // Pas besoin du shimmer si l'image est prête
+    ),
+                    
+                  ],
+                ),
+              ),
               GestureDetector(
                 onTap: () {
                   Get.toNamed(AppRoutes.profileDetailsScreen);
@@ -219,8 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              
-              
+
               // GestureDetector(
               //   onTap: () {
               //     Get.toNamed(AppRoutes.customerSupportScreen);

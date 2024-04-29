@@ -14,15 +14,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'controller/profile_details_controller.dart';
-import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
-import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileDetailsScreen extends StatefulWidget {
   @override
@@ -30,19 +25,19 @@ class ProfileDetailsScreen extends StatefulWidget {
 }
 
 class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
- late String email = '';
+  late String email = '';
   late String name = '';
   late String phoneNumber = '';
+  late String image = '';
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late User _currentUser;
-  File? _imageFile;
+  String? _imageUrl; // URL de l'image téléchargée
 
   @override
   void initState() {
     _currentUser = FirebaseAuth.instance.currentUser!;
     _loadUserData();
-    _loadImage();
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -50,79 +45,115 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+    _getUserImage();
   }
 
   Future<void> _loadUserData() async {
     if (_currentUser != null) {
-      // Fetch user data from Firebase Auth
-      // For example:
-      // controller.nameController.text = _currentUser.displayName ?? '';
-      // controller.emailController.text = _currentUser.email ?? '';
-
-      // Fetch additional user data from Firestore
-      // For example:
       DocumentSnapshot userData = await FirebaseFirestore.instance
           .collection('users')
           .doc(_currentUser.uid)
           .get();
-          if (userData.exists) {
-          setState(() {
-            email = userData['email'] ?? '';
-            name = userData['displayName'] ?? '';
-            phoneNumber = userData['contact'] ?? '';
-          });
-        }
-    }
-  }
-
- Future<void> _loadImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      setState(() {
-        _imageFile = File(imagePath);
-      });
-    }
-  }
-
-  
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: source);
-
-    if (pickedImage != null) {
-      setState(() {
-        _imageFile = File(pickedImage.path);
-      });
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('imagePath', pickedImage.path);
-    }
-  }
-
-  Future<void> _saveImageToDevice() async {
-    if (_imageFile != null) {
-      final Directory appDocumentsDirectory =
-          await getApplicationDocumentsDirectory();
-      final String imagePath =
-          '${appDocumentsDirectory.path}/mon_image.jpg';
-
-      try {
-        await _imageFile!.copy(imagePath);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('imagePath', imagePath);
-        print('Image enregistrée avec succès à $imagePath');
-      } catch (e) {
-        print('Erreur lors de l\'enregistrement de l\'image : $e');
+      if (userData.exists) {
+        setState(() {
+          email = userData['email'] ?? '';
+          name = userData['displayName'] ?? '';
+          phoneNumber = userData['contact'] ?? '';
+          image = userData['image'] ?? '';
+        });
       }
     }
   }
 
+// Fonction pour récupérer l'image de l'utilisateur
+  Future<void> _getUserImage() async {
+    // Récupérer l'utilisateur actuellement connecté
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      // Récupérer le document de l'utilisateur dans Firestore
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      // Vérifier si le champ 'image' existe dans le document
+      if (snapshot.exists &&
+          snapshot.data() != null &&
+          snapshot.data()!['image'] != null) {
+        // Récupérer l'URL de l'image à partir du champ 'image' du document
+        setState(() {
+          _imageUrl = snapshot.data()!['image'];
+        });
+      }
+    }
+  }
+
+  // Méthode pour choisir une image à partir de la galerie
+// Future<void> _pickImage() async {
+//   final picker = ImagePicker();
+//   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//   if (pickedFile != null) {
+//     // Enregistrer l'image dans Firebase Storage
+//     final imageUrl = await _uploadImageToStorage(pickedFile.path);
+    
+//     // Mettre à jour l'URL de l'image dans Firestore
+//     await _updateUserImageInFirestore(imageUrl);
+//   }
+// }
+
+// Méthode pour choisir une image à partir de la galerie
+Future<void> _pickImage() async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  if (pickedFile != null) {
+    // Enregistrer l'image dans Firebase Storage
+    final imageUrl = await _uploadImageToStorage(pickedFile.path);
+    
+    // Mettre à jour l'URL de l'image dans Firestore
+    await _updateUserImageInFirestore(imageUrl);
+
+    // Mettre à jour l'URL de l'image dans l'état local
+    setState(() {
+      _imageUrl = imageUrl;
+    });
+  }
+}
+
+
+
+  // Méthode pour télécharger l'image dans Firebase Storage
+  Future<String> _uploadImageToStorage(String imagePath) async {
+    final firebase_storage.Reference ref = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child('user_images')
+        .child(DateTime.now().toString() + '.jpg');
+    final firebase_storage.UploadTask uploadTask = ref.putFile(File(imagePath));
+    final firebase_storage.TaskSnapshot downloadUrl = (await uploadTask);
+    return downloadUrl.ref.getDownloadURL();
+  }
+
+  // Méthode pour mettre à jour le champ image dans la collection Firestore
+  Future<void> _updateUserImageInFirestore(String? imageUrl) async {
+    if (imageUrl != null) {
+      // Mettre à jour le champ image dans Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_currentUser.uid)
+          .update({
+        'image': imageUrl,
+      });
+
+    Navigator.pop(context);
+
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context) {
-   
-
-    
     late final User currentUser = FirebaseAuth.instance.currentUser!;
 
     return WillPopScope(
@@ -148,7 +179,6 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                     centerTitle: true,
                     title: AppbarSubtitle1(text: "Profil"),
                     actions: [
-                       
                       AppbarImage(
                           height: getSize(24),
                           width: getSize(24),
@@ -171,67 +201,85 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           Align(
                               alignment: Alignment.center,
                               child: SizedBox(
-                                  height: getSize(110),
-                                  width: getSize(110),
+                                  height: getSize(150),
+                                  width: getSize(150),
                                   child: Stack(
                                       alignment: Alignment.bottomRight,
                                       children: [
-                                      
-                                            
-                                       CustomImageView(
-                                            imagePath:
-                                                ImageConstant.imgEllipse240,
-                                            height: getSize(110),
-                                            width: getSize(110),
-                                            radius: BorderRadius.circular(
-                                                getHorizontalSize(55)),
-                                            alignment: Alignment.center),
-                                       GestureDetector(
-                                            onTap: () async {
-                                              await _pickImage(ImageSource.gallery);
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                Container(
-                                                  height: 110,
-                                                  width: 110,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.grey[200],
+                                        
+                                        GestureDetector(
+                                          onTap: () async {
+                                            _pickImage();
+                                          },
+                                          child: Stack(
+                                            children: [
+                                              Container(
+                                                height: 150,
+                                                width: 150,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.grey[
+                                                        200]!, // Couleur de la bordure
+                                                    width:
+                                                        2, // Largeur de la bordure
                                                   ),
-                                                  child: _imageFile != null
-                                                      ? Image.file(
-                                                          _imageFile!,
+                                                  color: Colors.grey[200],
+                                                  image: _imageUrl != null
+                                                      ? DecorationImage(
+                                                          image: NetworkImage(
+                                                              _imageUrl!),
                                                           fit: BoxFit.cover,
-                                                          width: double.infinity,
-                                                          height: double.infinity,
                                                         )
-                                                      : Icon(
-                                                          Icons.person,
-                                                          size: 50,
-                                                          color: Colors.grey,
-                                                        ),
+                                                      : null,
                                                 ),
-                                                Positioned(
-                                                  bottom: 0,
-                                                  right: 0,
-                                                  child: CircleAvatar(
-                                                    backgroundColor: Colors.grey[200],
-                                                    child: Icon(Icons.camera_alt),
-                                                  ),
+                                                child: _imageUrl == null
+                                                    ? Shimmer.fromColors(
+                                                        baseColor:
+                                                            Colors.grey[300]!,
+                                                        highlightColor:
+                                                            Colors.grey[100]!,
+                                                        child: Container(
+                                                            height: 110,
+                                                            width: 110,
+                                                            //color: Colors.white,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              border:
+                                                                  Border.all(
+                                                                color: Colors
+                                                                        .grey[
+                                                                    200]!, // Couleur de la bordure
+                                                                width:
+                                                                    2, // Largeur de la bordure
+                                                              ),
+                                                            ) // Couleur du shimmer
+                                                            ),
+                                                      )
+                                                    : null, // Pas besoin du shimmer si l'image est prête
+                                              ),
+                                              Positioned(
+                                                bottom: 0,
+                                                right: 0,
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.grey[200],
+                                                  child: Icon(Icons.camera_alt),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
-
+                                        ),
                                       ]))),
                           SizedBox(
                             height: getVerticalSize(40),
                           ),
                           // profileDetail(ImageConstant.imgUSerIcon, "Name",
                           //     "Ronald richards"),
-                          profileDetail(ImageConstant.imgUSerIcon, "Pseudo",
-                              name),
+                          profileDetail(
+                              ImageConstant.imgUSerIcon, "Pseudo", name),
 
                           SizedBox(
                             height: getVerticalSize(20),
@@ -246,7 +294,7 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           // profileDetail(ImageConstant.imgMailIcon,
                           //     "Email address", "ronaldrichard@gmail.com"),
                           profileDetail(ImageConstant.imgMailIcon,
-                              "Adresse Email",email),
+                              "Adresse Email", email),
                           SizedBox(
                             height: getVerticalSize(20),
                           ),
@@ -257,10 +305,8 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
                           SizedBox(
                             height: getVerticalSize(20),
                           ),
-                          profileDetail(
-                              ImageConstant.imgCallIcon,
-                              "Numéro de téléphone",
-                              phoneNumber),
+                          profileDetail(ImageConstant.imgCallIcon,
+                              "Numéro de téléphone", phoneNumber),
 
                           SizedBox(
                             height: getVerticalSize(20),

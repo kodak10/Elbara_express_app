@@ -104,7 +104,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                 'name': data['nom_receptioneur'], // Nom de la personne
                                                 'orderID': orderId, // Numéro de commande
                                                 'status': data['deliveryStatus'], // Statut de la commande
-                                                'date': data['deliveryStatus'].toDate(), // Date de la commande
+                                                'date': data['dateRegister'], // Date de la commande
                                                 // Vous pouvez ajouter d'autres informations de la commande ici
                                               },);
                                   // Naviguer vers les détails de la commande
@@ -150,13 +150,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                                 SizedBox(
                                                   height: getVerticalSize(6),
                                                 ),
-                                                // Text(
-                                                //   "Order id : ${doc['name']}",
-                                                //   overflow:
-                                                //       TextOverflow.ellipsis,
-                                                //   textAlign: TextAlign.left,
-                                                //   style: AppStyle.txtFootnote,
-                                                // )
+                                               
                                               ],
                                             )
                                           ],

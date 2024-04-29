@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
@@ -10,6 +11,7 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/custom_floating_edit_text.dart';
 import 'controller/log_in_controller.dart';
+import 'package:lottie/lottie.dart';
 
 
 class LogInScreen extends StatefulWidget {
@@ -34,6 +36,37 @@ class _LogInScreenState extends State<LogInScreen> {
     );
     super.initState();
   }
+
+void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Lottie.asset(
+                'assets/images/loading_1.json',
+                height: 150,
+                width: 150,
+              ),
+              ],
+            ),
+
+            // SizedBox(height: 16),
+            // Text('Traitement en cours...'), // Texte de chargement
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +180,7 @@ class _LogInScreenState extends State<LogInScreen> {
                       ),
                     ),
                   ),
-                  CustomButton(
+                 CustomButton(
                     height: getVerticalSize(54),
                     text: "Se Connecter",
                     margin: getMargin(top: 31),
@@ -155,55 +188,52 @@ class _LogInScreenState extends State<LogInScreen> {
                       SharedPreferences prefs = await SharedPreferences.getInstance();
                       prefs.setBool('isLoggedIn', true);
                       if (_formKey.currentState!.validate()) {
-                        setState(() {
-                              _isLoading = true; // Mettre à jour l'état de chargement
-                            });
-                          // Effectuer l'authentification avec email et mot de passe
-                          try {
-                            UserCredential userCredential =
-                                await FirebaseAuth.instance.signInWithEmailAndPassword(
-                              email: controller.emailController.text,
-                              password: controller.passwordController.text,
-                            );
-                            // L'utilisateur est connecté avec succès
-                            //onTapLogin();
-                            User? user = FirebaseAuth.instance.currentUser;
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(user!.uid)
-                                .get()
-                                .then((DocumentSnapshot documentSnapshot) {
-                              if (documentSnapshot.exists) {
-                                if (documentSnapshot.get('role') == "user") {
-                                   Get.toNamed(
-                                      AppRoutes.homeContainer1Screen,
-                                    );
-                                } else {
-                                  Get.toNamed(
-                                      AppRoutes.homeGestionnaireScreen,
-                                    );
-                                }
+                        _showLoadingDialog(); // Afficher le modal de chargement
+                        try {
+                          UserCredential userCredential =
+                              await FirebaseAuth.instance.signInWithEmailAndPassword(
+                            email: controller.emailController.text,
+                            password: controller.passwordController.text,
+                          );
+                          // L'utilisateur est connecté avec succès
+                          User? user = FirebaseAuth.instance.currentUser;
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user!.uid)
+                              .get()
+                              .then((DocumentSnapshot documentSnapshot) {
+                            Navigator.of(context).pop(); // Fermer le modal de chargement
+                            if (documentSnapshot.exists) {
+                              if (documentSnapshot.get('role') == "user") {
+                                Get.toNamed(
+                                  AppRoutes.homeContainer1Screen,
+                                );
                               } else {
-                                print('Une erreur est survenue, veuillez contactez le service client.');
+                                Get.toNamed(
+                                  AppRoutes.homeGestionnaireScreen,
+                                );
                               }
-                            });
-
-                            
-                            
-                          } on FirebaseAuthException catch (e) {
-                            if (e.code == 'user-not-found') {
-                              _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
-                            } else if (e.code == 'wrong-password') {
-                              _showSnackBar('Mauvais mot de passe fourni pour cet utilisateur.');
                             } else {
-                              _showSnackBar('Une erreur s\'est produite: ${e.message}');
+                              print('Une erreur est survenue, veuillez contacter le service client.');
                             }
-                          } catch (e) {
-                            _showSnackBar('Une erreur s\'est produite: $e');
+                          });
+                        } on FirebaseAuthException catch (e) {
+                          Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+                          if (e.code == 'user-not-found') {
+                            _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
+                          } else if (e.code == 'wrong-password') {
+                            _showSnackBar('Mauvais mot de passe fourni pour cet utilisateur.');
+                          } else {
+                            _showSnackBar('Une erreur s\'est produite: ${e.message}');
                           }
+                        } catch (e) {
+                          Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+                          _showSnackBar('Une erreur s\'est produite: $e');
                         }
+                      }
                     },
                   ),
+
                   Spacer(),
                   GestureDetector(
                     onTap: () {

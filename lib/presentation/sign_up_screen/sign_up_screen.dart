@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'controller/sign_up_controller.dart';
+import 'package:lottie/lottie.dart';
+
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -34,6 +36,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
     super.initState();
   }
+
+void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Lottie.asset(
+                'assets/images/loading_1.json',
+                height: 150,
+                width: 150,
+              ),
+              ],
+            ),
+
+            // SizedBox(height: 16),
+            // Text('Traitement en cours...'), // Texte de chargement
+          ],
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -158,6 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   margin: getMargin(top: 30),
                                   onTap: () {
                                     if (_formKey.currentState!.validate()) {
+                                       _showLoadingDialog(); // Afficher le modal de chargement
                                       onTapSignup();
                                     }
                                   }),

@@ -13,14 +13,13 @@ import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 
 import 'controller/edit_profile_controller.dart';
 import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class EditProfileScreen extends StatefulWidget {
@@ -34,12 +33,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   EditProfileController controller = Get.put(EditProfileController());
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late User _currentUser;
- File? _imageFile;
+   String? _imageUrl; // URL de l'image téléchargée
+
   @override
   void initState() {
     _currentUser = FirebaseAuth.instance.currentUser!;
     _loadUserData();
-    _loadImage();
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
@@ -47,6 +46,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+    _getUserImage();
+
   }
 
   Future<void> _loadUserData() async {
@@ -71,46 +72,147 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
- Future<void> _loadImage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final imagePath = prefs.getString('imagePath');
-    if (imagePath != null) {
-      setState(() {
-        _imageFile = File(imagePath);
-      });
-    }
-  }
+// Fonction pour récupérer l'image de l'utilisateur
+  Future<void> _getUserImage() async {
+    // Récupérer l'utilisateur actuellement connecté
+    User? user = FirebaseAuth.instance.currentUser;
 
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: source);
+    if (user != null) {
+      // Récupérer le document de l'utilisateur dans Firestore
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
-    if (pickedImage != null) {
-      setState(() {
-        _imageFile = File(pickedImage.path);
-      });
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('imagePath', pickedImage.path);
-    }
-  }
-
-  Future<void> _saveImageToDevice() async {
-    if (_imageFile != null) {
-      final Directory appDocumentsDirectory =
-          await getApplicationDocumentsDirectory();
-      final String imagePath =
-          '${appDocumentsDirectory.path}/mon_image.jpg';
-
-      try {
-        await _imageFile!.copy(imagePath);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('imagePath', imagePath);
-        print('Image enregistrée avec succès à $imagePath');
-      } catch (e) {
-        print('Erreur lors de l\'enregistrement de l\'image : $e');
+      // Vérifier si le champ 'image' existe dans le document
+      if (snapshot.exists &&
+          snapshot.data() != null &&
+          snapshot.data()!['image'] != null) {
+        // Récupérer l'URL de l'image à partir du champ 'image' du document
+        setState(() {
+          _imageUrl = snapshot.data()!['image'];
+        });
       }
     }
   }
+
+// // Méthode pour choisir une image à partir de la galerie
+// Future<void> _pickImage() async {
+
+//     _showLoadingDialog();
+
+//   final picker = ImagePicker();
+//   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+//   if (pickedFile != null) {
+//     // Enregistrer l'image dans Firebase Storage
+//     final imageUrl = await _uploadImageToStorage(pickedFile.path);
+    
+//     // Mettre à jour l'URL de l'image dans Firestore
+//     await _updateUserImageInFirestore(imageUrl);
+
+//     // Mettre à jour l'URL de l'image dans l'état local
+//     setState(() {
+//       _imageUrl = imageUrl;
+//     });
+//   }
+// }
+
+Future<void> _pickImage() async {
+  // Afficher le modal de chargement
+  _showLoadingDialog();
+
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  if (pickedFile != null) {
+    // Enregistrer l'image dans Firebase Storage
+    final imageUrl = await _uploadImageToStorage(pickedFile.path);
+    
+    // Mettre à jour l'URL de l'image dans Firestore
+    await _updateUserImageInFirestore(imageUrl);
+
+    // Mettre à jour l'URL de l'image dans l'état local
+    setState(() {
+      _imageUrl = imageUrl;
+    });
+
+    // Fermer le modal de chargement
+    Navigator.of(context).pop();
+  } else {
+    // Fermer le modal de chargement en cas d'erreur
+    Navigator.of(context).pop();
+  }
+}
+
+
+
+  // Méthode pour télécharger l'image dans Firebase Storage
+  Future<String> _uploadImageToStorage(String imagePath) async {
+    final firebase_storage.Reference ref = firebase_storage
+        .FirebaseStorage.instance
+        .ref()
+        .child('user_images')
+        .child(DateTime.now().toString() + '.jpg');
+    final firebase_storage.UploadTask uploadTask = ref.putFile(File(imagePath));
+    final firebase_storage.TaskSnapshot downloadUrl = (await uploadTask);
+    return downloadUrl.ref.getDownloadURL();
+  }
+
+  // Méthode pour mettre à jour le champ image dans la collection Firestore
+  Future<void> _updateUserImageInFirestore(String? imageUrl) async {
+    
+    if (imageUrl != null) {
+      // Mettre à jour le champ image dans Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_currentUser.uid)
+          .update({
+        'image': imageUrl,
+      });
+
+      // Revenir à la page précédente
+      Navigator.pop(context);
+      Navigator.pop(context);
+      
+
+    }
+  }
+
+
+
+// // Fonction pour afficher le modal de chargement
+void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset(
+                  'assets/images/loading_1.json',
+                  height: 150,
+                  width: 150,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+ 
+ 
+
+
+
+ 
 
 
   @override
@@ -152,56 +254,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               SizedBox(
-                                  height: getVerticalSize(110),
-                                  width: getHorizontalSize(113),
+                                  height: getVerticalSize(150),
+                                  width: getHorizontalSize(150),
                                   child: Stack(
                                       alignment: Alignment.bottomRight,
                                       children: [
-                                        CustomImageView(
-                                            imagePath:
-                                                ImageConstant.imgEllipse240,
-                                            height: getSize(110),
-                                            width: getSize(110),
-                                            radius: BorderRadius.circular(
-                                                getHorizontalSize(55)),
-                                            alignment: Alignment.center),
-                                       GestureDetector(
-                                            onTap: () async {
-                                              await _pickImage(ImageSource.gallery);
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                Container(
-                                                  height: 110,
-                                                  width: 110,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.grey[200],
-                                                  ),
-                                                  child: _imageFile != null
-                                                      ? Image.file(
-                                                          _imageFile!,
-                                                          fit: BoxFit.cover,
-                                                          width: double.infinity,
-                                                          height: double.infinity,
-                                                        )
-                                                      : Icon(
-                                                          Icons.person,
-                                                          size: 50,
-                                                          color: Colors.grey,
-                                                        ),
-                                                ),
-                                                Positioned(
-                                                  bottom: 0,
-                                                  right: 0,
-                                                  child: CircleAvatar(
-                                                    backgroundColor: Colors.grey[200],
-                                                    child: Icon(Icons.camera_alt),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                        
+                                        GestureDetector(
+                onTap: () async {
+                  _pickImage();
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey[200]!, // Couleur de la bordure
+                          width: 2, // Largeur de la bordure
+                        ),
+                        color: Colors.grey[200],
+                        image: _imageUrl != null
+                            ? DecorationImage(
+                                image: NetworkImage(_imageUrl!),
+                                fit: BoxFit.cover)
+                            : null,
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.grey[200],
+                        child: Icon(Icons.camera_alt),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
                                       ])),
                               CustomFloatingEditText(

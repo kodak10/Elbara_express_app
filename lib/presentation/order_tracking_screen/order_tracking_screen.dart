@@ -104,6 +104,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                         'orderId': orderId, // Numéro de commande
                                         'docID': doc.id, // Numéro de commande
                                         'dateRegister': data['dateRegister'], // Date de la commande
+                                        'status': data['deliveryStatus'], 
                                         
                                       },);
                                 },

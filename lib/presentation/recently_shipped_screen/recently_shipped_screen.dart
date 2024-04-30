@@ -209,26 +209,19 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                     SizedBox(
                                       height: getVerticalSize(15),
                                     ),
-                                    Visibility(
-                                      visible: status != "onTheWay",
-                                      child: Padding(
+                                    Padding(
                                         padding: getPadding(left: 8, right: 8),
                                         child: CustomButton(
                                           onTap: () {
-                                            Get.toNamed(
-                                              AppRoutes.trackingDetailsScreen,
-                                              arguments: {
-                                                'name': data[
-                                                    'nom_receptioneur'], // Nom de la personne
-                                                'orderID':
-                                                    orderId, // Numéro de commande
-                                                'status': data[
-                                                    'deliveryStatus'], // Statut de la commande
-                                                'date': data['dateRegister']
-                                                    .toDate(), // Date de la commande
-                                                // Vous pouvez ajouter d'autres informations de la commande ici
-                                              },
-                                            );
+                                             Get.toNamed(
+                                          AppRoutes.trackingDetailsScreen,
+                                          arguments: {
+                                            'orderId': data['orderId'], // Numéro de commande
+                                            'docID': document.id, // Numéro de commande
+                                            'dateRegister': data['dateRegister'], // Date de la commande
+                                            'status': data['deliveryStatus'],
+                                          }
+                                        );
                                           },
                                           height: getSize(40),
                                           text: "Suivre la commande",
@@ -237,7 +230,6 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                           padding: ButtonPadding.PaddingT0,
                                         ),
                                       ),
-                                    )
                                   ],
                                 ),
                               ),

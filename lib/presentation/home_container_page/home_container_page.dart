@@ -17,8 +17,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-
-
 class CourierService {
   String name;
   String logo;
@@ -36,13 +34,9 @@ class CourierService {
   }
 }
 
-
-
 bool isLoaded = false;
 
 class HomeContainerPage extends StatelessWidget {
-
-  
   HomeContainerPage({Key? key}) : super(key: key);
 
   HomeContainerController controller = Get.put(HomeContainerController());
@@ -57,7 +51,6 @@ class HomeContainerPage extends StatelessWidget {
       decoration: AppDecoration.white,
       child: Column(
         children: [
-          
           SizedBox(
             height: getVerticalSize(15),
           ),
@@ -183,88 +176,94 @@ class HomeContainerPage extends StatelessWidget {
                 ),
                 // Liste des compagnies
                 SizedBox(
-  height: getSize(109),
-  child: FutureBuilder<QuerySnapshot>(
-    future: FirebaseFirestore.instance
-        .collection('compagnie')
-        .limit(4)
-        .get(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return ListView.builder(
-          padding: getPadding(left: 8, right: 8),
-          itemCount: 4, // Afficher 4 shimmers pendant le chargement
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: getPadding(left: 8, right: 8),
-              child: Container(
-                width: getSize(236),
-                decoration: BoxDecoration(
-                  color: ColorConstant.gray50,
-                  borderRadius: BorderRadius.circular(getHorizontalSize(8)),
-                ),
-                child: compagniesShimmer(),
-              ),
-            );
-          },
-        );
-      } else if (snapshot.hasError) {
-        return Text('Erreur de chargement des données');
-      } else {
-        List<DocumentSnapshot> documents = snapshot.data!.docs;
-        return ListView.builder(
-          padding: getPadding(left: 8, right: 8),
-          itemCount: documents.length,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            CourierService data = CourierService.fromMap(
-                documents[index].data() as Map<String, dynamic>);
-            return Padding(
-              padding: getPadding(left: 8, right: 8),
-              child: Container(
-                width: getSize(236),
-                decoration: BoxDecoration(
-                  color: ColorConstant.gray50,
-                  borderRadius: BorderRadius.circular(getHorizontalSize(8)),
-                ),
-                child: Padding(
-                  padding: getPadding(left: 16, right: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              data.logo,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            data.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  height: getSize(109),
+                  child: FutureBuilder<QuerySnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('compagnie')
+                        .limit(4)
+                        .get(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return ListView.builder(
+                          padding: getPadding(left: 8, right: 8),
+                          itemCount:
+                              4, // Afficher 4 shimmers pendant le chargement
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: getPadding(left: 8, right: 8),
+                              child: Container(
+                                width: getSize(236),
+                                decoration: BoxDecoration(
+                                  color: ColorConstant.gray50,
+                                  borderRadius: BorderRadius.circular(
+                                      getHorizontalSize(8)),
+                                ),
+                                child: compagniesShimmer(),
+                              ),
+                            );
+                          },
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Erreur de chargement des données');
+                      } else {
+                        List<DocumentSnapshot> documents = snapshot.data!.docs;
+                        return ListView.builder(
+                          padding: getPadding(left: 8, right: 8),
+                          itemCount: documents.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            CourierService data = CourierService.fromMap(
+                                documents[index].data()
+                                    as Map<String, dynamic>);
+                            return Padding(
+                              padding: getPadding(left: 8, right: 8),
+                              child: Container(
+                                width: getSize(236),
+                                decoration: BoxDecoration(
+                                  color: ColorConstant.gray50,
+                                  borderRadius: BorderRadius.circular(
+                                      getHorizontalSize(8)),
+                                ),
+                                child: Padding(
+                                  padding: getPadding(left: 16, right: 16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              data.logo,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          Text(
+                                            data.name,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      }
-    },
-  ),
-),
 
                 SizedBox(
                   height: getVerticalSize(16),
@@ -307,130 +306,129 @@ class HomeContainerPage extends StatelessWidget {
                 SizedBox(
                   height: getVerticalSize(16),
                 ),
-               
+
                 SizedBox(
-  height: getSize(194),
-  child: StreamBuilder(
-    stream: FirebaseFirestore.instance
-        .collection('orders')
-        .where('userId', isEqualTo: user?.uid)
-
-        .limit(5)
-        .snapshots(),
-    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-      
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return ListView.builder(
-          padding: getPadding(left: 8, right: 8),
-          scrollDirection: Axis.horizontal,
-          itemCount: 5, // Afficher 5 shimmers pendant le chargement
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: getPadding(left: 8, right: 8),
-              child: Container(
-                width: getSize(308),
-                decoration: BoxDecoration(
-                  color: ColorConstant.gray50,
-                  borderRadius: BorderRadius.circular(getHorizontalSize(8)),
-                ),
-                child: ordersShimmer(),
-              ),
-            );
-          },
-        );
-      } else if (snapshot.hasError) {
-        return Text('Erreur de chargement des données');
-      } else {
-        return ListView.builder(
-          padding: getPadding(left: 8, right: 8),
-          scrollDirection: Axis.horizontal,
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            var document = snapshot.data!.docs[index];
-            var data = document.data() as Map<String, dynamic>;
-            return Padding(
-              padding: getPadding(left: 8, right: 8),
-              child: Container(
-                width: getSize(308),
-                decoration: BoxDecoration(
-                  color: ColorConstant.gray50,
-                  borderRadius: BorderRadius.circular(getHorizontalSize(8)),
-                ),
-                child: Padding(
-                  padding: getPadding(top: 16, left: 16, right: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Référence N°:  ${data['orderId']}",
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: AppStyle.txtSubheadline,
-                      ),
-                      SizedBox(height: getVerticalSize(15)),
-                      Text(
-                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: AppStyle.txtSFProTextRegular14,
-                      ),
-                      Padding(
-                        padding: getPadding(top: 4),
-                        child: Text(
-                          "Depart: ${data['lieu_depart']}",
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtFootnote,
-                        ),
-                      ),
-
-Padding(
-                                      padding: getPadding(top: 4),
-                                      child: Text(
-                                        "Destination: ${data['lieu_arrive']}",
+                  height: getSize(194),
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('orders')
+                        .where('userId', isEqualTo: user?.uid)
+                        .limit(5)
+                        .snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return ListView.builder(
+                          padding: getPadding(left: 8, right: 8),
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              5, // Afficher 5 shimmers pendant le chargement
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: getPadding(left: 8, right: 8),
+                              child: Container(
+                                width: getSize(308),
+                                decoration: BoxDecoration(
+                                  color: ColorConstant.gray50,
+                                  borderRadius: BorderRadius.circular(
+                                      getHorizontalSize(8)),
+                                ),
+                                child: ordersShimmer(),
+                              ),
+                            );
+                          },
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Erreur de chargement des données');
+                      } else {
+                        return ListView.builder(
+                          padding: getPadding(left: 8, right: 8),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            var document = snapshot.data!.docs[index];
+                            var data = document.data() as Map<String, dynamic>;
+                            var status = data['deliveryStatus'];
+                            return Padding(
+                              padding: getPadding(left: 8, right: 8),
+                              child: Container(
+                                width: getSize(308),
+                                decoration: BoxDecoration(
+                                  color: ColorConstant.gray50,
+                                  borderRadius: BorderRadius.circular(
+                                      getHorizontalSize(8)),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      getPadding(top: 16, left: 16, right: 16),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Référence N°:  ${data['orderId']}",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
-                                        style: AppStyle.txtFootnote,
+                                        style: AppStyle.txtSubheadline,
                                       ),
-                                    ),
-                       SizedBox(height: getVerticalSize(15)),
-                                    CustomButton(
-                                      onTap: () {
-                                        Get.toNamed(
-                                          AppRoutes.trackingDetailsScreen,
-                                          arguments: {
-                                            'orderID': data[
-                                                'orderiD'], // Numéro de commande
-                                            'date': data['dateRegister']
-                                                .toDate(), // Date de la commande
-                                            'name': data[
-                                                'nom_receptioneur'], // Nom de la personne
-                                            'status': data[
-                                                'deliveryStatus'], // Statut de la commande
-
-                                            // Vous pouvez ajouter d'autres informations de la commande ici
-                                          },
-                                        );
-                                      },
-                                      height: getSize(40),
-                                      text: "Suivre la commande",
-                                      fontStyle: ButtonFontStyle
-                                          .SFProTextBold15WhiteA700,
-                                      padding: ButtonPadding.PaddingT0,
-                                    ),
-                    ],
+                                      SizedBox(height: getVerticalSize(15)),
+                                      Text(
+                                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.left,
+                                        style: AppStyle.txtSFProTextRegular14,
+                                      ),
+                                      Padding(
+                                        padding: getPadding(top: 4),
+                                        child: Text(
+                                          "Depart: ${data['lieu_depart']}",
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtFootnote,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: getPadding(top: 4),
+                                        child: Text(
+                                          "Destination: ${data['lieu_arrive']}",
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtFootnote,
+                                        ),
+                                      ),
+                                      SizedBox(height: getVerticalSize(15)),
+                                      CustomButton(
+                                        onTap: () {
+                                          print('status_avant: $status');
+                                          Get.toNamed(
+                                              AppRoutes.trackingDetailsScreen,
+                                              arguments: {
+                                                'orderId': data[
+                                                    'orderId'], // Numéro de commande
+                                                'docID': document
+                                                    .id, // Numéro de commande
+                                                'dateRegister': data[
+                                                    'dateRegister'], // Date de la commande
+                                                'status': status,
+                                              });
+                                        },
+                                        height: getSize(40),
+                                        text: "Suivre la commande",
+                                        fontStyle: ButtonFontStyle
+                                            .SFProTextBold15WhiteA700,
+                                        padding: ButtonPadding.PaddingT0,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      }
-    },
-  ),
-),
-
 
                 SizedBox(
                   height: getVerticalSize(20),
@@ -490,78 +488,76 @@ Padding(
     );
   }
 
-
-Shimmer compagniesShimmer() {
+  Shimmer compagniesShimmer() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Padding(
-    padding: getPadding(left: 16, right: 16),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          radius: getSize(20), // Rayon simulant la taille du cercle
-          backgroundColor: Colors.white, // Couleur simulant le fond du cercle
+        padding: getPadding(left: 16, right: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: getSize(20), // Rayon simulant la taille du cercle
+              backgroundColor:
+                  Colors.white, // Couleur simulant le fond du cercle
+            ),
+            SizedBox(
+              width: 8,
+            ),
+            Container(
+              width: getSize(100), // Largeur simulant la taille du texte
+              height: getSize(20), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+          ],
         ),
-        SizedBox(
-          width: 8,
-        ),
-        Container(
-          width: getSize(100), // Largeur simulant la taille du texte
-          height: getSize(20), // Hauteur simulant la taille du texte
-          color: Colors.white, // Couleur simulant le fond du texte
-        ),
-      ],
-    ),
-  ),
+      ),
     );
   }
-
 
   Shimmer ordersShimmer() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: Padding(
-    padding: getPadding(top: 16, left: 16, right: 16),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: double.infinity,
-          height: getSize(18), // Hauteur simulant la taille du texte
-          color: Colors.white, // Couleur simulant le fond du texte
+        padding: getPadding(top: 16, left: 16, right: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(15)),
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(4)),
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(4)),
+            Container(
+              width: double.infinity,
+              height: getSize(18), // Hauteur simulant la taille du texte
+              color: Colors.white, // Couleur simulant le fond du texte
+            ),
+            SizedBox(height: getVerticalSize(15)),
+            Container(
+              width: getSize(150), // Largeur simulant la taille du bouton
+              height: getSize(40), // Hauteur simulant la taille du bouton
+              color: Colors.white, // Couleur simulant le fond du bouton
+            ),
+          ],
         ),
-        SizedBox(height: getVerticalSize(15)),
-        Container(
-          width: double.infinity,
-          height: getSize(18), // Hauteur simulant la taille du texte
-          color: Colors.white, // Couleur simulant le fond du texte
-        ),
-        SizedBox(height: getVerticalSize(4)),
-        Container(
-          width: double.infinity,
-          height: getSize(18), // Hauteur simulant la taille du texte
-          color: Colors.white, // Couleur simulant le fond du texte
-        ),
-        SizedBox(height: getVerticalSize(4)),
-        Container(
-          width: double.infinity,
-          height: getSize(18), // Hauteur simulant la taille du texte
-          color: Colors.white, // Couleur simulant le fond du texte
-        ),
-        SizedBox(height: getVerticalSize(15)),
-        Container(
-          width: getSize(150), // Largeur simulant la taille du bouton
-          height: getSize(40), // Hauteur simulant la taille du bouton
-          color: Colors.white, // Couleur simulant le fond du bouton
-        ),
-      ],
-    ),
-  ),
+      ),
     );
   }
-  
-  }
+}

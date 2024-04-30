@@ -183,12 +183,12 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       },
                                       isExpanded: true, // Permet au bouton de remplir l'espace horizontalement
                                       items: <String>[
-                                        'Type de colis',
-                                        'Alimentaires',
-                                        'Bijoux',
-                                        'Documents',
-                                        'Déménagements',
-                                        'Vêtements / Chaussures / Accessoires',
+                                        'TYPE DE COLIS',
+                                        'ALIMENTAIRES',
+                                        'BIJOUX',
+                                        'DOCUMENTS',
+                                        'DEMENAGEMENT',
+                                        'VÊTEMENTS / CHAUSSURES / ACCESSOIRES',
                                         'Autres'
                                       ].map<DropdownMenuItem<String>>(
                                           (String value) {

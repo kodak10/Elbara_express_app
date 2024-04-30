@@ -12,7 +12,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 
-
 class TrackingDetailsScreen extends StatefulWidget {
   final String docID;
 
@@ -43,139 +42,84 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
     super.initState();
   }
 
-  // void fetchOrderDetails() async {
-  //   final Map<String, dynamic> args = Get.arguments ?? {};
-  //   final String docID = args['docID'] ?? '';
-
-  //   print('document id: $docID');
-
-  //   try {
-  //     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-  //         .collection('orders')
-  //         .doc(docID)
-  //         .get();
-
-  //     if (documentSnapshot.exists) {
-  //       bool orderConfirmed = documentSnapshot['order_confirm'];
-  //       bool orderDeliveryConfirmed = documentSnapshot['order_on_delivery'];
-  //       bool orderDelivered = documentSnapshot['order_delivered'];
-
-  //       print('Order confirmed: $orderConfirmed');
-  //       print('Order delivery confirmed: $orderDeliveryConfirmed');
-  //       print('Order delivered: $orderDelivered');
-
-  //       if (orderConfirmed) {
-  //         Timestamp orderConfirmTimestamp =
-  //             documentSnapshot['order_confirm_date'];
-  //         DateTime orderConfirmDate = orderConfirmTimestamp.toDate();
-  //         statusOrderConfirmed =
-  //             DateFormat('dd/MM/yyyy HH:mm:ss').format(orderConfirmDate);
-
-  //         print('date: $statusOrderConfirmed');
-  //       } else {
-  //         statusOrderConfirmed = 'En attente';
-  //       }
-
-  //       if (orderDeliveryConfirmed) {
-  //         Timestamp orderDeliveryConfirmedTimestamp =
-  //             documentSnapshot['order_on_delivery_date'];
-  //         DateTime orderDeliveryConfirmedDate =
-  //             orderDeliveryConfirmedTimestamp.toDate();
-  //         statusOrderDeliveryConfirmed = DateFormat('dd/MM/yyyy HH:mm:ss')
-  //             .format(orderDeliveryConfirmedDate);
-  //       } else {
-  //         statusOrderDeliveryConfirmed = 'En attente';
-  //       }
-
-  //       if (orderDelivered) {
-  //         Timestamp orderDeliveredTimestamp =
-  //             documentSnapshot['order_delivered_date'];
-  //         DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
-  //         statusOrderDelivered =
-  //             DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
-  //       } else {
-  //         statusOrderDelivered = 'En attente';
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print('Erreur lors de la récupération des détails de la commande: $e');
-  //   }
-  // }
-
   void fetchOrderDetails() async {
-  final Map<String, dynamic> args = Get.arguments ?? {};
-  final String docID = args['docID'] ?? '';
+    final Map<String, dynamic> args = Get.arguments ?? {};
+    final String docID = args['docID'] ?? '';
 
-  print('document id: $docID');
+    print('document id: $docID');
 
-  try {
-    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-        .collection('orders')
-        .doc(docID)
-        .get();
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(docID)
+          .get();
 
-    if (documentSnapshot.exists) {
-      setState(() {
-        orderConfirmed = documentSnapshot['order_confirm'];
-        orderDeliveryConfirmed = documentSnapshot['order_on_delivery'];
-        orderDelivered = documentSnapshot['order_delivered'];
+      if (documentSnapshot.exists) {
+        setState(() {
+          orderConfirmed = documentSnapshot['order_confirm'];
+          orderDeliveryConfirmed = documentSnapshot['order_on_delivery'];
+          orderDelivered = documentSnapshot['order_delivered'];
 
-        print('Order confirmed: $orderConfirmed');
-        print('Order delivery confirmed: $orderDeliveryConfirmed');
-        print('Order delivered: $orderDelivered');
+          print('Order confirmed: $orderConfirmed');
+          print('Order delivery confirmed: $orderDeliveryConfirmed');
+          print('Order delivered: $orderDelivered');
 
-        if (orderConfirmed) {
-          Timestamp orderConfirmTimestamp =
-              documentSnapshot['order_confirm_date'];
-          
-          DateTime orderConfirmDate = orderConfirmTimestamp.toDate();
-          statusOrderConfirmed =
-              DateFormat('dd/MM/yyyy HH:mm:ss').format(orderConfirmDate);
+          if (orderConfirmed) {
+            Timestamp orderConfirmTimestamp =
+                documentSnapshot['order_confirm_date'];
 
-          print('date: $statusOrderConfirmed');
-        } else {
-          statusOrderConfirmed = 'En attente';
-        }
+            DateTime orderConfirmDate = orderConfirmTimestamp.toDate();
+            statusOrderConfirmed =
+                DateFormat('dd/MM/yyyy HH:mm:ss').format(orderConfirmDate);
 
-        if (orderDeliveryConfirmed) {
-          Timestamp orderDeliveryConfirmedTimestamp =
-              documentSnapshot['order_on_delivery_date'];
-          DateTime orderDeliveryConfirmedDate =
-              orderDeliveryConfirmedTimestamp.toDate();
-          statusOrderDeliveryConfirmed = DateFormat('dd/MM/yyyy HH:mm:ss')
-              .format(orderDeliveryConfirmedDate);
-        } else {
-          statusOrderDeliveryConfirmed = 'En attente';
-        }
+            print('date: $statusOrderConfirmed');
+          } else {
+            statusOrderConfirmed = 'En attente';
+          }
 
-        if (orderDelivered) {
-          Timestamp orderDeliveredTimestamp =
-              documentSnapshot['order_delivered_date'];
-          DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
-          statusOrderDelivered =
-              DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
-        } else {
-          statusOrderDelivered = 'En attente';
-        }
-      });
+          if (orderDeliveryConfirmed) {
+            Timestamp orderDeliveryConfirmedTimestamp =
+                documentSnapshot['order_on_delivery_date'];
+            DateTime orderDeliveryConfirmedDate =
+                orderDeliveryConfirmedTimestamp.toDate();
+            statusOrderDeliveryConfirmed = DateFormat('dd/MM/yyyy HH:mm:ss')
+                .format(orderDeliveryConfirmedDate);
+          } else {
+            statusOrderDeliveryConfirmed = 'En attente';
+          }
+
+          if (orderDelivered) {
+            Timestamp orderDeliveredTimestamp =
+                documentSnapshot['order_delivered_date'];
+            DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
+            statusOrderDelivered =
+                DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+          } else {
+            statusOrderDelivered = 'En attente';
+          }
+        });
+      }
+    } catch (e) {
+      print('Erreur lors de la récupération des détails de la commande: $e');
     }
-  } catch (e) {
-    print('Erreur lors de la récupération des détails de la commande: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args = Get.arguments ?? {};
-    final String orderID = args['orderId'] ?? '';
+    //final Map<String, dynamic> args = Get.arguments ?? {};
+    final Map<String, dynamic>? args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+final String orderID = args?['orderId'] ?? '';
+final String status = args?['status'] ?? '';
+    // final String orderID = args['orderId'] ?? '';
+    // final String status = args['deliveryStatus'] ?? '';
 
-    Timestamp dateCommandeTimestamp = args['dateRegister'];
+    print('status_now: $status');
+
+    Timestamp dateCommandeTimestamp = args?['dateRegister'];
     // Convertir Timestamp en DateTime
     DateTime dateCommandeDateTime = dateCommandeTimestamp.toDate();
     // Formatter la date
-    String formattedDate =
-        DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
+    String formattedDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
 
     return WillPopScope(
         onWillPop: () async {
@@ -294,7 +238,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                 getHorizontalSize(8)),
                                             alignment: Alignment.center),
                                         Visibility(
-                                          //visible: status == "onTheWay",
+                                          visible: status == "onTheWay",
                                           child: Padding(
                                             padding:
                                                 getPadding(left: 8, right: 8),

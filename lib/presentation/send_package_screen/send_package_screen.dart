@@ -187,6 +187,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                         'Alimentaires',
                                         'Bijoux',
                                         'Documents',
+                                        'Déménagements',
                                         'Vêtements / Chaussures / Accessoires',
                                         'Autres'
                                       ].map<DropdownMenuItem<String>>(
@@ -228,7 +229,14 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       top: 15,
                                                       right: 15,
                                                       bottom: 15),
-                                                  child: CustomImageView()),
+                                                   child: CustomImageView(
+                                                    onTap: () {
+                                                      // Get.toNamed(AppRoutes
+                                                      //     .selectDeliveryAddressScreen);
+                                                    },
+                                                    svgPath: ImageConstant
+                                                        .imgLocationBlack900)
+                                                  ),
                                               suffixConstraints: BoxConstraints(
                                                   maxHeight:
                                                       getVerticalSize(54)))
@@ -251,7 +259,15 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       top: 15,
                                                       right: 15,
                                                       bottom: 15),
-                                                  child: CustomImageView()),
+                                                   child: CustomImageView(
+                                                    onTap: () {
+                                                      // Get.toNamed(AppRoutes
+                                                      //     .selectDeliveryAddressScreen);
+                                                    },
+                                                    svgPath: ImageConstant
+                                                        .imgLocationBlack900)
+                                                  
+                                                  ),
                                               suffixConstraints: BoxConstraints(
                                                   maxHeight:
                                                       getVerticalSize(54)))
@@ -311,7 +327,10 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           variant: TextFormFieldVariant
                                               .OutlineGray300,
                                           prefixConstraints: BoxConstraints(
-                                              maxHeight: getVerticalSize(54)),
+                                              maxHeight: getVerticalSize(54)
+                                              ),
+                                            textInputType: TextInputType.phone,
+
                                         ),
                                       ],
                                     ),

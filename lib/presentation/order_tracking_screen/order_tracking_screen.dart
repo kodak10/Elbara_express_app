@@ -90,26 +90,22 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                           itemBuilder: (context, index) {
                             DocumentSnapshot doc = documents[index];
                               var document = snapshot.data!.docs[index];
-                              var orderId = document.id;
                               var data = document.data() as Map<String, dynamic>;
-                              String name = documents[index].get('nom_receptioneur');
+                               var orderId = data['orderId'];
+                              //String name = documents[index].get('nom_receptioneur');
                             return Padding(
                               padding: getPadding(
                                   top: 8, bottom: 8, left: 16, right: 16),
                               child: GestureDetector(
                                 onTap: () {
                                   Get.toNamed(
-                                              AppRoutes.trackingDetailsScreen,
-                                              arguments: {
-                                                'name': data['nom_receptioneur'], // Nom de la personne
-                                                'orderID': orderId, // Numéro de commande
-                                                'status': data['deliveryStatus'], // Statut de la commande
-                                                'date': data['dateRegister'], // Date de la commande
-                                                // Vous pouvez ajouter d'autres informations de la commande ici
-                                              },);
-                                  // Naviguer vers les détails de la commande
-                                  // Utilisez doc pour accéder aux données de la commande
-                                  //Get.toNamed(AppRoutes.trackingDetailsScreen);
+                                    AppRoutes.trackingDetailsScreen,
+                                      arguments: {
+                                        'orderId': orderId, // Numéro de commande
+                                        'docID': doc.id, // Numéro de commande
+                                        'dateRegister': data['dateRegister'], // Date de la commande
+                                        
+                                      },);
                                 },
                                 child: Container(
                                   decoration: AppDecoration.fillGray50.copyWith(

@@ -9,58 +9,173 @@ import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:jiffy/jiffy.dart';
+
 
 class TrackingDetailsScreen extends StatefulWidget {
-  final String orderId;
+  final String docID;
 
-  const TrackingDetailsScreen({Key? key, required this.orderId})
+  const TrackingDetailsScreen({Key? key, required this.docID})
       : super(key: key);
-
-  //const TrackingDetailsScreen({Key? key}) : super(key: key);
 
   @override
   State<TrackingDetailsScreen> createState() => _TrackingDetailsScreenState();
 }
 
 class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
-  @override
-  late DocumentSnapshot orderSnapshot;
+  late String statusOrderConfirmed = '';
+  late String statusOrderDeliveryConfirmed = '';
+  late String statusOrderDelivered = '';
 
+  bool orderConfirmed = false;
+  bool orderDeliveryConfirmed = false;
+  bool orderDelivered = false;
+
+  @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: ColorConstant.whiteA700,
           statusBarIconBrightness: Brightness.dark),
     );
+    fetchOrderDetails();
     super.initState();
   }
 
-  void fetchOrderDetails() async {
-    try {
-      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(widget.orderId)
-          .get();
+  // void fetchOrderDetails() async {
+  //   final Map<String, dynamic> args = Get.arguments ?? {};
+  //   final String docID = args['docID'] ?? '';
 
+  //   print('document id: $docID');
+
+  //   try {
+  //     DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+  //         .collection('orders')
+  //         .doc(docID)
+  //         .get();
+
+  //     if (documentSnapshot.exists) {
+  //       bool orderConfirmed = documentSnapshot['order_confirm'];
+  //       bool orderDeliveryConfirmed = documentSnapshot['order_on_delivery'];
+  //       bool orderDelivered = documentSnapshot['order_delivered'];
+
+  //       print('Order confirmed: $orderConfirmed');
+  //       print('Order delivery confirmed: $orderDeliveryConfirmed');
+  //       print('Order delivered: $orderDelivered');
+
+  //       if (orderConfirmed) {
+  //         Timestamp orderConfirmTimestamp =
+  //             documentSnapshot['order_confirm_date'];
+  //         DateTime orderConfirmDate = orderConfirmTimestamp.toDate();
+  //         statusOrderConfirmed =
+  //             DateFormat('dd/MM/yyyy HH:mm:ss').format(orderConfirmDate);
+
+  //         print('date: $statusOrderConfirmed');
+  //       } else {
+  //         statusOrderConfirmed = 'En attente';
+  //       }
+
+  //       if (orderDeliveryConfirmed) {
+  //         Timestamp orderDeliveryConfirmedTimestamp =
+  //             documentSnapshot['order_on_delivery_date'];
+  //         DateTime orderDeliveryConfirmedDate =
+  //             orderDeliveryConfirmedTimestamp.toDate();
+  //         statusOrderDeliveryConfirmed = DateFormat('dd/MM/yyyy HH:mm:ss')
+  //             .format(orderDeliveryConfirmedDate);
+  //       } else {
+  //         statusOrderDeliveryConfirmed = 'En attente';
+  //       }
+
+  //       if (orderDelivered) {
+  //         Timestamp orderDeliveredTimestamp =
+  //             documentSnapshot['order_delivered_date'];
+  //         DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
+  //         statusOrderDelivered =
+  //             DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+  //       } else {
+  //         statusOrderDelivered = 'En attente';
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print('Erreur lors de la récupération des détails de la commande: $e');
+  //   }
+  // }
+
+  void fetchOrderDetails() async {
+  final Map<String, dynamic> args = Get.arguments ?? {};
+  final String docID = args['docID'] ?? '';
+
+  print('document id: $docID');
+
+  try {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(docID)
+        .get();
+
+    if (documentSnapshot.exists) {
       setState(() {
-        orderSnapshot = documentSnapshot;
+        orderConfirmed = documentSnapshot['order_confirm'];
+        orderDeliveryConfirmed = documentSnapshot['order_on_delivery'];
+        orderDelivered = documentSnapshot['order_delivered'];
+
+        print('Order confirmed: $orderConfirmed');
+        print('Order delivery confirmed: $orderDeliveryConfirmed');
+        print('Order delivered: $orderDelivered');
+
+        if (orderConfirmed) {
+          Timestamp orderConfirmTimestamp =
+              documentSnapshot['order_confirm_date'];
+          
+          DateTime orderConfirmDate = orderConfirmTimestamp.toDate();
+          statusOrderConfirmed =
+              DateFormat('dd/MM/yyyy HH:mm:ss').format(orderConfirmDate);
+
+          print('date: $statusOrderConfirmed');
+        } else {
+          statusOrderConfirmed = 'En attente';
+        }
+
+        if (orderDeliveryConfirmed) {
+          Timestamp orderDeliveryConfirmedTimestamp =
+              documentSnapshot['order_on_delivery_date'];
+          DateTime orderDeliveryConfirmedDate =
+              orderDeliveryConfirmedTimestamp.toDate();
+          statusOrderDeliveryConfirmed = DateFormat('dd/MM/yyyy HH:mm:ss')
+              .format(orderDeliveryConfirmedDate);
+        } else {
+          statusOrderDeliveryConfirmed = 'En attente';
+        }
+
+        if (orderDelivered) {
+          Timestamp orderDeliveredTimestamp =
+              documentSnapshot['order_delivered_date'];
+          DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
+          statusOrderDelivered =
+              DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+        } else {
+          statusOrderDelivered = 'En attente';
+        }
       });
-    } catch (e) {
-      print('Error fetching order details: $e');
     }
+  } catch (e) {
+    print('Erreur lors de la récupération des détails de la commande: $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = Get.arguments ?? {};
-    final String name = args['name'] ?? '';
     final String orderID = args['orderId'] ?? '';
-    final String status = args['deliveryStatus'] ?? '';
-    //final String dateCommande = args['date'] ?? '';
-    final DateTime dateCommandeDateTime = args['dateRegister'];
-    //final String dateCommande = dateCommandeDateTime != null ? dateCommandeDateTime.toString() : '';
 
-    //final String dateCommande = args['date'] ?? ''; // Utiliser la clé 'date'
+    Timestamp dateCommandeTimestamp = args['dateRegister'];
+    // Convertir Timestamp en DateTime
+    DateTime dateCommandeDateTime = dateCommandeTimestamp.toDate();
+    // Formatter la date
+    String formattedDate =
+        DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
 
     return WillPopScope(
         onWillPop: () async {
@@ -83,7 +198,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                           onTapArrowleft12();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "Suivi de commandesss"),
+                    title: AppbarSubtitle1(text: ""),
                     styleType: Style.bgFillWhiteA700),
                 body: Container(
                     width: double.maxFinite,
@@ -132,7 +247,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                             alignment: Alignment
                                                                 .center,
                                                             child: Text(
-                                                                "Date: Date", // "Date: $dateCommande",
+                                                                "Date: $formattedDate",
                                                                 overflow:
                                                                     TextOverflow
                                                                         .ellipsis,
@@ -179,7 +294,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                                 getHorizontalSize(8)),
                                             alignment: Alignment.center),
                                         Visibility(
-                                          visible: status == "onTheWay",
+                                          //visible: status == "onTheWay",
                                           child: Padding(
                                             padding:
                                                 getPadding(left: 8, right: 8),
@@ -210,122 +325,118 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                               SizedBox(
                                 height: getVerticalSize(16),
                               ),
-
-                              StreamBuilder<DocumentSnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('orders')
-                                    .doc(orderID)
-                                    .snapshots(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  }
-
-                                  if (snapshot.hasError) {
-                                    return Center(
-                                        child:
-                                            Text('Erreur: ${snapshot.error}'));
-                                  }
-
-                                  final data = snapshot.data!.data()
-                                      as Map<String, dynamic>;
-                                  final status = data['deliveryStatus'];
-
-                                  return Row(
+                              Row(
+                                children: [
+                                  CustomImageView(
+                                    svgPath: ImageConstant.imgTrackingOrder,
+                                    height: getSize(318),
+                                  ),
+                                  SizedBox(width: getHorizontalSize(14)),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      // CustomImageView(
-                                      //   svgPath: ImageConstant.imgTrackingOrder,
-                                      //   height: getSize(318),
-                                      // ),
-                                      SizedBox(width: getHorizontalSize(14)),
                                       Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          _buildTimelineItem(
-                                              "Verification de la commande",
-                                              status == "accepter",
-                                              status != "accepter"),
-                                          _buildDashedLine(),
-                                          _buildTimelineItem(
-                                              "En attente de livreur",
-                                              status == "pending",
-                                              status != "pending"),
-                                          _buildDashedLine(),
-                                          _buildTimelineItem(
-                                              "En cours de livraison",
-                                              status == "onTheWay",
-                                              status != "onTheWay"),
-                                          _buildDashedLine(),
-                                          _buildTimelineItem(
-                                              "Commande terminée",
-                                              status == "delivered",
-                                              status != "delivered"),
-                                        ],
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text("Vérification".tr,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtHeadline),
+                                            Padding(
+                                                padding: getPadding(top: 8),
+                                                child: Text(
+                                                    "Terminé le: $statusOrderConfirmed",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        AppStyle.txtFootnote))
+                                          ]),
+                                      SizedBox(
+                                        height: getVerticalSize(40),
                                       ),
+                                      Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text("En Attente du Livreur".tr,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtHeadline),
+                                            Padding(
+                                                padding: getPadding(top: 13),
+                                                child: Text(
+                                                    "Terminé le: $statusOrderDeliveryConfirmed",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        AppStyle.txtFootnote))
+                                          ]),
+                                      SizedBox(
+                                        height: getVerticalSize(40),
+                                      ),
+                                      Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text("Colis en transit".tr,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtHeadline),
+                                            Padding(
+                                                padding: getPadding(top: 15),
+                                                child: Text(
+                                                    "Terminé le: $statusOrderDeliveryConfirmed",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        AppStyle.txtFootnote))
+                                          ]),
+                                      SizedBox(
+                                        height: getVerticalSize(40),
+                                      ),
+                                      Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text("Colis livré".tr,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtHeadline),
+                                            Padding(
+                                                padding: getPadding(top: 13),
+                                                child: Text(
+                                                    "Terminé le: $statusOrderDelivered",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.left,
+                                                    style:
+                                                        AppStyle.txtFootnote))
+                                          ])
                                     ],
-                                  );
-                                },
+                                  )
+                                ],
                               ),
-                              //buildTrackingHistory(status),
                             ]),
                       ],
                     )))));
-  }
-
-  Widget _buildTimelineItem(String title, bool isActive, bool isCompleted) {
-    Color iconColor = Colors.grey;
-    print(
-        'isActive: $isActive, isCompleted: $isCompleted'); // Ajoutez cette ligne pour vérifier les valeurs
-
-    if (isCompleted) {
-      iconColor = Colors
-          .green; // Si l'étape est complétée, la couleur de l'icône est verte
-    } else if (isActive) {
-      iconColor = Colors
-          .yellow; // Si l'étape est en cours, la couleur de l'icône est jaune
-    } else {
-      iconColor = Colors.black; // Sinon, la couleur de l'icône est grise
-    }
-
-    return Row(
-      children: [
-        Container(
-          width:
-              30, // Ajustez la largeur du conteneur de l'icône selon vos besoins
-          height:
-              30, // Ajustez la hauteur du conteneur de l'icône selon vos besoins
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: iconColor,
-          ),
-          child: IconButton(
-            onPressed: null, // Désactivez le bouton
-            icon: Icon(FontAwesomeIcons.circleCheck, color: Colors.white),
-            padding: EdgeInsets.zero, // Ajustez le padding selon vos besoins
-          ),
-        ),
-        SizedBox(width: 8),
-        Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(width: 20), // Ajustez cet espace selon vos besoins
-      ],
-    );
-  }
-
-  Widget _buildDashedLine() {
-    return Container(
-      height: 50,
-      width: 3, // Ajustez la longueur de la ligne en pointillés
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 1),
-        borderRadius: BorderRadius.circular(1),
-        color: Colors.transparent,
-      ),
-    );
   }
 
   onTapLivetracking() {

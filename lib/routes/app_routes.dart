@@ -60,6 +60,7 @@ import 'package:elbara_express/presentation/onboarding_three_screen/binding/onbo
 import 'package:elbara_express/presentation/onboarding_three_screen/onboarding_three_screen.dart';
 import 'package:elbara_express/presentation/onboarding_two_screen/binding/onboarding_two_binding.dart';
 import 'package:elbara_express/presentation/onboarding_two_screen/onboarding_two_screen.dart';
+import 'package:elbara_express/presentation/order_details_in_transit_screen/order_details_in_transit_screen.dart';
 import 'package:elbara_express/presentation/order_success_screen/binding/order_success_binding.dart';
 import 'package:elbara_express/presentation/order_success_screen/order_success_screen.dart';
 import 'package:elbara_express/presentation/order_tracking_screen/binding/order_tracking_binding.dart';
@@ -460,7 +461,7 @@ class AppRoutes {
     ),
     GetPage(
       name: trackingDetailsScreen,
-      page: () => TrackingDetailsScreen(orderId: '',), // parfait
+      page: () => TrackingDetailsScreen(docID: '',), // parfait
       bindings: [
         TrackingDetailsBinding(),
       ],
@@ -525,10 +526,11 @@ class AppRoutes {
     
     // GetPage(
     //   name: orderDetailsInTransitScreen,
-    //   page: () => OrderDetailsInTransitScreen(),
-    //   bindings: [
-    //     OrderDetailsInTransitBinding(),
-    //   ],
+    //   //page: () => OrderDetailsInTransitScreen(orderData: ''),
+    //   page: () => OrderDetailsInTransitScreen(orderData: ''),
+    //   // bindings: [
+    //   //   OrderDetailsInTransitBinding(),
+    //   // ],
     // ),
     GetPage(
       name: cancelOrderScreen,

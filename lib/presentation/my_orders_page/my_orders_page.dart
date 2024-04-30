@@ -178,12 +178,12 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                   child: Padding(
                     padding: getPadding(bottom: 20),
                     child: GestureDetector(
-                        // onTap: () {
-                        //   Get.to(OrderDetailsInTransitScreen(
-                        //     orderData: ordertest,
-                        //   ));
-                        //   // Get.toNamed(AppRoutes.orderDetailsInTransitScreen);
-                        // },
+                        onTap: () {
+                          // Get.to(OrderDetailsInTransitScreen(
+                          //   orderData: ordertest,
+                          // ));
+                          // Get.toNamed(AppRoutes.orderDetailsInTransitScreen);
+                        },
 
                         child: StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance

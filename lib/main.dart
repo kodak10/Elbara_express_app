@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Importer le package pour gérer la mémoire locale
+//import 'package:shared_preferences/shared_preferences.dart'; // Importer le package pour gérer la mémoire locale
 
 
 Future main() async {
@@ -28,7 +28,7 @@ Future main() async {
     ),
   );
 
-final SharedPreferences prefs = await SharedPreferences.getInstance();
+//final SharedPreferences prefs = await SharedPreferences.getInstance();
   // final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   // final User? user = FirebaseAuth.instance.currentUser;
 

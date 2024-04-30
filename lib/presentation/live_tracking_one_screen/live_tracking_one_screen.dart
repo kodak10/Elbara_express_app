@@ -50,7 +50,7 @@ class _LiveTrackingOneScreenState extends State<LiveTrackingOneScreen> {
                           onTapArrowleft20();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "lbl_live_tracking".tr),
+                    title: AppbarSubtitle1(text: "".tr),
                     styleType: Style.bgFillWhiteA700),
                 body: Container(
                     width: size.width,

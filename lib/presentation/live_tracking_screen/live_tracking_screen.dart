@@ -28,7 +28,7 @@ class LiveTrackingScreen extends GetWidget<LiveTrackingController> {
           SizedBox(
             height: getSize(20),
           ),
-          Text("msg_package_information".tr,
+          Text("".tr,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.left,
               style: AppStyle.txtSFProTextBold20),
@@ -46,7 +46,7 @@ class LiveTrackingScreen extends GetWidget<LiveTrackingController> {
                         child: RichText(
                             text: TextSpan(children: [
                               TextSpan(
-                                  text: "lbl_delivery_type".tr,
+                                  text: "Destination".tr,
                                   style: TextStyle(
                                       color: ColorConstant.gray600,
                                       fontSize: getFontSize(16),
@@ -88,7 +88,7 @@ class LiveTrackingScreen extends GetWidget<LiveTrackingController> {
                                       fontFamily: 'SF Pro Text',
                                       fontWeight: FontWeight.w400)),
                               TextSpan(
-                                  text: "lbl_on_the_way".tr,
+                                  text: "Colis en chemin".tr,
                                   style: TextStyle(
                                       color: ColorConstant.black900,
                                       fontSize: getFontSize(18),

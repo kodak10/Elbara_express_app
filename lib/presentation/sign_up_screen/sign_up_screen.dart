@@ -209,7 +209,7 @@ void _showLoadingDialog() {
                                                 fontFamily: 'SF Pro Text',
                                                 fontWeight: FontWeight.w400)),
                                         TextSpan(
-                                            text: "Se Connecté".tr,
+                                            text: "Se Connecter".tr,
                                             style: TextStyle(
                                                 color:
                                                     ColorConstant.deepPurple600,

@@ -146,6 +146,11 @@ Future<void> saveCommande() async {
     'status': 'accepte',
     'lieu_depart': 'Abidjan, Abobo',
     'lieu_arrive' : 'Abidjan, Cocody',
+
+    'order_confirm_date': FieldValue.serverTimestamp(),
+    'order_delivered_date' : FieldValue.serverTimestamp(),
+    'order_on_delivery_date' : FieldValue.serverTimestamp(),
+
   };
 
   Map<String, dynamic> addressModel = {

@@ -180,59 +180,109 @@ void _showLoadingDialog() {
                       ),
                     ),
                   ),
-                 CustomButton(
-                    height: getVerticalSize(54),
-                    text: "Se Connecter",
-                    margin: getMargin(top: 31),
-                    onTap: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.setBool('isLoggedIn', true);
-                      if (_formKey.currentState!.validate()) {
-                        _showLoadingDialog(); // Afficher le modal de chargement
-                        try {
-                          UserCredential userCredential =
-                              await FirebaseAuth.instance.signInWithEmailAndPassword(
-                            email: controller.emailController.text,
-                            password: controller.passwordController.text,
-                          );
-                          // L'utilisateur est connecté avec succès
-                          User? user = FirebaseAuth.instance.currentUser;
-                          FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user!.uid)
-                              .get()
-                              .then((DocumentSnapshot documentSnapshot) {
-                            Navigator.of(context).pop(); // Fermer le modal de chargement
-                            if (documentSnapshot.exists) {
-                              if (documentSnapshot.get('role') == "user") {
-                                Get.toNamed(
-                                  AppRoutes.homeContainer1Screen,
-                                );
-                              } else {
-                                Get.toNamed(
-                                  AppRoutes.homeGestionnaireScreen,
-                                );
-                              }
-                            } else {
-                              print('Une erreur est survenue, veuillez contacter le service client.');
-                            }
-                          });
-                        } on FirebaseAuthException catch (e) {
-                          Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
-                          if (e.code == 'user-not-found') {
-                            _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
-                          } else if (e.code == 'wrong-password') {
-                            _showSnackBar('Mauvais mot de passe fourni pour cet utilisateur.');
-                          } else {
-                            _showSnackBar('Une erreur s\'est produite: ${e.message}');
-                          }
-                        } catch (e) {
-                          Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
-                          _showSnackBar('Une erreur s\'est produite: $e');
-                        }
-                      }
-                    },
-                  ),
+                //  CustomButton(
+                //     height: getVerticalSize(54),
+                //     text: "Se Connecter",
+                //     margin: getMargin(top: 31),
+                //     onTap: () async {
+                //       SharedPreferences prefs = await SharedPreferences.getInstance();
+                //       prefs.setBool('isLoggedIn', true);
+                //       if (_formKey.currentState!.validate()) {
+                //         _showLoadingDialog(); // Afficher le modal de chargement
+                //         try {
+                //           UserCredential userCredential =
+                //               await FirebaseAuth.instance.signInWithEmailAndPassword(
+                //             email: controller.emailController.text,
+                //             password: controller.passwordController.text,
+                //           );
+                //           // L'utilisateur est connecté avec succès
+                //           User? user = FirebaseAuth.instance.currentUser;
+                //           FirebaseFirestore.instance
+                //               .collection('users')
+                //               .doc(user!.uid)
+                //               .get()
+                //               .then((DocumentSnapshot documentSnapshot) {
+                //             Navigator.of(context).pop(); // Fermer le modal de chargement
+                //             if (documentSnapshot.exists) {
+                //               if (documentSnapshot.get('role') == "user") {
+                //                 Get.toNamed(
+                //                   AppRoutes.homeContainer1Screen,
+                //                 );
+                //               } else {
+                //                 Get.toNamed(
+                //                   AppRoutes.homeGestionnaireScreen,
+                //                 );
+                //               }
+                //             } else {
+                //               print('Une erreur est survenue, veuillez contacter le service client.');
+                //             }
+                //           });
+                //         } on FirebaseAuthException catch (e) {
+                //           Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+                //           if (e.code == 'user-not-found') {
+                //             _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
+                //           } else if (e.code == 'wrong-password') {
+                //             _showSnackBar('Mauvais mot de passe fourni pour cet utilisateur.');
+                //           } else {
+                //             _showSnackBar('Une erreur s\'est produite: ${e.message}');
+                //           }
+                //         } catch (e) {
+                //           Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+                //           _showSnackBar('Une erreur s\'est produite: $e');
+                //         }
+                //       }
+                //     },
+                //   ),
+
+                CustomButton(
+  height: getVerticalSize(54),
+  text: "Se Connecter",
+  margin: getMargin(top: 31),
+  onTap: () async {
+    if (_formKey.currentState!.validate()) {
+      _showLoadingDialog(); // Afficher le modal de chargement
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: controller.emailController.text,
+          password: controller.passwordController.text,
+        );
+        // L'utilisateur est connecté avec succès
+        User? user = FirebaseAuth.instance.currentUser;
+        FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get()
+          .then((DocumentSnapshot documentSnapshot) {
+            Navigator.of(context).pop(); // Fermer le modal de chargement
+            if (documentSnapshot.exists) {
+              if (documentSnapshot.get('role') == "user") {
+                Get.toNamed(
+                  AppRoutes.homeContainer1Screen,
+                );
+              } else {
+                _showSnackBar('Email ou mot de passe incorrecte.');
+              }
+            } else {
+              print('Une erreur est survenue, veuillez contacter le service client.');
+            }
+          });
+      } on FirebaseAuthException catch (e) {
+        Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+        if (e.code == 'user-not-found') {
+          _showSnackBar('Aucun utilisateur trouvé pour cet e-mail.');
+        } else if (e.code == 'wrong-password') {
+          _showSnackBar('Mauvais mot de passe fourni pour cet utilisateur.');
+        } else {
+          _showSnackBar('Une erreur s\'est produite: ${e.message}');
+        }
+      } catch (e) {
+        Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+        _showSnackBar('Une erreur s\'est produite: $e');
+      }
+    }
+  },
+),
+
 
                   Spacer(),
                   GestureDetector(

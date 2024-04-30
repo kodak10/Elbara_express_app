@@ -62,7 +62,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                         onTapArrowleft15();
                       }),
                   centerTitle: true,
-                  title: AppbarSubtitle1(text: "Commandes récentes00"),
+                  title: AppbarSubtitle1(text: "Commandes récentes"),
                   styleType: Style.bgFillWhiteA700),
               body: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance

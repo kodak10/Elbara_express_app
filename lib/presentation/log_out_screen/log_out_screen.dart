@@ -1,5 +1,6 @@
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/custum_bottom_bar_controller.dart';
@@ -15,6 +16,11 @@ class _LogOutScreenState extends State<LogOutScreen> {
   CustomBottomBarController customBottomBarController =
       Get.put(CustomBottomBarController());
 
+
+void signOut() async {
+  await FirebaseAuth.instance.signOut();
+  // Naviguer vers l'écran de connexion par exemple
+}
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -65,10 +71,13 @@ class _LogOutScreenState extends State<LogOutScreen> {
                                     fontStyle:
                                         ButtonFontStyle.SFProDisplayBold18,
                                     onTap: () {
+                                      signOut(); 
                                       PrefUtils.setIsSignIn(true);
                                       customBottomBarController.getIndex(0);
                                       Get.offAllNamed(AppRoutes.logInScreen);
                                     },
+
+                                   
                                   ))
                                 ]))
                       ])))

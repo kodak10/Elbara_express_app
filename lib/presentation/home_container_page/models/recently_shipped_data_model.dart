@@ -1,7 +1,34 @@
 class RecentlyShipped{
-  String? name;
-  String? orderID;
-  String? date;
-  String? stsatus;
-  RecentlyShipped(this.name,this.orderID,this.date,this.stsatus);
+
+  final String orderID;
+  final String status;
+  final String name;
+  final String typCourse;
+  final String typeEngin;
+  final String depart;
+  final String destination;
+  
+  final DateTime date;
+  final String payemenStatus;
+  final String docID;
+  final double cout;
+
+
+
+
+  const RecentlyShipped({
+    required this.docID,
+    required this.orderID,
+    required this.status,
+    required this.name,
+    required this.date,
+    required this.typCourse,
+    required this.typeEngin,
+    required this.depart,
+    required this.destination,
+    required this.payemenStatus,
+    required this.cout,
+
+  });
+  
 }

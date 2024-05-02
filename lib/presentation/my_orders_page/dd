@@ -1,14 +1,11 @@
+mon code complet
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/app_export.dart';
-import 'package:elbara_express/presentation/order_details_in_transit_screen/order_details_in_transit_screen.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../home_container_page/controller/home_container_controller.dart';
-import '../home_container_page/models/recently_shipped_data_model.dart';
-import '../my_orders_page/widgets/my_orders_item_widget.dart';
-import 'controller/my_orders_controller.dart';
 import 'package:flutter/material.dart';
 
 class MyOrdersPage extends StatefulWidget {
@@ -17,7 +14,6 @@ class MyOrdersPage extends StatefulWidget {
           key: key,
         );
 
-
   @override
   State<MyOrdersPage> createState() => _MyOrdersPageState();
 }
@@ -25,57 +21,10 @@ class MyOrdersPage extends StatefulWidget {
 final User? user = FirebaseAuth.instance.currentUser;
 
 class _MyOrdersPageState extends State<MyOrdersPage> {
-  List<RecentlyShipped> recentlyShippedData = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchRecentlyShippedData();
-  }
-
-@override
-
-@override
-Future<void> fetchRecentlyShippedData() async {
-  try {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('orders')
-        .get();
-
-    setState(() {
-      recentlyShippedData = querySnapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-        // Convertir Timestamp en DateTime pour la propriété 'date'
-        Timestamp timestamp = data['dateRegister'];
-        DateTime date = timestamp.toDate();
-        String docID = doc.id;
-
-        return RecentlyShipped(
-          docID: docID,
-          orderID: data['orderId'] ?? '', // Valeur pour l'ID de la commande
-          name: data['name'] ?? '', // Valeur pour le nom
-          date: date, // Utilisez la date convertie
-          status: data['deliveryStatus'] ?? '', // Valeur pour le statut
-          typCourse: data['type_colis'] ?? '', // Valeur pour le statut
-          typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut
-          depart: data['lieu_depart'] ?? '', // Valeur pour le statut
-          destination: data['lieu_arrive'] ?? '', // Valeur pour le statut
-          payemenStatus: data['paymentMethod'] ?? '', // Valeur pour le statut
-          cout: data['price'] ?? '', // Valeur pour le statut
-
-
-        );
-      }).toList();
-    });
-  } catch (e) {
-    print('Erreur lors de la récupération des données: $e');
-  }
-}
-
+ 
   @override
   Widget build(BuildContext context) {
-    return recentlyShippedData.isEmpty
+    return controller.recentlyShipped.isEmpty
         ? SizedBox(
             width: double.maxFinite,
             child: Column(
@@ -85,9 +34,9 @@ Future<void> fetchRecentlyShippedData() async {
                   width: double.maxFinite,
                   child: Container(
                     padding: getPadding(
-                      left: 0,
+                      left: 142,
                       top: 19,
-                      right: 0,
+                      right: 142,
                       bottom: 19,
                     ),
                     decoration: AppDecoration.white,
@@ -158,15 +107,28 @@ Future<void> fetchRecentlyShippedData() async {
                     style: AppStyle.txtSFProTextBold22,
                   ),
                 ),
-                
+                Container(
+                  width: getHorizontalSize(
+                    270,
+                  ),
+                  margin: getMargin(
+                    top: 12,
+                  ),
+                  child: Text(
+                    "msg_pellentesque_eu".tr,
+                    maxLines: null,
+                    textAlign: TextAlign.center,
+                    style: AppStyle.txtBody,
+                  ),
+                ),
                 CustomButton(
                   height: getVerticalSize(
                     53,
                   ),
                   width: getHorizontalSize(
-                    220,
+                    178,
                   ),
-                  text: "Envoyer un colis".tr,
+                  text: "lbl_add".tr,
                   margin: getMargin(
                     top: 41,
                     bottom: 194,
@@ -184,9 +146,9 @@ Future<void> fetchRecentlyShippedData() async {
             width: double.maxFinite,
             child: Container(
               padding: getPadding(
-                left: 0,
+                left: 142,
                 top: 19,
-                right: 0,
+                right: 142,
                 bottom: 19,
               ),
               decoration: AppDecoration.white,
@@ -233,14 +195,10 @@ Future<void> fetchRecentlyShippedData() async {
                           ),
                         );
                       },
-                      itemCount: recentlyShippedData.length,
-                        itemBuilder: (context, index) {
-                          RecentlyShipped model = recentlyShippedData[index];
-                          return MyOrdersItemWidget(
-                           recentlyShippedData[index],
-                          );
-                        },
-
+                      return MyOrdersItemWidget(
+                          model,
+                        );
+                      
                     ),
                   ],
                 ),

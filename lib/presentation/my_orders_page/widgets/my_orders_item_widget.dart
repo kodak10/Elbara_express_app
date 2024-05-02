@@ -68,7 +68,7 @@ class MyOrdersItemWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "lbl_shipped_to".tr,
+                          "Référence N°:".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtSubheadlineGray600,
@@ -78,7 +78,7 @@ class MyOrdersItemWidget extends StatelessWidget {
                             top: 4,
                           ),
                           child: Text(
-                            myOrdersItemModelObj.name!,
+                            myOrdersItemModelObj.orderID!,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.left,
                             style: AppStyle.txtSubheadline,
@@ -95,22 +95,22 @@ class MyOrdersItemWidget extends StatelessWidget {
                         borderRadius:
                             BorderRadius.circular(getHorizontalSize(16)),
                         border: Border.all(
-                            color: myOrdersItemModelObj.stsatus!
+                            color: myOrdersItemModelObj.status!
                                         .toLowerCase() ==
-                                    "delivered"
+                                    "onTheWay"
                                 ? ColorConstant.greenA700
-                                : myOrdersItemModelObj.stsatus!.toLowerCase() ==
-                                        "in transit"
+                                : myOrdersItemModelObj.status!.toLowerCase() ==
+                                        "pending"
                                     ? ColorConstant.amber700
                                     : ColorConstant.red)),
                     child: Center(
                         child: Text(
-                      myOrdersItemModelObj.stsatus!,
-                      style: myOrdersItemModelObj.stsatus!.toLowerCase() ==
-                              "delivered"
+                      myOrdersItemModelObj.status!,
+                      style: myOrdersItemModelObj.status!.toLowerCase() ==
+                              "onTheWay"
                           ? AppStyle.txtOutfitRegular14Green
-                          : myOrdersItemModelObj.stsatus!.toLowerCase() ==
-                                  "in transit"
+                          : myOrdersItemModelObj.status!.toLowerCase() ==
+                                  "pending"
                               ? AppStyle.txtOutfitRegular14Amber
                               : AppStyle.txtOutfitRegular14Red,
                     )),
@@ -122,7 +122,7 @@ class MyOrdersItemWidget extends StatelessWidget {
                   top: 17,
                 ),
                 child: Text(
-                  "Order ID : ${myOrdersItemModelObj.orderID!}",
+                  "Date: ${myOrdersItemModelObj.date!}",
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.left,
                   style: AppStyle.txtSFProTextRegular14,
@@ -134,7 +134,20 @@ class MyOrdersItemWidget extends StatelessWidget {
                   bottom: 1,
                 ),
                 child: Text(
-                  "Order date: ${myOrdersItemModelObj.date!}",
+                  
+                  "Départ: ${myOrdersItemModelObj.depart!}",
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.left,
+                  style: AppStyle.txtFootnote,
+                ),
+              ),
+              Padding(
+                padding: getPadding(
+                  top: 14,
+                  bottom: 1,
+                ),
+                child: Text(
+                  "Destination: ${myOrdersItemModelObj.destination!}",
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.left,
                   style: AppStyle.txtFootnote,

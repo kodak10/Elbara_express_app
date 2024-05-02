@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/presentation/home_container_page/models/recently_shipped_data_model.dart';
 
@@ -49,13 +50,38 @@ class HomeData {
     ];
   }
 
-  static List<RecentlyShipped> getShippedData() {
-    return [
-      RecentlyShipped("Aarav", "#202022194", "Sat, 18 Jun 23", "Delivered"),
-      RecentlyShipped("Pranav", "#202022194", "Sat, 18 Jun 23", "In Transit"),
-      RecentlyShipped("Ronald", "#202022194", "Sat, 18 Jun 23", "Cancelled"),
-      RecentlyShipped("Estard", "#202022194", "Sat, 18 Jun 23", "Delivered"),
-      RecentlyShipped("Pranav", "#202022194", "Sat, 18 Jun 23", "In Transit"),
-    ];
+static Future<List<RecentlyShipped>> getShippedData() async {
+    List<RecentlyShipped> shippedData = [];
+
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .get();
+
+      querySnapshot.docs.forEach((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        String name = data['name'] ?? '';
+        String orderID = data['orderId'] ?? '';
+        String date = data['date'] ?? '';
+        String status = data['status'] ?? '';
+
+        //RecentlyShipped shippedItem = RecentlyShipped(name, orderID, date, status);
+        //shippedData.add(shippedItem);
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération des données: $e');
+    }
+
+    return shippedData;
   }
+  
+  // static List<RecentlyShipped> getShippedData() {
+  //   return [
+  //     RecentlyShipped("Aarav", "#202022194", "Sat, 18 Jun 23", "Delivered"),
+  //     RecentlyShipped("Pranav", "#202022194", "Sat, 18 Jun 23", "In Transit"),
+  //     RecentlyShipped("Ronald", "#202022194", "Sat, 18 Jun 23", "Cancelled"),
+  //     RecentlyShipped("Estard", "#202022194", "Sat, 18 Jun 23", "Delivered"),
+  //     RecentlyShipped("Pranav", "#202022194", "Sat, 18 Jun 23", "In Transit"),
+  //   ];
+  // }
 }

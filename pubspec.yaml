@@ -85,6 +85,7 @@ dependencies:
   shimmer: ^3.0.0
   lottie: ^3.1.0
   jiffy: ^6.2.1
+  geolocator: ^10.1.1
 
 dev_dependencies:
   flutter_test:

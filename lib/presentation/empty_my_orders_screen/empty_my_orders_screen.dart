@@ -43,7 +43,7 @@ class EmptyMyOrdersScreen extends GetWidget<EmptyMyOrdersController> {
                           top: 5,
                         ),
                         child: Text(
-                          "Mes commandes555".tr,
+                          "Mes commandes".tr,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.left,
                           style: AppStyle.txtSFProTextBold28,

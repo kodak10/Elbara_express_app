@@ -12,6 +12,10 @@ import '../models/recently_shipped_data_model.dart';
 class HomeContainerController extends GetxController {
   List<HomeSlider> sliderData = HomeData.getSliderData();
   List<CourierService> courierData = HomeData.getCourierData();
-  List<RecentlyShipped> recentlyShipped = HomeData.getShippedData();
+
+
+ // List<RecentlyShipped> recentlyShipped = HomeData.getShippedData();
+
+  
   Rx<int> sliderIndex = 0.obs;
 }

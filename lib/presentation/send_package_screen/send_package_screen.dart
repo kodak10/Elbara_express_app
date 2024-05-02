@@ -13,17 +13,9 @@ import 'package:intl/date_symbol_data_local.dart';
 //import 'package:mapbox_place_search/mapbox_place_search.dart';
 import 'controller/send_package_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_dropdown_search/flutter_dropdown_search.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:dropdown_search/dropdown_search.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:google_places_autocomplete_flutter/google_places_autocomplete_flutter.dart';
-import 'package:google_places_autocomplete_flutter/model/prediction.dart';
 
 
-import 'package:bottom_picker/bottom_picker.dart';
+
 import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -52,7 +44,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
 
   String? selectedValue;
   String? selectedGare;
-  String? _selectedOption = 'Type de colis';
+  String? _selectedOption = 'TYPE DE COURSE';
   bool useCompagnie =
       false; // Variable pour activer ou désactiver l'utilisation de la compagnie
   String? name;
@@ -183,7 +175,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       },
                                       isExpanded: true, // Permet au bouton de remplir l'espace horizontalement
                                       items: <String>[
-                                        'TYPE DE COLIS',
+                                        'TYPE DE COURSE',
                                         'ALIMENTAIRES',
                                         'BIJOUX',
                                         'DOCUMENTS',

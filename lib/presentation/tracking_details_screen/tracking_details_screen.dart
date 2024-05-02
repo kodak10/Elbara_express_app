@@ -120,6 +120,7 @@ final String status = args?['status'] ?? '';
     DateTime dateCommandeDateTime = dateCommandeTimestamp.toDate();
     // Formatter la date
     String formattedDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
+    
 
     return WillPopScope(
         onWillPop: () async {

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/presentation/cancel_order_screen/cancel_order_screen.dart';
@@ -8,6 +9,7 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 import '../home_container_page/models/recently_shipped_data_model.dart';
 import 'controller/order_details_in_transit_controller.dart';
@@ -18,6 +20,8 @@ class OrderDetailsInTransitScreen extends StatefulWidget {
       : super(key: key);
   RecentlyShipped orderData;
 
+
+
   @override
   State<OrderDetailsInTransitScreen> createState() =>
       _OrderDetailsInTransitScreenState();
@@ -25,6 +29,8 @@ class OrderDetailsInTransitScreen extends StatefulWidget {
 
 class _OrderDetailsInTransitScreenState
     extends State<OrderDetailsInTransitScreen> {
+
+      
   OrderDetailsInTransitController controler =
       Get.put(OrderDetailsInTransitController());
 
@@ -70,25 +76,25 @@ class _OrderDetailsInTransitScreenState
                       children: [
                         Padding(
                             padding: getPadding(top: 3),
-                            child: Text("msg_shipping_address".tr,
+                            child: Text("Adresse de ramassage".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(left: 2, top: 12),
-                            child: Text("msg_1901_thornridge".tr,
+                            child: Text(widget.orderData.depart,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
                         Padding(
                             padding: getPadding(top: 19),
-                            child: Text("msg_delivery_address2".tr,
+                            child: Text("Adresse de livraison".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(left: 2, top: 11, bottom: 16),
-                            child: Text("msg_4140_parker_rd2".tr,
+                            child: Text(widget.orderData.destination,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
@@ -97,101 +103,95 @@ class _OrderDetailsInTransitScreenState
                             thickness: getVerticalSize(1),
                             color: ColorConstant.gray300),
                         SizedBox(
-                          height: getVerticalSize(16),
+                          height: getVerticalSize(8),
                         ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                  padding: getPadding(top: 0),
-                                  child: Text("lbl_package_total".tr,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle.txtBody)),
-                              Text("lbl_500_00".tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: AppStyle.txtBody)
-                            ]),
+                       
+                        
                         Padding(
-                            padding: getPadding(top: 18, bottom: 16),
+                            padding: getPadding(top: 16, bottom: 16),
                             child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("lbl_delivery_charge".tr,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle.txtBody),
-                                  Text("lbl_50_00".tr,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle.txtBody)
-                                ])),
-                        Divider(
-                            height: getVerticalSize(1),
-                            thickness: getVerticalSize(1),
-                            color: ColorConstant.gray300),
-                        Padding(
-                            padding: getPadding(top: 16),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("lbl_total".tr,
+                                  Text("Coût:".tr,
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: AppStyle.txtSFProTextBold20),
-                                  Text("lbl_550_00".tr,
+                                  Text('${widget.orderData.cout}',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: AppStyle.txtSFProTextBold20)
                                 ])),
+                        SizedBox(
+                          height: getVerticalSize(8),
+                        ),
+                        Divider(
+                            height: getVerticalSize(1),
+                            thickness: getVerticalSize(1),
+                            color: ColorConstant.gray300),
+
                         Padding(
                             padding: getPadding(top: 32),
-                            child: Text("lbl_order_details".tr,
+                            child: Text("Details de la commande".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtSFProTextBold20)),
                         Padding(
                             padding: getPadding(top: 22),
-                            child: Text("lbl_order_number".tr,
+                            child: Text("Référence du colis".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
-                            padding: getPadding(top: 12),
-                            child: Text("lbl_202022176".tr,
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.orderID,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
                         Padding(
-                            padding: getPadding(top: 21),
-                            child: Text("lbl_delivery_type2".tr,
+                            padding: getPadding(top: 22),
+                            child: Text("Type de course".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
-                            padding: getPadding(top: 12),
-                            child: Text("msg_express_delivery2".tr,
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.typCourse,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
+
+                       
+
+
+                        Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Type d'engin".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.typeEngin,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
+                       
                         Padding(
                             padding: getPadding(top: 20),
-                            child: Text("msg_delivery_status".tr,
+                            child: Text("Status de la livraison".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(top: 10),
                             child: Text(
-                              widget.orderData.stsatus!,
-                              style: widget.orderData.stsatus!.toLowerCase() ==
-                                      "delivered"
+                              widget.orderData.status!,
+                              style: widget.orderData.status!.toLowerCase() ==
+                                      "Livrer"
                                   ? AppStyle.txtOutfitRegular16Green
-                                  : widget.orderData.stsatus!.toLowerCase() ==
-                                          "in transit"
+                                  : widget.orderData.status!.toLowerCase() ==
+                                          "En chemin"
                                       ? AppStyle.txtOutfitRegular16Amber
                                       : AppStyle.txtOutfitRegular16Red,
                             )
@@ -203,13 +203,13 @@ class _OrderDetailsInTransitScreenState
                             ),
                         Padding(
                             padding: getPadding(top: 21),
-                            child: Text("lbl_delivery_date".tr,
+                            child: Text("Date de commande".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(top: 10, bottom: 0),
-                            child: Text("msg_14_june_2023_at".tr,
+                            child: Text(DateFormat('yyyy-MM-dd HH:mm').format(widget.orderData.date),
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody))
@@ -220,38 +220,94 @@ class _OrderDetailsInTransitScreenState
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          // CustomButton(
+                          //     height: getVerticalSize(54),
+                          //     width: getHorizontalSize(190),
+                          //     text: "Annuler".tr,
+                          //     variant: ButtonVariant.OutlineDeeppurple600,
+                          //     fontStyle:
+                          //         ButtonFontStyle.SFProTextBold18Deeppurple600,
+                          //     onTap: widget.orderData.status!.toLowerCase() ==
+                          //                 "delivered" ||
+                          //             widget.orderData.status!.toLowerCase() ==
+                          //                 "cancelled"
+                          //         ? () {
+                          //             Fluttertoast.showToast(
+                          //                 msg: widget.orderData.status!
+                          //                             .toLowerCase() ==
+                          //                         "delivered"
+                          //                     ? "Your order is deliverd"
+                          //                     : "Your order is already cancel",
+                          //                 toastLength: Toast.LENGTH_SHORT,
+                          //                 gravity: ToastGravity.CENTER,
+                          //                 timeInSecForIosWeb: 1,
+                          //                 backgroundColor: Colors.black,
+                          //                 textColor: Colors.white,
+                          //                 fontSize: 16.0);
+                          //           }
+                          //         : () {
+                          //             onTapCancelorder();
+                          //           }),
+                          CustomButton(
+                            height: getVerticalSize(54),
+                            width: getHorizontalSize(190),
+                            text: "Annuler".tr,
+                            variant: ButtonVariant.OutlineDeeppurple600,
+                            fontStyle: ButtonFontStyle.SFProTextBold18Deeppurple600,
+                            onTap: () async {
+                              if (widget.orderData.status!.toLowerCase() == "delivered" ||
+                                  widget.orderData.status!.toLowerCase() == "cancelled") {
+                                // Afficher un message indiquant que la commande est déjà livrée ou annulée
+                                Fluttertoast.showToast(
+                                  msg: widget.orderData.status!.toLowerCase() == "delivered"
+                                      ? "Votre commande est déjà livrée"
+                                      : "Votre commande est déjà annulée",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.black,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                              } else {
+                                // Mettre à jour le statut de la commande dans Firebase
+                                try {
+                                  await FirebaseFirestore.instance
+                                      .collection('orders')
+                                      .doc(widget.orderData.docID)
+                                      .update({'deliveryStatus': 'canceled'});
+                                  // Afficher un message de succès
+                                  Fluttertoast.showToast(
+                                    msg: "Votre commande a été annulée avec succès",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.black,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0,
+                                  );
+                                } catch (error) {
+                                  // Gérer les erreurs éventuelles
+                                  print('Erreur lors de l\'annulation de la commande: $error');
+                                  // Afficher un message d'erreur
+                                  Fluttertoast.showToast(
+                                    msg: "Erreur lors de l'annulation de la commande",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.black,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0,
+                                  );
+                                }
+                              }
+                            },
+                          ),
+
                           CustomButton(
                               height: getVerticalSize(54),
                               width: getHorizontalSize(190),
-                              text: "lbl_cancel_order".tr,
-                              variant: ButtonVariant.OutlineDeeppurple600,
-                              fontStyle:
-                                  ButtonFontStyle.SFProTextBold18Deeppurple600,
-                              onTap: widget.orderData.stsatus!.toLowerCase() ==
-                                          "delivered" ||
-                                      widget.orderData.stsatus!.toLowerCase() ==
-                                          "cancelled"
-                                  ? () {
-                                      Fluttertoast.showToast(
-                                          msg: widget.orderData.stsatus!
-                                                      .toLowerCase() ==
-                                                  "delivered"
-                                              ? "Your order is deliverd"
-                                              : "Your order is already cancel",
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.CENTER,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: Colors.black,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0);
-                                    }
-                                  : () {
-                                      onTapCancelorder();
-                                    }),
-                          CustomButton(
-                              height: getVerticalSize(54),
-                              width: getHorizontalSize(190),
-                              text: "lbl_track_order".tr,
+                              text: "Suivre".tr,
                               margin: getMargin(left: 16),
                               onTap: () {
                                 onTapTrackorder();
@@ -279,9 +335,19 @@ class _OrderDetailsInTransitScreenState
   }
 
   onTapTrackorder() {
+  
+
     Get.toNamed(
-      AppRoutes.trackingDetailsOneScreen,
-    );
+                                    AppRoutes.trackingDetailsScreen,
+                                      arguments: {
+                                        'orderId': widget.orderData.date, // Numéro de commande
+                                        'docID': widget.orderData.docID, // Numéro de commande
+                                        //'date': widget.orderData.date, // Date de la commande
+                                        //'dateRegister': widget.orderData.dateString,
+                                        'status': widget.orderData.status, 
+                                        
+                                        
+                                      },);
   }
 
   onTapArrowleft18() {

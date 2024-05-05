@@ -161,9 +161,6 @@ class _OrderDetailsInTransitScreenState
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
 
-                       
-
-
                         Padding(
                             padding: getPadding(top: 22),
                             child: Text("Type d'engin".tr,
@@ -209,7 +206,7 @@ class _OrderDetailsInTransitScreenState
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(top: 10, bottom: 0),
-                            child: Text(widget.orderData.date,
+                            child: Text( DateFormat('dd/MM/yyyy').format(widget.orderData.date),
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody))
@@ -340,7 +337,7 @@ class _OrderDetailsInTransitScreenState
     Get.toNamed(
                                     AppRoutes.trackingDetailsScreen,
                                       arguments: {
-                                        'orderId': widget.orderData.date, // Numéro de commande
+                                        'orderId': widget.orderData.orderID, // Numéro de commande
                                         'docID': widget.orderData.docID, // Numéro de commande
                                         'date': widget.orderData.date, // Date de la commande
                                         'status': widget.orderData.status, 

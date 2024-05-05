@@ -4,6 +4,7 @@ import 'package:elbara_express/presentation/order_details_in_transit_screen/orde
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 import '../home_container_page/controller/home_container_controller.dart';
 import '../home_container_page/models/recently_shipped_data_model.dart';
@@ -27,32 +28,38 @@ final User? user = FirebaseAuth.instance.currentUser;
 class _MyOrdersPageState extends State<MyOrdersPage> {
   List<RecentlyShipped> recentlyShippedData = [];
 
+
   @override
   void initState() {
     super.initState();
     fetchRecentlyShippedData();
   }
 
-@override
 
 @override
+final User? user = FirebaseAuth.instance.currentUser;
+
 Future<void> fetchRecentlyShippedData() async {
   try {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('orders')
+        .where('userId', isEqualTo: user!.uid) // Remplacez 'userID' par le nom du champ contenant l'ID de l'utilisateur
         .get();
 
     setState(() {
       recentlyShippedData = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        
+
         String docID = doc.id;
+
+         Timestamp timestamp = data['dateRegister'] as Timestamp;
+          DateTime date = timestamp.toDate();
 
         return RecentlyShipped(
           docID: docID,
           orderID: data['orderId'] ?? '', // Valeur pour l'ID de la commande
           name: data['name'] ?? '', // Valeur pour le nom
-          date: data['dateRegister'], // Utilisez la date convertie
+          date: date,
           status: data['deliveryStatus'] ?? '', // Valeur pour le statut
           typCourse: data['type_colis'] ?? '', // Valeur pour le statut
           typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut

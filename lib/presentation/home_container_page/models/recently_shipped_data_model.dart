@@ -7,8 +7,7 @@ class RecentlyShipped{
   final String typeEngin;
   final String depart;
   final String destination;
-  
-  final String date;
+  final DateTime date;
   final String payemenStatus;
   final String docID;
   final double cout;

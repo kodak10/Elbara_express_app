@@ -102,13 +102,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                                             fontSize: getFontSize(16),
                                             fontFamily: 'SF Pro Display',
                                             fontWeight: FontWeight.w400)),
-                                    TextSpan(
-                                        text: "msg_maecenas_egestas".tr,
-                                        style: TextStyle(
-                                            color: ColorConstant.black900,
-                                            fontSize: getFontSize(16),
-                                            fontFamily: 'SF Pro Display',
-                                            fontWeight: FontWeight.w400))
                                   ]),
                                   textAlign: TextAlign.left))
                         ])))));

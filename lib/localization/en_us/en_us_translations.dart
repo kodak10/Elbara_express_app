@@ -108,7 +108,7 @@ final Map<String, String> enUs = {
   "lbl_calculate": "Calculate",
   "lbl_log_in": "Log in",
   "msg_duis_tristique_diam":
-      "Duis tristique diam nunc. Sed at tincidunt orci. Mauris eget congue leo. Cras varius at ante vitae convallis. Duis semper magna nec tortor tincidunt, id tincidunt quam blandit. Vivamus vehicula dictum magna quis eleifend. Fusce ac odio ac nibh tempus euismod. Nullam bibendum velit et ex facilisis maximus. Donec vesed commodo. Vivamus sollicitudin risus quam",
+      "Nous collectons divers types d'informations, notamment les données du compte, les données rendues publiques, les données sur les transactions et les données de navigation, lorsque vous utilisez notre site web ou notre application. Ces données nous aident à mieux comprendre vos besoins et à améliorer votre expérience utilisateur.",
   "msg_our_new_customer2":
       "Our New Customer Center \nguides you through all the ",
   "lbl_search_here": "Search here",
@@ -243,7 +243,7 @@ final Map<String, String> enUs = {
   "msg_your_package_book": "Votre commande à été effectuée avec succès",
   "msg_your_order_has_been": "Your Order has been placed successfully",
   "msg_sed_sollicitudin":
-      "Sed sollicitudin nisi mollis libero consectetur rutrum. Nam maximus mollis nisl quis facilisis. Integer fermentum commodo nibh. Ut mollis tincidunt hendrerit. Duis ipsum velit, maximus sed commodo imperdiet, dapibus id velit. Nullam in maximus enim. Pellentesque vulputate nisi sit amet lacus pulvinar finibus. Nullam sit amet enim id nibh volutpat gravida vitae in orci. Quisque nibh nisl, congue in ex a, ultricies ultrices metus. ",
+      "Les données que nous collectons sont utilisées de manière transparente et légitime. Elles servent à créer votre compte en ligne, à faciliter l'exécution des contrats conclus entre vous et nous, ainsi qu'à gérer la relation commerciale dans son ensemble, ce qui inclut les étapes de livraison, de facturation et les services après-vente. Vos données sont traitées avec le plus grand soin et ne sont jamais utilisées à des fins autres que celles pour lesquelles elles ont été collectées.",
   "lbl_cancelled": "Cancelled",
   "msg_bring_happiness": "Bring Happiness with \nfastest delivery ",
   "msg_order_id_202022195": "Order id : #202022195",
@@ -308,7 +308,7 @@ final Map<String, String> enUs = {
   "lbl_empty_address": "Empty address",
   "lbl_office": "Office",
   "msg_sed_sollicitudin3":
-      "Sed sollicitudin nisi mollis libero consectetur rutrum. Nam maximus mollis nisl quis facilisis. Integer fermentum commodo nibh. Ut mollis tincidunt hendrerit. Duis ipsum velit, maximus sed commodo imperdiet, dapibus id velit. Nullam in maximus enim. Pellentesque vulputate nisi sit amet lacus pulvinar finibus. Nullam sit amet enim id nibh volutpat gravida vitae in orci. Quisque nibh nisl, congue in ex a, ultricies ultrices metus. Maecenas egestas eu ligula sed commodo. Vivamus sollicitudin risus quam",
+      "Dans le respect des lois et réglementations en vigueur, vos données peuvent être divulguées aux autorités compétentes sur demande, ainsi qu'à des tiers avec lesquels nous collaborons étroitement pour assurer la fourniture de nos services. Ces tiers sont tenus par des accords contractuels de respecter la confidentialité et la sécurité de vos données, et ne les utilisent que dans le cadre des services qu'ils fournissent pour notre compte.",
   "msg_parker_rd_allentown": "Parker Rd. Allentown,",
   "lbl_pickup_from": "Pickup from",
   "lbl_profile": "Profile",

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,8 @@ class MyOrdersItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-DateTime date = DateTime.parse(myOrdersItemModelObj.date);
-    String formattedDate = DateFormat('dd/MM/yyyy').format(date);
+ DateTime date = myOrdersItemModelObj.date; // Utilisation directe de la date Timestamp
+    String formattedDate = DateFormat('dd/MM/yyyy').format(date); // Formatter la date en chaîne de caractères
     
     return GestureDetector(
       onTap: () {
@@ -129,23 +130,25 @@ DateTime date = DateTime.parse(myOrdersItemModelObj.date);
                   top: 17,
                 ),
                 child: Text(
-                  "Date: ${myOrdersItemModelObj.date!}",
+                  "Date: $formattedDate",
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.left,
                   style: AppStyle.txtSFProTextRegular14,
                 ),
               ),
-              // Padding(
-              //   padding: getPadding(
-              //     top: 14,
-              //     bottom: 1,
-              //   ),
-              //   child: Text("Date: $formattedDate",
-              //     overflow: TextOverflow.ellipsis,
-              //     textAlign: TextAlign.left,
-              //     style: AppStyle.txtFootnote,
-              //   ),
-              // ),
+              Padding(
+                padding: getPadding(
+                  top: 14,
+                  bottom: 1,
+                ),
+                child: Text(
+                  "Départ: ${myOrdersItemModelObj.depart!}",
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.left,
+                  style: AppStyle.txtFootnote,
+                ),
+              ),
+              
               Padding(
                 padding: getPadding(
                   top: 14,

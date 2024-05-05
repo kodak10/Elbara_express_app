@@ -26,6 +26,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   late String statusOrderConfirmed = '';
   late String statusOrderDeliveryConfirmed = '';
   late String statusOrderDelivered = '';
+  late String deliveryConfirm = '';
 
   bool orderConfirmed = false;
   bool orderDeliveryConfirmed = false;
@@ -82,10 +83,15 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                 documentSnapshot['order_on_delivery_date'];
             DateTime orderDeliveryConfirmedDate =
                 orderDeliveryConfirmedTimestamp.toDate();
+
             statusOrderDeliveryConfirmed = DateFormat('dd/MM/yyyy HH:mm:ss')
                 .format(orderDeliveryConfirmedDate);
+
+            deliveryConfirm = "Colis en transit";
           } else {
             statusOrderDeliveryConfirmed = 'En attente';
+            deliveryConfirm = "En attente";
+
           }
 
           if (orderDelivered) {
@@ -107,9 +113,10 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     //final Map<String, dynamic> args = Get.arguments ?? {};
-    final Map<String, dynamic>? args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-final String orderID = args?['orderId'] ?? '';
-final String status = args?['status'] ?? '';
+    final Map<String, dynamic>? args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final String orderID = args?['orderId'] ?? '';
+    final String status = args?['status'] ?? '';
     // final String orderID = args['orderId'] ?? '';
     // final String status = args['deliveryStatus'] ?? '';
 
@@ -119,8 +126,8 @@ final String status = args?['status'] ?? '';
     // Convertir Timestamp en DateTime
     DateTime dateCommandeDateTime = dateCommandeTimestamp.toDate();
     // Formatter la date
-    String formattedDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
-    
+    String formattedDate =
+        DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
 
     return WillPopScope(
         onWillPop: () async {
@@ -344,7 +351,7 @@ final String status = args?['status'] ?? '';
                                             Padding(
                                                 padding: getPadding(top: 15),
                                                 child: Text(
-                                                    "Terminé le: $statusOrderDeliveryConfirmed",
+                                                    deliveryConfirm,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,

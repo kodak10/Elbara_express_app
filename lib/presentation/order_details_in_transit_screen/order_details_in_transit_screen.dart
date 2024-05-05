@@ -209,7 +209,7 @@ class _OrderDetailsInTransitScreenState
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(top: 10, bottom: 0),
-                            child: Text(DateFormat('yyyy-MM-dd HH:mm').format(widget.orderData.date),
+                            child: Text(widget.orderData.date,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody))
@@ -342,8 +342,7 @@ class _OrderDetailsInTransitScreenState
                                       arguments: {
                                         'orderId': widget.orderData.date, // Numéro de commande
                                         'docID': widget.orderData.docID, // Numéro de commande
-                                        //'date': widget.orderData.date, // Date de la commande
-                                        //'dateRegister': widget.orderData.dateString,
+                                        'date': widget.orderData.date, // Date de la commande
                                         'status': widget.orderData.status, 
                                         
                                         

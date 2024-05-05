@@ -8,7 +8,7 @@ class RecentlyShipped{
   final String depart;
   final String destination;
   
-  final DateTime date;
+  final String date;
   final String payemenStatus;
   final String docID;
   final double cout;

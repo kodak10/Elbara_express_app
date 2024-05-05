@@ -14,12 +14,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'controller/send_package_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-
 
 class SendPackageScreen extends StatefulWidget {
   SendPackageScreen({Key? key}) : super(key: key);
@@ -47,8 +44,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   String? _selectedOption = 'TYPE DE COURSE';
   bool useCompagnie =
       false; // Variable pour activer ou désactiver l'utilisation de la compagnie
-  String? name;
-  String? contact;
   String? birthday;
 
 
@@ -63,68 +58,72 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
-      initializeDateFormatting('fr_FR', null); // Initialisez les données de localisation pour le français
-
+    initializeDateFormatting('fr_FR',
+        null); // Initialisez les données de localisation pour le français
   }
 
   void _showLoadingDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Lottie.asset(
-                'assets/images/loading_1.json',
-                height: 150,
-                width: 150,
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Empêcher la fermeture du modal en cliquant en dehors
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/images/loading_1.json',
+                    height: 150,
+                    width: 150,
+                  ),
+                ],
               ),
-              ],
-            ),
 
-            // SizedBox(height: 16),
-            // Text('Traitement en cours...'), // Texte de chargement
-          ],
-        ),
-      );
-    },
-  );
-}
+              // SizedBox(height: 16),
+              // Text('Traitement en cours...'), // Texte de chargement
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
 
   final searchController = TextEditingController();
 
   DateTime _selectedDateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    final String formattedDate = DateFormat.Md('fr_FR').format(_selectedDateTime);
+    final String formattedDate =
+        DateFormat.Md('fr_FR').format(_selectedDateTime);
 
-  final birthdayTile = Material(
-    color: Colors.transparent,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text("Date de ramassage",
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.left,
-            style: AppStyle.txtSubheadline),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 5.0),
-        ),
-        CupertinoDateTextBox(
-          initialValue: _selectedDateTime,
-          onDateChange: onBirthdayChange,
-          hintText: formattedDate,
-        ),
-      ],
-    ),
-  );
+    final birthdayTile = Material(
+      color: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("Date de ramassage",
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.left,
+              style: AppStyle.txtSubheadline),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 5.0),
+          ),
+          CupertinoDateTextBox(
+            initialValue: _selectedDateTime,
+            onDateChange: onBirthdayChange,
+            hintText: formattedDate,
+          ),
+        ],
+      ),
+    );
 
-  //return birthdayTile;
+    //return birthdayTile;
 
     return WillPopScope(
         onWillPop: () async {
@@ -173,7 +172,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           _selectedOption = newValue;
                                         });
                                       },
-                                      isExpanded: true, // Permet au bouton de remplir l'espace horizontalement
+                                      isExpanded:
+                                          true, // Permet au bouton de remplir l'espace horizontalement
                                       items: <String>[
                                         'TYPE DE COURSE',
                                         'ALIMENTAIRES',
@@ -221,14 +221,13 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       top: 15,
                                                       right: 15,
                                                       bottom: 15),
-                                                   child: CustomImageView(
-                                                    onTap: () {
-                                                      // Get.toNamed(AppRoutes
-                                                      //     .selectDeliveryAddressScreen);
-                                                    },
-                                                    svgPath: ImageConstant
-                                                        .imgLocationBlack900)
-                                                  ),
+                                                  child: CustomImageView(
+                                                      onTap: () {
+                                                        // Get.toNamed(AppRoutes
+                                                        //     .selectDeliveryAddressScreen);
+                                                      },
+                                                      svgPath: ImageConstant
+                                                          .imgLocationBlack900)),
                                               suffixConstraints: BoxConstraints(
                                                   maxHeight:
                                                       getVerticalSize(54)))
@@ -251,15 +250,13 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                                       top: 15,
                                                       right: 15,
                                                       bottom: 15),
-                                                   child: CustomImageView(
-                                                    onTap: () {
-                                                      // Get.toNamed(AppRoutes
-                                                      //     .selectDeliveryAddressScreen);
-                                                    },
-                                                    svgPath: ImageConstant
-                                                        .imgLocationBlack900)
-                                                  
-                                                  ),
+                                                  child: CustomImageView(
+                                                      onTap: () {
+                                                        // Get.toNamed(AppRoutes
+                                                        //     .selectDeliveryAddressScreen);
+                                                      },
+                                                      svgPath: ImageConstant
+                                                          .imgLocationBlack900)),
                                               suffixConstraints: BoxConstraints(
                                                   maxHeight:
                                                       getVerticalSize(54)))
@@ -319,10 +316,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           variant: TextFormFieldVariant
                                               .OutlineGray300,
                                           prefixConstraints: BoxConstraints(
-                                              maxHeight: getVerticalSize(54)
-                                              ),
-                                            textInputType: TextInputType.phone,
-
+                                              maxHeight: getVerticalSize(54)),
+                                          textInputType: TextInputType.phone,
                                         ),
                                       ],
                                     ),
@@ -360,8 +355,8 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                           textInputAction: TextInputAction.done,
                                           variant: TextFormFieldVariant
                                               .OutlineGray300,
-                                          maxLines: 2, // Ajout de cette ligne pour permettre le champ sur deux lignes
-
+                                          maxLines:
+                                              2, // Ajout de cette ligne pour permettre le champ sur deux lignes
                                         ),
                                       ],
                                     ),
@@ -616,8 +611,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                 ],
                               ),
                             ),
-
-                            
                           ],
                         ),
                       ),
@@ -629,20 +622,17 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                     text: "Suivant".tr,
                     margin: getMargin(left: 16, right: 16, bottom: 40),
                     onTap: () {
-                       //_showLoadingDialog(); // Afficher le modal de chargement
+                      //_showLoadingDialog(); // Afficher le modal de chargement
                       //saveDataToFirebase();
                       onTapNext();
                     }))));
   }
-
 
   void onBirthdayChange(DateTime birthday) {
     setState(() {
       _selectedDateTime = birthday;
     });
   }
-
- 
 
   // void saveUserData() {
   //   User? user = FirebaseAuth.instance.currentUser;
@@ -688,9 +678,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
     // Collectez toutes les données de l'écran 1
     Map<String, dynamic> DataInfos = {
       'type_colis': _selectedOption,
-      // a changer pour api google maps
-      // 'lieu_ramassage': _lieuRamassage.text,
-      // 'lieu_destination': _destinationRamassage.text,
       'nom_receptioneur': _nomRecepteur.text,
       'telephone_receptioneur': _telephoneRecepteur.text,
       'infos_complementaire': _infosComplementaire.text,
@@ -700,8 +687,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
       'poids': _poids.text,
       'taille': _taille.text,
       'date_ramassage': _selectedDateTime,
-      'name': name,
-      'phone': contact,
     };
 
     // Passez les données à l'écran suivant et naviguez

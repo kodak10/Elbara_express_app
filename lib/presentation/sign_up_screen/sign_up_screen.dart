@@ -270,10 +270,10 @@ void _showLoadingDialog() {
   // Ajoutez le document à Firestore et récupérez l'ID généré
   await docRef.set({
     'email': email,
-    'name': name,
+    'displayName': name,
     'role': defaultRole,
-    'phone':  '+225${controller.phoneNumberController.text}',
-    'image': '',
+    'phoneNumber':  '+225${controller.phoneNumberController.text}',
+    'photoURL': '',
   });
 
   // Récupérez l'ID généré par Firebase

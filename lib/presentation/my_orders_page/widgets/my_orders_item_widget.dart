@@ -1,6 +1,7 @@
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../home_container_page/models/recently_shipped_data_model.dart';
 import '../../order_details_in_transit_screen/order_details_in_transit_screen.dart';
@@ -16,10 +17,16 @@ class MyOrdersItemWidget extends StatelessWidget {
 
   RecentlyShipped myOrdersItemModelObj;
 
+
+
   // var controller = Get.find<MyOrdersController>();
 
   @override
   Widget build(BuildContext context) {
+
+DateTime date = DateTime.parse(myOrdersItemModelObj.date);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(date);
+    
     return GestureDetector(
       onTap: () {
         Get.to(OrderDetailsInTransitScreen(
@@ -128,19 +135,17 @@ class MyOrdersItemWidget extends StatelessWidget {
                   style: AppStyle.txtSFProTextRegular14,
                 ),
               ),
-              Padding(
-                padding: getPadding(
-                  top: 14,
-                  bottom: 1,
-                ),
-                child: Text(
-                  
-                  "Départ: ${myOrdersItemModelObj.depart!}",
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.left,
-                  style: AppStyle.txtFootnote,
-                ),
-              ),
+              // Padding(
+              //   padding: getPadding(
+              //     top: 14,
+              //     bottom: 1,
+              //   ),
+              //   child: Text("Date: $formattedDate",
+              //     overflow: TextOverflow.ellipsis,
+              //     textAlign: TextAlign.left,
+              //     style: AppStyle.txtFootnote,
+              //   ),
+              // ),
               Padding(
                 padding: getPadding(
                   top: 14,

@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/utils/color_constant.dart';
 import 'package:elbara_express/core/utils/image_constant.dart';
@@ -8,8 +11,15 @@ import 'package:elbara_express/routes/app_routes.dart';
 import 'package:elbara_express/theme/app_decoration.dart';
 import 'package:elbara_express/theme/app_style.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+
 import 'package:elbara_express/widgets/custom_image_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -36,60 +46,87 @@ class _SelectCourierServiceScreenState
   static const String screen1Route = '/screen1';
   static const String screen2Route = '/screen2';
 
+  late String email = '';
+  late String name = '';
+  late String phoneNumber = '';
+  late String image = '';
+  late User _currentUser;
+
+  late String paymentUrl = "";
+
+  String mode_paiement =
+      ''; // Définir une variable pour stocker la valeur sélectionnée
+
   String selectedVehicle = 'Moto';
-  String mode_paiement = ''; // Définir une variable pour stocker la valeur sélectionnée
+
   double selectedPrice = 0.0;
   GeoPoint geoPoint =
       GeoPoint(37.4219983, -122.084); // en attente de api google maps
 
-
-    String generateOrderId() {
-  const String chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  Random random = Random();
-  String orderId = '';
-  for (int i = 0; i < 11; i++) {
-    String randomChar = chars[random.nextInt(chars.length)];
-    orderId += randomChar.toUpperCase(); // Convertir en majuscule
+  String generateOrderId() {
+    const String chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    Random random = Random();
+    String orderId = '';
+    for (int i = 0; i < 11; i++) {
+      String randomChar = chars[random.nextInt(chars.length)];
+      orderId += randomChar.toUpperCase(); // Convertir en majuscule
+    }
+    return orderId;
   }
-  return orderId;
-}
-
-      
 
   //late Map<String, dynamic> DataInfos;
   Map<String, dynamic>? DataInfos;
 
- void _showLoadingDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Lottie.asset(
-                'assets/images/loading_1.json',
-                height: 150,
-                width: 150,
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Empêcher la fermeture du modal en cliquant en dehors
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/images/loading_1.json',
+                    height: 150,
+                    width: 150,
+                  ),
+                ],
               ),
-              ],
-            ),
 
-            // SizedBox(height: 16),
-            // Text('Traitement en cours...'), // Texte de chargement
-          ],
-        ),
-      );
-    },
-  );
-}
+              // SizedBox(height: 16),
+              // Text('Traitement en cours...'), // Texte de chargement
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
+  // void initState() {
+  //   SystemChrome.setSystemUIOverlayStyle(
+  //     SystemUiOverlayStyle(
+  //         statusBarColor: ColorConstant.whiteA700,
+  //         statusBarIconBrightness: Brightness.dark),
+  //   );
+  //   super.initState();
+  //     getUserInfo(); // Appeler la fonction pour récupérer les informations de l'utilisateur lors de l'initialisation de l'écran
+
+  //   // Récupérez les données transmises depuis l'écran précédent
+  //   //Map<String, dynamic> DataInfos = Get.arguments;
+  //   DataInfos = Get.arguments as Map<String, dynamic>;
+  //   selectedPrice = calculatePrice("Moto", 3.0, 1.0, 1.0);
+  // }
+
   void initState() {
+    _currentUser = FirebaseAuth.instance.currentUser!;
+    _loadUserData();
+
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: ColorConstant.whiteA700,
@@ -97,107 +134,115 @@ class _SelectCourierServiceScreenState
     );
     super.initState();
 
-    // Récupérez les données transmises depuis l'écran précédent
-    //Map<String, dynamic> DataInfos = Get.arguments;
+    // Récupérer les données transmises depuis l'écran précédent
     DataInfos = Get.arguments as Map<String, dynamic>;
     selectedPrice = calculatePrice("Moto", 3.0, 1.0, 1.0);
   }
 
-// Fonction pour afficher les prix simulés pour chaque type d'engin
-  void displaySimulatedPrices(double distance, double weight, double size) {
-    // Liste des types d'engin
-    List<String> vehicles = ['Moto', 'Tricycle', 'Camion'];
-
-    // Calculer et afficher le prix simulé pour chaque type d'engin
-    for (String vehicle in vehicles) {
-      double totalPrice = calculatePrice(vehicle, distance, weight, size);
-      print(
-          'Prix simulé pour la livraison en $vehicle sur une distance de $distance km : $totalPrice');
+  Future<void> _loadUserData() async {
+    if (_currentUser != null) {
+      DocumentSnapshot userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_currentUser.uid)
+          .get();
+      if (userData.exists) {
+        setState(() {
+          email = userData['email'] ?? '';
+          name = userData['displayName'] ?? '';
+          phoneNumber = userData['contact'] ?? '';
+          image = userData['image'] ?? '';
+        });
+      }
     }
   }
 
-  final User? user = FirebaseAuth.instance.currentUser;
+  //final User? user = FirebaseAuth.instance.currentUser;
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-Future<void> saveCommande() async {
-  String orderId = generateOrderId();
+  Future<void> saveCommande(String? paymentUrl) async {
+    //print(user?.displayName);
+    String orderId = generateOrderId();
 
-  // Collectez toutes les données de l'écran 2
-  Map<String, dynamic> screen2Data = {
-    'dateRegister': date,
-    'date': 57755,
-    'deliveryGeoPoint': geoPoint,
-    //'deliveryId': user?.uid,
-    'deliveryStatus': 'pending',
-    'employeeCancelNote': "",
-    'geoPoint': geoPoint,
-    'orderId': orderId,
-    'order_confirm': true,
-    'order_delivered': false,
-    'order_on_delivery': false,
-    'paymentMethod': 'Cash',
-    'pickupOption': "delivery",
-    'userId': user?.uid,
-    'userImage': "",
-    'userNote': "",
-    'selectedVehicle': selectedVehicle,
-    'price': selectedPrice,
-    'status': 'accepte',
-    'lieu_depart': 'Abidjan, Abobo',
-    'lieu_arrive' : 'Abidjan, Cocody',
+    // Collectez toutes les données de l'écran 2
+    Map<String, dynamic> screen2Data = {
+      'dateRegister': date,
+      'date': 57755,
+      'deliveryGeoPoint': geoPoint,
+      'deliveryId': '',
+      'deliveryStatus': 'pending',
+      'employeeCancelNote': "",
+      'geoPoint': geoPoint,
+      'orderId': orderId,
+      'order_confirm': true,
+      'order_delivered': false,
+      'order_on_delivery': false,
 
-    'order_confirm_date': FieldValue.serverTimestamp(),
-    'order_delivered_date' : FieldValue.serverTimestamp(),
-    'order_on_delivery_date' : FieldValue.serverTimestamp(),
+      'pickupOption': "delivery",
+      'selectedVehicle': selectedVehicle,
+      'status': 'accepte',
+      'lieu_depart': 'Abidjan, Abobo',
+      'lieu_arrive': 'Abidjan, Cocody',
 
-  };
+      'userNote': "",
+      'order_confirm_date': FieldValue.serverTimestamp(),
+      'order_delivered_date': FieldValue.serverTimestamp(),
+      'order_on_delivery_date': FieldValue.serverTimestamp(),
 
-  Map<String, dynamic> addressModel = {
-    'city': 'Abidjan',
-    'geoPoint': GeoPoint(5.3518078, 4.0204716),
-    'mobile': '0103810998',
-    'state': 'Angré',
-    'street': 'Terminus 81/82',
-  };
+      'userId': _currentUser.uid,
+      'userName': name,
+      'userPhone': phoneNumber,
+      'userImage': image,
 
-  // Combinez les données de l'écran 1 et de l'écran 2
-  Map<String, dynamic> combinedData = {
-    ...?DataInfos,
-    ...screen2Data,
-    'addressModel': addressModel,
-  };
+      'price': selectedPrice,
+      'paymentMethod': mode_paiement,
+      'payementQrCode': "", // le lien de l'image generer
+      'paymentStatus': "", // Statut de payement si il a bien payer ou pas
+    };
 
-  // // Enregistrez toutes ces données dans la collection Firestore
-  // _firestore.collection('orders').add(combinedData).then((value) {
-  
-  //  String orderId = value.id;
+    Map<String, dynamic> addressModel = {
+      'geoPoint': GeoPoint(5.3518078, 4.0204716),
+      'mobile': phoneNumber,
+    };
 
-  // // Mettez à jour 'orderId' dans combinedData avec l'ID du document ajouté
-  // combinedData['orderId'] = orderId;
+    // Combinez les données de l'écran 1 et de l'écran 2
+    Map<String, dynamic> combinedData = {
+      ...?DataInfos,
+      ...screen2Data,
+      'addressModel': addressModel,
+      'paymentUrl': paymentUrl, // lien qui se trouve sur le codeQr à scanner
+    };
 
-  //   print('Données enregistrées avec succès');
-  //   // Naviguez vers l'écran suivant si nécessaire
-  // }).catchError((error) {
-  //   print('Erreur lors de l\'enregistrement des données: $error');
-  //   // Gérez les erreurs ici si nécessaire
-  // });
+    // // Enregistrez toutes ces données dans la collection Firestore
+    // _firestore.collection('orders').add(combinedData).then((value) {
 
- try {
-  // Enregistrez toutes ces données dans la collection Firestore
-  DocumentReference documentReference = await _firestore.collection('orders').add(combinedData);
-    
-  print('Données enregistrées avec succès avec l\'ID du document ajouté: $orderId');
-  // Naviguez vers l'écran suivant si nécessaire
-} catch (error) {
-  print('Erreur lors de l\'enregistrement des données: $error');
-  // Gérez les erreurs ici si nécessaire
-}
+    //  String orderId = value.id;
 
-}
+    // // Mettez à jour 'orderId' dans combinedData avec l'ID du document ajouté
+    // combinedData['orderId'] = orderId;
 
+    //   print('Données enregistrées avec succès');
+    //   // Naviguez vers l'écran suivant si nécessaire
+    // }).catchError((error) {
+    //   print('Erreur lors de l\'enregistrement des données: $error');
+    //   // Gérez les erreurs ici si nécessaire
+    // });
 
+    try {
+      // Enregistrez toutes ces données dans la collection Firestore
+      DocumentReference documentReference =
+          await _firestore.collection('orders').add(combinedData);
 
+      print('save url: $paymentUrl');
+
+      print(
+          'Données enregistrées avec succès avec l\'ID du document ajouté: $orderId');
+      // Naviguez vers l'écran suivant si nécessaire
+    } catch (error) {
+      print('Erreur lors de l\'enregistrement des données: $error');
+      // Gérez les erreurs ici si nécessaire
+    }
+  }
 
   Future<void> initiatePayment(BuildContext context) async {
     // Remplacez ces valeurs par vos véritables identifiants API PayDunya
@@ -237,7 +282,12 @@ Future<void> saveCommande() async {
         // Initiation de paiement réussie
         // Récupérer l'URL de paiement à partir de la réponse
         var responseData = jsonDecode(response.body);
-        var paymentUrl = responseData['response_text'];
+        //var paymentUrl = responseData['response_text'];
+        paymentUrl = responseData['response_text'];
+
+        generateQRAndUpload(context, paymentUrl);
+        saveCommande(paymentUrl);
+
 
         // Ouvrir l'URL de paiement dans le navigateur par défaut
         launch(paymentUrl);
@@ -260,6 +310,107 @@ Future<void> saveCommande() async {
       );
     }
   }
+
+  Future<void> initiatePaymentLivraison(BuildContext context) async {
+    // Remplacez ces valeurs par vos véritables identifiants API PayDunya
+    String masterKey = 'fhRrUGWg-Upkg-0r3x-Z7DI-d8fR0aIHgxc2';
+    // TEST
+    //String privatekey = 'test_private_SbiMC3CevM2M7CwG9InuuKJCugA';
+    //String token = 'U2VG53YZyOhonBVvKuw7';
+
+    // PRODUCTION
+    String privatekey = 'live_private_tvQxERrcZFOVXgpi3NyUckcWDDL';
+    String token = 'vI7BDJAJvpWDY8Y4rjBL';
+
+    // Point de terminaison de l'API pour initier le paiement
+    //String url ='https://app.paydunya.com/sandbox-api/v1/checkout-invoice/create'; // test
+    String url =
+        'https://app.paydunya.com/api/v1/checkout-invoice/create'; // production
+
+    // Payload pour initier le paiement (remplacez-le par les données réelles de votre paiement)
+    Map<String, dynamic> payload = {
+      "invoice": {"total_amount": selectedPrice, "description": "Livraison"},
+      "store": {"name": "Elbara Express"}
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'PAYDUNYA-MASTER-KEY': masterKey,
+          'PAYDUNYA-PRIVATE-KEY': privatekey,
+          'PAYDUNYA-TOKEN': token,
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        // Initiation de paiement réussie
+        // Récupérer l'URL de paiement à partir de la réponse
+        var responseData = jsonDecode(response.body);
+        //var paymentUrl = responseData['response_text'];
+        paymentUrl = responseData['response_text'];
+
+        saveCommande(paymentUrl);
+        generateQRAndUpload(context, paymentUrl);
+
+      } else {
+        // Echec de l'initiation de paiement
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Echec de l\'initiation de paiement: ${response.statusCode}'),
+          ),
+        );
+      }
+    } catch (error) {
+      // Gérez toutes les erreurs survenues pendant le processus
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $error'),
+        ),
+      );
+    }
+  }
+
+  Future<void> generateQRAndUpload(BuildContext context, String paymentUrl) async {
+  // Génération du code QR contenant l'URL de paiement
+  final qrWidget = RepaintBoundary(
+    child: QrImageView(
+      data: paymentUrl,
+      version: QrVersions.auto,
+      size: 100,
+      gapless: true,
+    ),
+  );
+
+  // Création d'un rendu pour le widget QR
+  final qrRenderObject = qrWidget.createRenderObject(context);
+  final image = await qrRenderObject.toImage(pixelRatio: 1.0);
+  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  final Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+  // Enregistrement de l'image dans un fichier local
+  final tempDir = await getTemporaryDirectory();
+  final qrImageFile = File('${tempDir.path}/qrcode.png');
+  await qrImageFile.writeAsBytes(pngBytes);
+
+  // Enregistrement de l'image dans Firebase Storage
+  final firebase_storage.Reference storageReference = firebase_storage.FirebaseStorage.instance.ref().child('payment/qrcode.png');
+
+  try {
+    // Envoi du fichier dans Firebase Storage
+    await storageReference.putFile(qrImageFile);
+    print('QR Code uploaded to Firebase Storage');
+
+    // Obtention de l'URL de téléchargement de l'image
+    final String imageUrl = await storageReference.getDownloadURL();
+    print('QR Code Image URL: $imageUrl');
+  } catch (e) {
+    print('Error uploading QR Code to Firebase Storage: $e');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -444,98 +595,95 @@ Future<void> saveCommande() async {
               ),
               SizedBox(height: 20),
 
-            GetBuilder<PaymentMethodController>(
-                  init: PaymentMethodController(),
-                  builder: (controller) => Container(
-                      width: double.maxFinite,
-                      padding: getPadding(top: 21, bottom: 21),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: getPadding(left: 16, right: 16),
-                              child: Text("Mode de paiement".tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: AppStyle.txtSFProTextBold20),
-                            ),
-                            ListView.builder(
-                              padding: getPadding(left: 16, right: 16, top: 8),
-                              primary: false,
-                              shrinkWrap: true,
-                              itemCount: controller.paymentMethods.length,
-                              itemBuilder: (context, index) {
-                                PaymentMethodModel data =
-                                    controller.paymentMethods[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    controller.setCurrentPaymentMethod(index);
-                                    setState(() {
-                                      mode_paiement = data.title!; // Mettre à jour la valeur sélectionnée
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: getPadding(top: 8, bottom: 8),
-                                    child: Container(
-                                      decoration: AppDecoration.fillGray50
-                                          .copyWith(
-                                              borderRadius: BorderRadiusStyle
-                                                  .roundedBorder16,
-                                              color:
-                                                  controller.currentPayment ==
-                                                          index
-                                                      ? ColorConstant
-                                                          .deepPurple50
-                                                      : ColorConstant.gray50,
-                                              border: Border.all(
-                                                  color: controller
-                                                              .currentPayment ==
-                                                          index
-                                                      ? ColorConstant
-                                                          .deepPurple600
-                                                      : ColorConstant.gray50)),
-                                      child: Padding(
-                                        padding: getPadding(
-                                            top: 20,
-                                            bottom: 20,
-                                            left: 16,
-                                            right: 16),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(data.title!,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle.txtHeadline)
-                                              ],
-                                            ),
-                                            CustomImageView(
-                                              svgPath: controller
-                                                          .currentPayment ==
-                                                      index
-                                                  ? ImageConstant.imgEyeBlack900
-                                                  : ImageConstant
-                                                      .imgIcRadioButton,
-                                            )
-                                            //ImageConstant.imgIcRadioButton,
-                                          ],
-                                        ),
+              GetBuilder<PaymentMethodController>(
+                init: PaymentMethodController(),
+                builder: (controller) => Container(
+                    width: double.maxFinite,
+                    padding: getPadding(top: 21, bottom: 21),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: getPadding(left: 16, right: 16),
+                            child: Text("Mode de paiement".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtSFProTextBold20),
+                          ),
+                          ListView.builder(
+                            padding: getPadding(left: 16, right: 16, top: 8),
+                            primary: false,
+                            shrinkWrap: true,
+                            itemCount: controller.paymentMethods.length,
+                            itemBuilder: (context, index) {
+                              PaymentMethodModel data =
+                                  controller.paymentMethods[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  controller.setCurrentPaymentMethod(index);
+                                  setState(() {
+                                    mode_paiement = data
+                                        .title!; // Mettre à jour la valeur sélectionnée
+                                  });
+                                },
+                                child: Padding(
+                                  padding: getPadding(top: 8, bottom: 8),
+                                  child: Container(
+                                    decoration: AppDecoration.fillGray50
+                                        .copyWith(
+                                            borderRadius: BorderRadiusStyle
+                                                .roundedBorder16,
+                                            color: controller.currentPayment ==
+                                                    index
+                                                ? ColorConstant.deepPurple50
+                                                : ColorConstant.gray50,
+                                            border: Border.all(
+                                                color: controller
+                                                            .currentPayment ==
+                                                        index
+                                                    ? ColorConstant
+                                                        .deepPurple600
+                                                    : ColorConstant.gray50)),
+                                    child: Padding(
+                                      padding: getPadding(
+                                          top: 20,
+                                          bottom: 20,
+                                          left: 16,
+                                          right: 16),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(data.title!,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.left,
+                                                  style: AppStyle.txtHeadline)
+                                            ],
+                                          ),
+                                          CustomImageView(
+                                            svgPath: controller
+                                                        .currentPayment ==
+                                                    index
+                                                ? ImageConstant.imgEyeBlack900
+                                                : ImageConstant
+                                                    .imgIcRadioButton,
+                                          )
+                                          //ImageConstant.imgIcRadioButton,
+                                        ],
                                       ),
                                     ),
                                   ),
-                                );
-                              },
-                            ),
-                          ])),
-                ),
+                                ),
+                              );
+                            },
+                          ),
+                        ])),
+              ),
 
-                
-                
               // Row(
               //   children: [
               //     Expanded(
@@ -608,13 +756,14 @@ Future<void> saveCommande() async {
           margin: getMargin(left: 16, right: 16, bottom: 40),
           onTap: () {
             if (mode_paiement == 'Payer Maintenant') {
-               _showLoadingDialog(); // Afficher le modal de chargement
+              _showLoadingDialog(); // Afficher le modal de chargement
               initiatePayment(context);
-              saveCommande();
+              //saveCommande(paymentUrl);
               // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
             } else if (mode_paiement == 'Payer à la livraison') {
-               _showLoadingDialog(); // Afficher le modal de chargement
-              saveCommande();
+              _showLoadingDialog(); // Afficher le modal de chargement
+              initiatePaymentLivraison(context);
+              //saveCommande(paymentUrl);
 
               this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
             } else {
@@ -629,8 +778,6 @@ Future<void> saveCommande() async {
             }
           },
         ));
-
-        
   }
 
   void selectNow() {

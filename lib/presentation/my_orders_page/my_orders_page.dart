@@ -45,17 +45,14 @@ Future<void> fetchRecentlyShippedData() async {
     setState(() {
       recentlyShippedData = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-        // Convertir Timestamp en DateTime pour la propriété 'date'
-        Timestamp timestamp = data['dateRegister'];
-        DateTime date = timestamp.toDate();
+        
         String docID = doc.id;
 
         return RecentlyShipped(
           docID: docID,
           orderID: data['orderId'] ?? '', // Valeur pour l'ID de la commande
           name: data['name'] ?? '', // Valeur pour le nom
-          date: date, // Utilisez la date convertie
+          date: data['dateRegister'], // Utilisez la date convertie
           status: data['deliveryStatus'] ?? '', // Valeur pour le statut
           typCourse: data['type_colis'] ?? '', // Valeur pour le statut
           typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut

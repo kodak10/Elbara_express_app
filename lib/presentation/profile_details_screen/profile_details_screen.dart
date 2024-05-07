@@ -58,8 +58,8 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
         setState(() {
           email = userData['email'] ?? '';
           name = userData['displayName'] ?? '';
-          phoneNumber = userData['contact'] ?? '';
-          image = userData['image'] ?? '';
+          phoneNumber = userData['phoneNumber'] ?? '';
+          image = userData['photoURL'] ?? '';
         });
       }
     }
@@ -81,10 +81,10 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
       // Vérifier si le champ 'image' existe dans le document
       if (snapshot.exists &&
           snapshot.data() != null &&
-          snapshot.data()!['image'] != null) {
+          snapshot.data()!['photoURL'] != null) {
         // Récupérer l'URL de l'image à partir du champ 'image' du document
         setState(() {
-          _imageUrl = snapshot.data()!['image'];
+          _imageUrl = snapshot.data()!['photoURL'];
         });
       }
     }
@@ -143,7 +143,7 @@ Future<void> _pickImage() async {
           .collection('users')
           .doc(_currentUser.uid)
           .update({
-        'image': imageUrl,
+        'photoURL': imageUrl,
       });
 
     Navigator.pop(context);

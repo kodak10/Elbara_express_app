@@ -41,7 +41,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
 
   String? selectedValue;
   String? selectedGare;
-  String? _selectedOption = 'TYPE DE COURSE';
+  String? _selectedOption = 'TYPE DE SERVICE';
   bool useCompagnie =
       false; // Variable pour activer ou désactiver l'utilisation de la compagnie
   String? birthday;
@@ -175,13 +175,13 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       isExpanded:
                                           true, // Permet au bouton de remplir l'espace horizontalement
                                       items: <String>[
-                                        'TYPE DE COURSE',
-                                        'ALIMENTAIRES',
-                                        'BIJOUX',
-                                        'DOCUMENTS',
-                                        'DEMENAGEMENT',
-                                        'VÊTEMENTS / CHAUSSURES / ACCESSOIRES',
+                                        'TYPE DE SERVICE',
+                                        'COURSES',
+                                        'DEMENAGEMENTS',
+                                        'DOCUMENTS'
+                                        'LIVRAISON',
                                         'Autres'
+
                                       ].map<DropdownMenuItem<String>>(
                                           (String value) {
                                         return DropdownMenuItem<String>(
@@ -373,7 +373,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Faire transiter le colis par une gare ?'),
+                                Text('Faire transiter le colis par une compagnie ?'),
                                 Switch(
                                   value: useCompagnie,
                                   onChanged: (value) {

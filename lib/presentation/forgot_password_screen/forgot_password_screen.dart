@@ -9,6 +9,7 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../widgets/custom_floating_edit_text.dart';
 import 'controller/forgot_password_controller.dart';
@@ -21,6 +22,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+    bool _isLoading = false; // Variable pour gérer l'état du chargement
+
   ForgotPasswordController controller = Get.put(ForgotPasswordController());
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -37,11 +40,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.initState();
   }
 
+  
+
   Future<void> _resetPassword(BuildContext context) async {
+     if (_formKey.currentState!.validate()) {
+      _showLoadingDialog(); // Afficher le modal de chargement
+     
     try {
+
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: controller.emailController.text.trim(),
       );
+      Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+
+      // Fermer le clavier
+      FocusScope.of(context).unfocus();
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Un email de réinitialisation a été envoyé."),
@@ -54,8 +68,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Text("Erreur lors de l'envoi de l'email de réinitialisation."),
         ),
       );
+      Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+
     }
+      }
+     
   }
+
+  void _showLoadingDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Lottie.asset(
+                'assets/images/loading_1.json',
+                height: 150,
+                width: 150,
+              ),
+              ],
+            ),
+
+            // SizedBox(height: 16),
+            // Text('Traitement en cours...'), // Texte de chargement
+          ],
+        ),
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

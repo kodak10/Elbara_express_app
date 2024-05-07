@@ -256,6 +256,7 @@ void _showLoadingDialog() {
             Navigator.of(context).pop(); // Fermer le modal de chargement
             if (documentSnapshot.exists) {
               if (documentSnapshot.get('role') == "user") {
+                PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
                 Get.toNamed(
                   AppRoutes.homeContainer1Screen,
                 );

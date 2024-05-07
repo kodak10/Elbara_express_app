@@ -233,30 +233,30 @@ void _showLoadingDialog() {
           password: controller.passwordController.text,
 
         );
-        // Call function to post user details to Firestore
-        //await postDetailsToFirestore(controller.emailController.text, defaultRole );
+
         await postDetailsToFirestore(
-        controller.emailController.text,
-        controller.nameController.text, // Pass the name from the nameController
-        defaultRole,
-        controller.phoneNumberController.text, // Pass the phoneNumber from the phoneNumberController
-      );      // Sign-up successful, navigate to next screen
-        Get.toNamed(AppRoutes.homeContainer1Screen);
+          controller.emailController.text,
+          controller.nameController.text, // Pass the name from the nameController
+          defaultRole,
+          controller.phoneNumberController.text, // Pass the phoneNumber from the phoneNumberController
+        );    
+        PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
+
+          Get.toNamed(AppRoutes.homeContainer1Screen);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
-          print('Le mot de passe fourni est trop faible.');
+           _showSnackBar('Le mot de passe fourni est trop faible.');
         } else if (e.code == 'email-already-in-use') {
-          print('Le compte existe déjà pour cet e-mail.');
+          _showSnackBar('Le compte existe déjà.');
+
         }
-        // Show error message or handle the exception as per your requirement
       } catch (e) {
         print(e);
-        // Show error message or handle the exception as per your requirement
       }
     }
   }
 
-  postDetailsToFirestore(
+postDetailsToFirestore(
   String email,
   String name,
   String role,
@@ -265,18 +265,21 @@ void _showLoadingDialog() {
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   var user = FirebaseAuth.instance.currentUser;
   CollectionReference ref = firebaseFirestore.collection('users');
-  DocumentReference docRef = ref.doc(); // Créez une référence de document sans ID
 
-  // Ajoutez le document à Firestore et récupérez l'ID généré
+  // Utilisez l'UID de l'utilisateur comme ID du document
+  DocumentReference docRef = ref.doc(user!.uid);
+
+  // Ajoutez les détails de l'utilisateur à Firestore
   await docRef.set({
     'email': email,
     'displayName': name,
     'role': defaultRole,
-    'phoneNumber':  '+225${controller.phoneNumberController.text}',
-    'photoURL': '',
+    'phoneNumber': '+225${controller.phoneNumberController.text}',
+    'photoURL': 'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
+    // Ajoutez d'autres champs selon vos besoins
   });
 
-  // Récupérez l'ID généré par Firebase
+   // Récupérez l'ID généré par Firebase
   String documentId = docRef.id;
 
   // Mettez à jour le document avec l'ID généré
@@ -286,6 +289,16 @@ void _showLoadingDialog() {
   Get.toNamed(AppRoutes.logInScreen);
 }
 
+_showSnackBar(String message) {
+  Get.snackbar(
+    "Erreur",
+    message,
+    snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.red,
+    colorText: Colors.white,
+    duration: Duration(seconds: 3),
+  );
+}
 
   onTapTxtAlreadyhavean() {
     Get.back();

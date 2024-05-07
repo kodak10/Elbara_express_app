@@ -11,13 +11,14 @@ import '../home_container_page/models/recently_shipped_data_model.dart';
 import '../my_orders_page/widgets/my_orders_item_widget.dart';
 import 'controller/my_orders_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class MyOrdersPage extends StatefulWidget {
   const MyOrdersPage({Key? key})
       : super(
           key: key,
         );
-
 
   @override
   State<MyOrdersPage> createState() => _MyOrdersPageState();
@@ -28,54 +29,58 @@ final User? user = FirebaseAuth.instance.currentUser;
 class _MyOrdersPageState extends State<MyOrdersPage> {
   List<RecentlyShipped> recentlyShippedData = [];
 
-
   @override
   void initState() {
     super.initState();
     fetchRecentlyShippedData();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);  
   }
 
+  Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    print("Handling a background message: ${message.messageId}");
+  }
 
-@override
-final User? user = FirebaseAuth.instance.currentUser;
+  @override
+  final User? user = FirebaseAuth.instance.currentUser;
 
-Future<void> fetchRecentlyShippedData() async {
-  try {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('orders')
-        .where('userId', isEqualTo: user!.uid) // Remplacez 'userID' par le nom du champ contenant l'ID de l'utilisateur
-        .get();
+  Future<void> fetchRecentlyShippedData() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('userId',
+              isEqualTo: user!
+                  .uid) // Remplacez 'userID' par le nom du champ contenant l'ID de l'utilisateur
+          .get();
 
-    setState(() {
-      recentlyShippedData = querySnapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      setState(() {
+        recentlyShippedData = querySnapshot.docs.map((doc) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-        String docID = doc.id;
+          String docID = doc.id;
 
-         Timestamp timestamp = data['dateRegister'] as Timestamp;
+          Timestamp timestamp = data['dateRegister'] as Timestamp;
           DateTime date = timestamp.toDate();
 
-        return RecentlyShipped(
-          docID: docID,
-          orderID: data['orderId'] ?? '', // Valeur pour l'ID de la commande
-          name: data['name'] ?? '', // Valeur pour le nom
-          date: date,
-          status: data['deliveryStatus'] ?? '', // Valeur pour le statut
-          typCourse: data['type_colis'] ?? '', // Valeur pour le statut
-          typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut
-          depart: data['lieu_depart'] ?? '', // Valeur pour le statut
-          destination: data['lieu_arrive'] ?? '', // Valeur pour le statut
-          payemenStatus: data['paymentMethod'] ?? '', // Valeur pour le statut
-          cout: data['price'] ?? '', // Valeur pour le statut
-
-
-        );
-      }).toList();
-    });
-  } catch (e) {
-    print('Erreur lors de la récupération des données: $e');
+          return RecentlyShipped(
+            docID: docID,
+            orderID: data['orderId'] ?? '', // Valeur pour l'ID de la commande
+            name: data['name'] ?? '', // Valeur pour le nom
+            date: date,
+            status: data['deliveryStatus'] ?? '', // Valeur pour le statut
+            typCourse: data['type_colis'] ?? '', // Valeur pour le statut
+            typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut
+            depart: data['lieu_depart'] ?? '', // Valeur pour le statut
+            destination: data['lieu_arrive'] ?? '', // Valeur pour le statut
+            payemenStatus: data['paymentMethod'] ?? '', // Valeur pour le statut
+            cout: data['price'] ?? '', // Valeur pour le statut
+          );
+        }).toList();
+      });
+    } catch (e) {
+      print('Erreur lors de la récupération des données: $e');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +167,6 @@ Future<void> fetchRecentlyShippedData() async {
                     style: AppStyle.txtSFProTextBold22,
                   ),
                 ),
-                
                 CustomButton(
                   height: getVerticalSize(
                     53,
@@ -180,81 +184,75 @@ Future<void> fetchRecentlyShippedData() async {
             ),
           )
         : Container(
-      decoration: AppDecoration.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: double.maxFinite,
-            child: Container(
-              padding: getPadding(
-                left: 0,
-                top: 19,
-                right: 0,
-                bottom: 19,
-              ),
-              decoration: AppDecoration.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
+            decoration: AppDecoration.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: double.maxFinite,
+                  child: Container(
                     padding: getPadding(
-                      top: 5,
+                      left: 0,
+                      top: 19,
+                      right: 0,
+                      bottom: 19,
                     ),
-                    child: Text(
-                      "lbl_my_orders".tr,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
-                      style: AppStyle.txtSFProTextBold28,
+                    decoration: AppDecoration.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: getPadding(
+                            top: 5,
+                          ),
+                          child: Text(
+                            "lbl_my_orders".tr,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.left,
+                            style: AppStyle.txtSFProTextBold28,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: getPadding(bottom: 20),
-              child: Container(
-                child: ListView(
-                  children: [
-                    ListView.separated(
-                      padding: getPadding(
-                        left: 16,
-                        top: 16,
-                        right: 16,
-                        bottom: 20
-                      ),
-                      physics: BouncingScrollPhysics(),
-                      shrinkWrap: true,
-                      separatorBuilder: (
-                          context,
-                          index,
-                          ) {
-                        return SizedBox(
-                          height: getVerticalSize(
-                            16,
-                          ),
-                        );
-                      },
-                      itemCount: recentlyShippedData.length,
-                        itemBuilder: (context, index) {
-                          RecentlyShipped model = recentlyShippedData[index];
-                          return MyOrdersItemWidget(
-                           recentlyShippedData[index],
-                          );
-                        },
-
-                    ),
-                  ],
                 ),
-              ),
+                Expanded(
+                  child: Padding(
+                    padding: getPadding(bottom: 20),
+                    child: Container(
+                      child: ListView(
+                        children: [
+                          ListView.separated(
+                            padding: getPadding(
+                                left: 16, top: 16, right: 16, bottom: 20),
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            separatorBuilder: (
+                              context,
+                              index,
+                            ) {
+                              return SizedBox(
+                                height: getVerticalSize(
+                                  16,
+                                ),
+                              );
+                            },
+                            itemCount: recentlyShippedData.length,
+                            itemBuilder: (context, index) {
+                              RecentlyShipped model =
+                                  recentlyShippedData[index];
+                              return MyOrdersItemWidget(
+                                recentlyShippedData[index],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-
-        ],
-      ),
-    );
-    
+          );
   }
 }

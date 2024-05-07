@@ -49,10 +49,10 @@ class _ProfilePageState extends State<ProfilePage> {
           await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
       // Vérifier si le champ 'image' existe dans le document
-      if (snapshot.exists && snapshot.data() != null && snapshot.data()!['image'] != null) {
+      if (snapshot.exists && snapshot.data() != null && snapshot.data()!['photoURL'] != null) {
         // Récupérer l'URL de l'image à partir du champ 'image' du document
         setState(() {
-          _imageUrl = snapshot.data()!['image'];
+          _imageUrl = snapshot.data()!['photoURL'];
         });
       }
     }

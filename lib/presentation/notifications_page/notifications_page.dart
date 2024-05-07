@@ -104,23 +104,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 Expanded(
                   child: ListView(
                     children: [
-                      // Container(
-                      //     margin: getMargin(top: 15),
-                      //     decoration: BoxDecoration(
-                      //         borderRadius: BorderRadiusStyle.roundedBorder8),
-                      //     child: ListView.separated(
-                      //         physics: BouncingScrollPhysics(),
-                      //         shrinkWrap: true,
-                      //         primary: false,
-                      //         separatorBuilder: (context, index) {
-                      //           return SizedBox(height: getVerticalSize(16));
-                      //         },
-                      //         itemCount: controller.notificationData.length,
-                      //         itemBuilder: (context, index) {
-                      //           NotificationsItemModel model =
-                      //               controller.notificationData[index];
-                      //           return NotificationsItemWidget(model);
-                      //         })),
+                      Container(
+                          margin: getMargin(top: 15),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadiusStyle.roundedBorder8),
+                          child: ListView.separated(
+                              physics: BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              primary: false,
+                              separatorBuilder: (context, index) {
+                                return SizedBox(height: getVerticalSize(16));
+                              },
+                              itemCount: controller.notificationData.length,
+                              itemBuilder: (context, index) {
+                                NotificationsItemModel model =
+                                    controller.notificationData[index];
+                                return NotificationsItemWidget(model);
+                              })),
                     ],
                   ),
                 )

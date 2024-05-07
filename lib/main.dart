@@ -1,13 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-//import 'package:shared_preferences/shared_preferences.dart'; // Importer le package pour gérer la mémoire locale
-
+//import 'firebase_options.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,21 +16,14 @@ Future main() async {
         storageBucket: "elbaraexpress-9b834.appspot.com", // Nom du bucket uniquement
       ),
     );
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   const SystemUiOverlayStyle(
+  //     statusBarBrightness: Brightness.light, // For iOS: (dark icons)
+  //     statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
+  //   ),
+  // );
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-      statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
-    ),
-  );
 
-//final SharedPreferences prefs = await SharedPreferences.getInstance();
-  // final bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
-  // final User? user = FirebaseAuth.instance.currentUser;
-
-  // runApp(MyApp(isLoggedIn: isLoggedIn, user: user));
-
-  
   runApp(MyApp());
 }
 
@@ -44,7 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         visualDensity: VisualDensity.standard,
         useMaterial3: true,

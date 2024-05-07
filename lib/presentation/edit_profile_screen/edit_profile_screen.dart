@@ -64,7 +64,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .doc(_currentUser.uid)
           .get();
       if (userData.exists) {
-        controller.phoneNumberController.text = userData['contact'] ?? '';
+        controller.phoneNumberController.text = userData['phoneNumber'] ?? '';
         controller.emailController.text = userData['email'] ?? '';
 
         controller.nameController.text = userData['displayName'] ?? '';
@@ -88,10 +88,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // Vérifier si le champ 'image' existe dans le document
       if (snapshot.exists &&
           snapshot.data() != null &&
-          snapshot.data()!['image'] != null) {
+          snapshot.data()!['photoURL'] != null) {
         // Récupérer l'URL de l'image à partir du champ 'image' du document
         setState(() {
-          _imageUrl = snapshot.data()!['image'];
+          _imageUrl = snapshot.data()!['photoURL'];
         });
       }
     }
@@ -167,7 +167,7 @@ Future<void> _pickImage() async {
           .collection('users')
           .doc(_currentUser.uid)
           .update({
-        'image': imageUrl,
+        'photoURL': imageUrl,
       });
 
       // Revenir à la page précédente
@@ -355,8 +355,10 @@ void _showLoadingDialog() {
       // For example:
       FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'displayName': controller.nameController.text,
-        'contact': controller.phoneNumberController.text,
+        'phoneNumber': controller.phoneNumberController.text,
       }).then((_) {
+            Navigator.pop(context);
+
         print('mis a jour');
         // Profile updated successfully
         Get.back();

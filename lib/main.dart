@@ -1,4 +1,6 @@
+import 'package:elbara_express/presentation/notifications_page/firebase_notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/app_export.dart';
@@ -16,6 +18,8 @@ Future main() async {
         storageBucket: "elbaraexpress-9b834.appspot.com", // Nom du bucket uniquement
       ),
     );
+      FirebaseNotificationService().setupFirebase(); // Initialiser le service de notifications Firebase
+
   // SystemChrome.setSystemUIOverlayStyle(
   //   const SystemUiOverlayStyle(
   //     statusBarBrightness: Brightness.light, // For iOS: (dark icons)

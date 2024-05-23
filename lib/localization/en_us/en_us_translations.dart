@@ -168,7 +168,7 @@ final Map<String, String> enUs = {
   "lbl_or": "Or",
   "lbl_status": "Status:",
   "lbl_405_555_0128": "(405) 555-0128",
-  "lbl_order_details": "Details de commande",
+  "lbl_order_details": "Détails de commande",
   "msg_shipping_charges": "Shipping charges",
   "lbl_grid": "Grid",
   "lbl_500_00": "\$500.00",

@@ -250,6 +250,15 @@ class AppStyle {
     fontWeight: FontWeight.w600,
   );
 
+  static TextStyle txtOutfitBlue = TextStyle(
+    color: ColorConstant.blue700,
+    fontSize: getFontSize(
+      16,
+    ),
+    fontFamily: 'Outfit',
+    fontWeight: FontWeight.w600,
+  );
+
   static TextStyle txtSFProTextMedium14 = TextStyle(
     color: ColorConstant.black900,
     fontSize: getFontSize(
@@ -285,6 +294,16 @@ class AppStyle {
     fontFamily: 'SF Pro Text',
     fontWeight: FontWeight.w600,
   );
+
+  static TextStyle txtHeadlineBlueA700 = TextStyle(
+    color: ColorConstant.blue700, 
+    fontSize: getFontSize(
+      18,
+    ),
+    fontFamily: 'SF Pro Text',
+    fontWeight: FontWeight.w600,
+  );
+
 
   static TextStyle txtSFProDisplaySemibold18 = TextStyle(
     color: ColorConstant.black900,

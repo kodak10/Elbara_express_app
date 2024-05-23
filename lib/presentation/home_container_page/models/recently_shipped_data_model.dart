@@ -8,9 +8,11 @@ class RecentlyShipped{
   final String depart;
   final String destination;
   final DateTime date;
-  final String payemenStatus;
   final String docID;
   final double cout;
+  final String modePayment;
+  final String payemenStatus;
+
 
 
 
@@ -27,6 +29,7 @@ class RecentlyShipped{
     required this.destination,
     required this.payemenStatus,
     required this.cout,
+    required this.modePayment,
 
   });
   

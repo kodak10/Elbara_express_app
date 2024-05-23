@@ -41,7 +41,7 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
 
   String? selectedValue;
   String? selectedGare;
-  String? _selectedOption = 'TYPE DE SERVICE';
+  String? _selectedOption = 'TYPE DE SERVICES';
   bool useCompagnie =
       false; // Variable pour activer ou désactiver l'utilisation de la compagnie
   String? birthday;
@@ -175,12 +175,10 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                                       isExpanded:
                                           true, // Permet au bouton de remplir l'espace horizontalement
                                       items: <String>[
-                                        'TYPE DE SERVICE',
+                                        'TYPE DE SERVICES',
                                         'COURSES',
                                         'DEMENAGEMENTS',
-                                        'DOCUMENTS'
-                                        'LIVRAISON',
-                                        'Autres'
+                                        'LIVRAISONS',
 
                                       ].map<DropdownMenuItem<String>>(
                                           (String value) {

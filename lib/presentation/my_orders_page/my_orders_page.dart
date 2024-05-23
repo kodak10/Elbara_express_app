@@ -33,7 +33,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
   void initState() {
     super.initState();
     fetchRecentlyShippedData();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);  
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
   Future<void> _firebaseMessagingBackgroundHandler(
@@ -72,8 +72,10 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
             typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut
             depart: data['lieu_depart'] ?? '', // Valeur pour le statut
             destination: data['lieu_arrive'] ?? '', // Valeur pour le statut
-            payemenStatus: data['paymentMethod'] ?? '', // Valeur pour le statut
             cout: data['price'] ?? '', // Valeur pour le statut
+            modePayment: data[' paymentMethod'] ?? '',
+            payemenStatus: data['paymentStatus'] ?? '', // Valeur pour le statut
+
           );
         }).toList();
       });
@@ -167,17 +169,23 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                     style: AppStyle.txtSFProTextBold22,
                   ),
                 ),
-                CustomButton(
-                  height: getVerticalSize(
-                    53,
-                  ),
-                  width: getHorizontalSize(
-                    220,
-                  ),
-                  text: "Envoyer un colis".tr,
-                  margin: getMargin(
-                    top: 41,
-                    bottom: 194,
+                GestureDetector(
+                  onTap: () {
+                    print('send');
+                    Get.toNamed(AppRoutes.sendPackageScreen);
+                  },
+                  child: CustomButton(
+                    height: getVerticalSize(
+                      53,
+                    ),
+                    width: getHorizontalSize(
+                      220,
+                    ),
+                    text: "Envoyer un colis".tr,
+                    margin: getMargin(
+                      top: 41,
+                      bottom: 194,
+                    ),
                   ),
                 ),
               ],

@@ -22,7 +22,7 @@ class SlidermaskgroupItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: getSize(333),
-      height: getSize(150),
+      height: getSize(160),
       decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage(slidermaskgroupItemModelObj.image!),
@@ -42,24 +42,41 @@ class SlidermaskgroupItemWidget extends StatelessWidget {
                 style: AppStyle.txtHeadlineWhiteA700,
               ),
             ),
-            // SizedBox(
-            //   height: getVerticalSize(8),
-            // ),
-            // CustomButton(
-            //   onTap: () {
-            //     Get.toNamed(AppRoutes.selectCourierServiceScreen);
-            //   },
-            //   height: getVerticalSize(
-            //     34,
-            //   ),
-            //   width: getHorizontalSize(
-            //     103,
-            //   ),
-            //   text: "Commander".tr,
-            //   variant: ButtonVariant.White,
-            //   padding: ButtonPadding.PaddingAll8,
-            //   fontStyle: ButtonFontStyle.SFProTextBold15,
-            // ),
+            SizedBox(
+              height: getVerticalSize(8),
+            ),
+            CustomButton(
+              onTap: () {
+                // Afficher un dialogue avec le texte modal
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Information"),
+                      content: Text(slidermaskgroupItemModelObj.modalText),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Fermer"),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              height: getVerticalSize(
+                34,
+              ),
+              width: getHorizontalSize(
+                103,
+              ),
+              text: "En savoir".tr,
+              variant: ButtonVariant.White,
+              padding: ButtonPadding.PaddingAll8,
+              fontStyle: ButtonFontStyle.SFProTextBold15,
+            ),
           ],
         ),
       ),

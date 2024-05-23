@@ -27,6 +27,10 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   late String statusOrderDeliveryConfirmed = '';
   late String statusOrderDelivered = '';
   late String deliveryConfirm = '';
+  late String deliveryID = '';
+
+  String displayName = '';
+  String phoneNumber = '';
 
   bool orderConfirmed = false;
   bool orderDeliveryConfirmed = false;
@@ -113,21 +117,19 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     //final Map<String, dynamic> args = Get.arguments ?? {};
-    final Map<String, dynamic>? args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final Map<String, dynamic>? args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final String orderID = args?['orderId'] ?? '';
     final String status = args?['status'] ?? '';
-    // final String orderID = args['orderId'] ?? '';
-    // final String status = args['deliveryStatus'] ?? '';
 
-    print('status_now: $status');
-
-    Timestamp dateCommandeTimestamp = args?['dateRegister'];
-    // Convertir Timestamp en DateTime
-    DateTime dateCommandeDateTime = dateCommandeTimestamp.toDate();
+    deliveryID = args?['deliveryId'] ?? '';
+    
+    DateTime dateCommandeDateTime = args?['dateRegister'] as DateTime;
     // Formatter la date
-    String formattedDate =
-        DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
+    String formattedDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
+
+
+  
+  // Votre code de construction de widget continue ici
 
     return WillPopScope(
         onWillPop: () async {

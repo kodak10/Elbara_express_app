@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/utils/color_constant.dart';
@@ -16,8 +17,10 @@ import 'package:elbara_express/widgets/custom_image_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:flutter/material.dart';
@@ -43,9 +46,6 @@ class SelectCourierServiceScreen extends StatefulWidget {
 
 class _SelectCourierServiceScreenState
     extends State<SelectCourierServiceScreen> {
-  static const String screen1Route = '/screen1';
-  static const String screen2Route = '/screen2';
-
   late String email = '';
   late String name = '';
   late String phoneNumber = '';
@@ -53,9 +53,12 @@ class _SelectCourierServiceScreenState
   late User _currentUser;
 
   late String paymentUrl = "";
+  late String paymentRef = "";
 
   String mode_paiement =
       ''; // Définir une variable pour stocker la valeur sélectionnée
+  late QrCode qrCode;
+  late QrImage qrImage;
 
   String selectedVehicle = 'Moto';
 
@@ -74,7 +77,17 @@ class _SelectCourierServiceScreenState
     return orderId;
   }
 
-  //late Map<String, dynamic> DataInfos;
+  void sendNotification(String userToken, String title, String body) {
+    // Remplacez cet appel par l'envoi de la notification via Firebase Cloud Messaging
+    // Exemple fictif :
+    // firebaseMessaging.send(notification: {
+    //   'title': title,
+    //   'body': body,
+    //   'token': userToken,
+    // });
+    print('Notification envoyée à $userToken : $title - $body');
+  }
+
   Map<String, dynamic>? DataInfos;
 
   void _showLoadingDialog() {
@@ -108,30 +121,17 @@ class _SelectCourierServiceScreenState
   }
 
   @override
-  // void initState() {
-  //   SystemChrome.setSystemUIOverlayStyle(
-  //     SystemUiOverlayStyle(
-  //         statusBarColor: ColorConstant.whiteA700,
-  //         statusBarIconBrightness: Brightness.dark),
-  //   );
-  //   super.initState();
-  //     getUserInfo(); // Appeler la fonction pour récupérer les informations de l'utilisateur lors de l'initialisation de l'écran
-
-  //   // Récupérez les données transmises depuis l'écran précédent
-  //   //Map<String, dynamic> DataInfos = Get.arguments;
-  //   DataInfos = Get.arguments as Map<String, dynamic>;
-  //   selectedPrice = calculatePrice("Moto", 3.0, 1.0, 1.0);
-  // }
-
   void initState() {
     _currentUser = FirebaseAuth.instance.currentUser!;
     _loadUserData();
+    qrCode = QrCode(4, QrErrorCorrectLevel.L);
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
           statusBarColor: ColorConstant.whiteA700,
           statusBarIconBrightness: Brightness.dark),
     );
+
     super.initState();
 
     // Récupérer les données transmises depuis l'écran précédent
@@ -149,19 +149,16 @@ class _SelectCourierServiceScreenState
         setState(() {
           email = userData['email'] ?? '';
           name = userData['displayName'] ?? '';
-          phoneNumber = userData['contact'] ?? '';
-          image = userData['image'] ?? '';
+          phoneNumber = userData['phoneNumber'] ?? '';
+          image = userData['photoURL'] ?? '';
         });
       }
     }
   }
 
-  //final User? user = FirebaseAuth.instance.currentUser;
-
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> saveCommande(String? paymentUrl) async {
-    //print(user?.displayName);
     String orderId = generateOrderId();
 
     // Collectez toutes les données de l'écran 2
@@ -211,32 +208,13 @@ class _SelectCourierServiceScreenState
       ...screen2Data,
       'addressModel': addressModel,
       'paymentUrl': paymentUrl, // lien qui se trouve sur le codeQr à scanner
+      'paymentRef': paymentRef,
     };
-
-    // // Enregistrez toutes ces données dans la collection Firestore
-    // _firestore.collection('orders').add(combinedData).then((value) {
-
-    //  String orderId = value.id;
-
-    // // Mettez à jour 'orderId' dans combinedData avec l'ID du document ajouté
-    // combinedData['orderId'] = orderId;
-
-    //   print('Données enregistrées avec succès');
-    //   // Naviguez vers l'écran suivant si nécessaire
-    // }).catchError((error) {
-    //   print('Erreur lors de l\'enregistrement des données: $error');
-    //   // Gérez les erreurs ici si nécessaire
-    // });
 
     try {
       // Enregistrez toutes ces données dans la collection Firestore
       DocumentReference documentReference =
           await _firestore.collection('orders').add(combinedData);
-
-      print('save url: $paymentUrl');
-
-      print(
-          'Données enregistrées avec succès avec l\'ID du document ajouté: $orderId');
       // Naviguez vers l'écran suivant si nécessaire
     } catch (error) {
       print('Erreur lors de l\'enregistrement des données: $error');
@@ -247,23 +225,22 @@ class _SelectCourierServiceScreenState
   Future<void> initiatePayment(BuildContext context) async {
     // Remplacez ces valeurs par vos véritables identifiants API PayDunya
     String masterKey = 'fhRrUGWg-Upkg-0r3x-Z7DI-d8fR0aIHgxc2';
-    // TEST
-    //String privatekey = 'test_private_SbiMC3CevM2M7CwG9InuuKJCugA';
-    //String token = 'U2VG53YZyOhonBVvKuw7';
 
     // PRODUCTION
     String privatekey = 'live_private_tvQxERrcZFOVXgpi3NyUckcWDDL';
     String token = 'vI7BDJAJvpWDY8Y4rjBL';
 
-    // Point de terminaison de l'API pour initier le paiement
-    //String url ='https://app.paydunya.com/sandbox-api/v1/checkout-invoice/create'; // test
-    String url =
-        'https://app.paydunya.com/api/v1/checkout-invoice/create'; // production
+    String url = 'https://app.paydunya.com/api/v1/dmp-api'; // production
+
+    String phoneNumberWithoutPlus = phoneNumber.substring(1);
+    print('Numéro de téléphone sans le symbole + : $phoneNumberWithoutPlus');
 
     // Payload pour initier le paiement (remplacez-le par les données réelles de votre paiement)
     Map<String, dynamic> payload = {
-      "invoice": {"total_amount": selectedPrice, "description": "Livraison"},
-      "store": {"name": "Elbara Express"}
+      "recipient_phone": phoneNumber.substring(1),
+      "amount": selectedPrice,
+      "support_fees": 1,
+      "send_notification": 0
     };
 
     try {
@@ -283,11 +260,12 @@ class _SelectCourierServiceScreenState
         // Récupérer l'URL de paiement à partir de la réponse
         var responseData = jsonDecode(response.body);
         //var paymentUrl = responseData['response_text'];
-        paymentUrl = responseData['response_text'];
+        paymentUrl = responseData['url'];
 
-        generateQRAndUpload(context, paymentUrl);
+        paymentRef = responseData['reference_number'];
+
+        //generateQRAndUpload(context, paymentUrl);
         saveCommande(paymentUrl);
-
 
         // Ouvrir l'URL de paiement dans le navigateur par défaut
         launch(paymentUrl);
@@ -302,6 +280,7 @@ class _SelectCourierServiceScreenState
         );
       }
     } catch (error) {
+      print('${error}');
       // Gérez toutes les erreurs survenues pendant le processus
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -314,23 +293,19 @@ class _SelectCourierServiceScreenState
   Future<void> initiatePaymentLivraison(BuildContext context) async {
     // Remplacez ces valeurs par vos véritables identifiants API PayDunya
     String masterKey = 'fhRrUGWg-Upkg-0r3x-Z7DI-d8fR0aIHgxc2';
-    // TEST
-    //String privatekey = 'test_private_SbiMC3CevM2M7CwG9InuuKJCugA';
-    //String token = 'U2VG53YZyOhonBVvKuw7';
 
     // PRODUCTION
     String privatekey = 'live_private_tvQxERrcZFOVXgpi3NyUckcWDDL';
     String token = 'vI7BDJAJvpWDY8Y4rjBL';
 
-    // Point de terminaison de l'API pour initier le paiement
-    //String url ='https://app.paydunya.com/sandbox-api/v1/checkout-invoice/create'; // test
-    String url =
-        'https://app.paydunya.com/api/v1/checkout-invoice/create'; // production
+    String url = 'https://app.paydunya.com/api/v1/dmp-api'; // production
 
     // Payload pour initier le paiement (remplacez-le par les données réelles de votre paiement)
     Map<String, dynamic> payload = {
-      "invoice": {"total_amount": selectedPrice, "description": "Livraison"},
-      "store": {"name": "Elbara Express"}
+      "recipient_phone": phoneNumber.substring(1),
+      "amount": selectedPrice,
+      "support_fees": 1,
+      "send_notification": 0
     };
 
     try {
@@ -350,11 +325,19 @@ class _SelectCourierServiceScreenState
         // Récupérer l'URL de paiement à partir de la réponse
         var responseData = jsonDecode(response.body);
         //var paymentUrl = responseData['response_text'];
-        paymentUrl = responseData['response_text'];
+        paymentUrl = responseData['url'];
+        paymentRef = responseData['reference_number'];
 
-        saveCommande(paymentUrl);
-        generateQRAndUpload(context, paymentUrl);
+        // saveCommande(paymentUrl);
+        // generateQRAndUpload(context, paymentUrl);
+        await saveCommande(paymentUrl);
 
+        // Save QR code image to Firebase Storage
+        await saveQRImage(
+          paymentUrl,
+        ); // Assuming paymentRef is the file name
+
+        print('okay');
       } else {
         // Echec de l'initiation de paiement
         ScaffoldMessenger.of(context).showSnackBar(
@@ -374,43 +357,76 @@ class _SelectCourierServiceScreenState
     }
   }
 
-  Future<void> generateQRAndUpload(BuildContext context, String paymentUrl) async {
-  // Génération du code QR contenant l'URL de paiement
-  final qrWidget = RepaintBoundary(
-    child: QrImageView(
-      data: paymentUrl,
-      version: QrVersions.auto,
-      size: 100,
-      gapless: true,
-    ),
-  );
+  Future<void> saveQRImage(String paymentUrl) async {
+    print('0');
+    // Créer une clé pour le RepaintBoundary
+    final boundaryKey = GlobalKey();
+    print('1');
 
-  // Création d'un rendu pour le widget QR
-  final qrRenderObject = qrWidget.createRenderObject(context);
-  final image = await qrRenderObject.toImage(pixelRatio: 1.0);
-  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  final Uint8List pngBytes = byteData!.buffer.asUint8List();
+    // Utiliser Builder pour accéder au contexte de construction
+    Builder(
+      builder: (context) {
+            print('2');
 
-  // Enregistrement de l'image dans un fichier local
-  final tempDir = await getTemporaryDirectory();
-  final qrImageFile = File('${tempDir.path}/qrcode.png');
-  await qrImageFile.writeAsBytes(pngBytes);
+        // Créer une nouvelle instance de QrImageView avec les données appropriées
+        final qrImageView = QrImageView(
+          data: paymentUrl,
+          version: QrVersions.auto,
+          size: 200.0, // Taille du code QR
+        );
+    print('3');
 
-  // Enregistrement de l'image dans Firebase Storage
-  final firebase_storage.Reference storageReference = firebase_storage.FirebaseStorage.instance.ref().child('payment/qrcode.png');
+        // Attendre que le widget soit construit
+        WidgetsBinding.instance!.addPostFrameCallback((_) async {
+              print('4');
 
-  try {
-    // Envoi du fichier dans Firebase Storage
-    await storageReference.putFile(qrImageFile);
-    print('QR Code uploaded to Firebase Storage');
+          // Récupérer le contexte de la clé
+          final RenderRepaintBoundary boundary = boundaryKey.currentContext!
+              .findRenderObject() as RenderRepaintBoundary;
 
-    // Obtention de l'URL de téléchargement de l'image
-    final String imageUrl = await storageReference.getDownloadURL();
-    print('QR Code Image URL: $imageUrl');
-  } catch (e) {
-    print('Error uploading QR Code to Firebase Storage: $e');
+          // Dessiner le QR code sur un canevas
+          final image = await boundary.toImage(pixelRatio: 3.0);
+          final byteData =
+              await image.toByteData(format: ui.ImageByteFormat.png);
+    print('5');
+
+          if (byteData != null) {
+                print('6');
+
+            final Uint8List bytes = byteData.buffer.asUint8List();
+
+            // Enregistrer les bytes dans Firebase Storage
+            try {
+              await FirebaseStorage.instance
+                  .ref()
+                  .child(
+                      'payment/codeQr.png') // Nom du fichier dans Firebase Storage
+                  .putData(bytes);
+              print('Image du code QR enregistrée avec succès.');
+            } catch (error) {
+              print(
+                  "Erreur lors de l'enregistrement de l'image du code QR : $error");
+            }
+          } else {
+            print('Erreur lors de la conversion du code QR en bytes.');
+          }
+        });
+
+        return RepaintBoundary(
+          key: boundaryKey,
+          child: qrImageView,
+        );
+      },
+    );
   }
-}
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -752,7 +768,7 @@ class _SelectCourierServiceScreenState
 
         bottomNavigationBar: CustomButton(
           height: getVerticalSize(54),
-          text: "Suivant".tr,
+          text: "Valider".tr,
           margin: getMargin(left: 16, right: 16, bottom: 40),
           onTap: () {
             if (mode_paiement == 'Payer Maintenant') {

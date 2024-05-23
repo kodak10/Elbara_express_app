@@ -1,5 +1,6 @@
 class ImageConstant {
     static String bgImage = 'assets/images/login_background.png';
+    static String phone = 'assets/images/phone.png';
 
 
   static String imgVector4 = 'assets/images/img_vector4.svg';
@@ -71,8 +72,8 @@ class ImageConstant {
 
 
   static String imgSlider1st = 'assets/images/slider1st.png';
-  static String imgSlider2nd = 'assets/images/slider1st.png';
-  static String imgSlider3rd = 'assets/images/slider1st.png';
+  static String imgSlider2nd = 'assets/images/slider2st.png';
+  static String imgSlider3rd = 'assets/images/slider3st.png';
 
   static String imgOnboarding1st = 'assets/images/onboarding_1st.png';
   static String imgOnboarding2nd = 'assets/images/onboarding_2nd.png';

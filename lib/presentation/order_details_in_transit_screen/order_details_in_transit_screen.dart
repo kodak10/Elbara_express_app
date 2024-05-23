@@ -132,10 +132,22 @@ class _OrderDetailsInTransitScreenState
 
                         Padding(
                             padding: getPadding(top: 32),
-                            child: Text("Details de la commande".tr,
+                            child: Text("Détails de la commande".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtSFProTextBold20)),
+                          Padding(
+                            padding: getPadding(top: 21),
+                            child: Text("Date de commande".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text( DateFormat('dd/MM/yyyy HH:mm').format(widget.orderData.date),
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
                         Padding(
                             padding: getPadding(top: 22),
                             child: Text("Référence du colis".tr,
@@ -150,7 +162,7 @@ class _OrderDetailsInTransitScreenState
                                 style: AppStyle.txtBody)),
                         Padding(
                             padding: getPadding(top: 22),
-                            child: Text("Type de course".tr,
+                            child: Text("Type de service".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
@@ -176,40 +188,69 @@ class _OrderDetailsInTransitScreenState
                        
                         Padding(
                             padding: getPadding(top: 20),
-                            child: Text("Status de la livraison".tr,
+                            child: Text("Statut de la livraison".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
-                        Padding(
-                            padding: getPadding(top: 10),
-                            child: Text(
-                              widget.orderData.status!,
-                              style: widget.orderData.status!.toLowerCase() ==
-                                      "Livrer"
-                                  ? AppStyle.txtOutfitRegular16Green
-                                  : widget.orderData.status!.toLowerCase() ==
-                                          "En chemin"
-                                      ? AppStyle.txtOutfitRegular16Amber
-                                      : AppStyle.txtOutfitRegular16Red,
-                            )
-                            //
-                            // Text("lbl_in_transit".tr,
-                            //     overflow: TextOverflow.ellipsis,
-                            //     textAlign: TextAlign.left,
-                            //     style: AppStyle.txtSFProTextSemibold16)
-                            ),
-                        Padding(
-                            padding: getPadding(top: 21),
-                            child: Text("Date de commande".tr,
+                       Padding(
+                          padding: getPadding(top: 10),
+                          child: Text(
+                            widget.orderData.status!.toLowerCase() == "delivered"
+                              ? "Livré"
+                              : widget.orderData.status!.toLowerCase() == "canceled"
+                                ? "Annulé"
+                                : widget.orderData.status!.toLowerCase() == "pending"
+                                  ? "En attente"
+                                  : "En transit",
+                            style: widget.orderData.status!.toLowerCase() == "delivered"
+                              ? AppStyle.txtOutfitRegular16Green // Texte vert pour "Livré"
+                              : widget.orderData.status!.toLowerCase() == "canceled"
+                                ? AppStyle.txtOutfitRegular16Red // Texte bleu pour "En transit"
+                                : widget.orderData.status!.toLowerCase() == "pending"
+                                  ? AppStyle.txtOutfitRegular14Amber // Texte jaune pour "En attente"
+                                  : AppStyle.txtOutfitBlue, // Texte rouge pour "Annulé"
+                          ),
+                        ),
+
+                         Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Mode de payement".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(top: 10, bottom: 0),
-                            child: Text( DateFormat('dd/MM/yyyy').format(widget.orderData.date),
+                            child: Text(widget.orderData.modePayment,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
-                                style: AppStyle.txtBody))
+                                style: AppStyle.txtBody)),
+
+                         Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Status de payement".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text( 
+                                  widget.orderData.payemenStatus == "canceled" 
+                                    ? "Annulé" 
+                                    : widget.orderData.payemenStatus == "pending" 
+                                      ? "En attente" 
+                                      : widget.orderData.payemenStatus == "completed" 
+                                        ? "Payer" 
+                                        : "En attente", 
+                                  style: widget.orderData.payemenStatus == "canceled" 
+                                    ? AppStyle.txtOutfitRegular14Red // Texte bleu pour "onTheWay" 
+                                    : widget.orderData.payemenStatus == "pending" 
+                                      ? AppStyle.txtOutfitRegular14Amber // Texte jaune pour "pending" 
+                                      : widget.orderData.payemenStatus == "completed" 
+                                        ? AppStyle.txtOutfitRegular14Green // Texte vert pour "delivered" 
+                                        : AppStyle.txtOutfitBlue, // Texte rouge par défaut 
+                                ), 
+                                ),
+
                       ],
                     )),
                 bottomNavigationBar: Padding(
@@ -217,34 +258,7 @@ class _OrderDetailsInTransitScreenState
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // CustomButton(
-                          //     height: getVerticalSize(54),
-                          //     width: getHorizontalSize(190),
-                          //     text: "Annuler".tr,
-                          //     variant: ButtonVariant.OutlineDeeppurple600,
-                          //     fontStyle:
-                          //         ButtonFontStyle.SFProTextBold18Deeppurple600,
-                          //     onTap: widget.orderData.status!.toLowerCase() ==
-                          //                 "delivered" ||
-                          //             widget.orderData.status!.toLowerCase() ==
-                          //                 "cancelled"
-                          //         ? () {
-                          //             Fluttertoast.showToast(
-                          //                 msg: widget.orderData.status!
-                          //                             .toLowerCase() ==
-                          //                         "delivered"
-                          //                     ? "Your order is deliverd"
-                          //                     : "Your order is already cancel",
-                          //                 toastLength: Toast.LENGTH_SHORT,
-                          //                 gravity: ToastGravity.CENTER,
-                          //                 timeInSecForIosWeb: 1,
-                          //                 backgroundColor: Colors.black,
-                          //                 textColor: Colors.white,
-                          //                 fontSize: 16.0);
-                          //           }
-                          //         : () {
-                          //             onTapCancelorder();
-                          //           }),
+                          
                           CustomButton(
                             height: getVerticalSize(54),
                             width: getHorizontalSize(190),
@@ -326,24 +340,18 @@ class _OrderDetailsInTransitScreenState
         );
       },
     );
-    // Get.toNamed(
-    //  AppRoutes.cancelOrderScreen,
-    // );
+
   }
 
   onTapTrackorder() {
-  
-
     Get.toNamed(
-                                    AppRoutes.trackingDetailsScreen,
-                                      arguments: {
-                                        'orderId': widget.orderData.orderID, // Numéro de commande
-                                        'docID': widget.orderData.docID, // Numéro de commande
-                                        'date': widget.orderData.date, // Date de la commande
-                                        'status': widget.orderData.status, 
-                                        
-                                        
-                                      },);
+      AppRoutes.trackingDetailsScreen,
+      arguments: {
+      'orderId': widget.orderData.orderID, // Numéro de commande
+      'docID': widget.orderData.docID, // Numéro de commande
+      'dateRegister': widget.orderData.date, // Date de la commande
+      'status': widget.orderData.status, 
+      },);
   }
 
   onTapArrowleft18() {

@@ -8,12 +8,9 @@ import 'home_slider_model.dart';
 class HomeData {
   static List<HomeSlider> getSliderData() {
     return [
-      HomeSlider(ImageConstant.imgSlider1st,
-          "Livraison"),
-      HomeSlider(ImageConstant.imgSlider2nd,
-          "Courses"),
-      HomeSlider(ImageConstant.imgSlider3rd,
-          "Déménagement"),
+      HomeSlider(ImageConstant.imgSlider1st, "Livraisons", "Détails sur les livraisons"),
+      HomeSlider(ImageConstant.imgSlider2nd, "Courses", "Détails sur les courses"),
+      HomeSlider(ImageConstant.imgSlider3rd, "Déménagements", "Détails sur les déménagements"),
     ];
   }
 

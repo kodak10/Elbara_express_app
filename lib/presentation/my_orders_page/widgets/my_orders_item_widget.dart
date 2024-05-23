@@ -26,7 +26,8 @@ class MyOrdersItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
 
  DateTime date = myOrdersItemModelObj.date; // Utilisation directe de la date Timestamp
-    String formattedDate = DateFormat('dd/MM/yyyy').format(date); // Formatter la date en chaîne de caractères
+  String formattedDateTime = DateFormat('dd/MM/yyyy HH:mm').format(date);
+
     
     return GestureDetector(
       onTap: () {
@@ -96,33 +97,40 @@ class MyOrdersItemWidget extends StatelessWidget {
                     ),
                   ),
                   Spacer(),
-                  Container(
-                    height: getSize(32),
-                    width: getSize(102),
-                    decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(getHorizontalSize(16)),
-                        border: Border.all(
-                            color: myOrdersItemModelObj.status!
-                                        .toLowerCase() ==
-                                    "onTheWay"
-                                ? ColorConstant.greenA700
-                                : myOrdersItemModelObj.status!.toLowerCase() ==
-                                        "pending"
-                                    ? ColorConstant.amber700
-                                    : ColorConstant.red)),
-                    child: Center(
-                        child: Text(
-                      myOrdersItemModelObj.status!,
-                      style: myOrdersItemModelObj.status!.toLowerCase() ==
-                              "onTheWay"
-                          ? AppStyle.txtOutfitRegular14Green
-                          : myOrdersItemModelObj.status!.toLowerCase() ==
-                                  "pending"
-                              ? AppStyle.txtOutfitRegular14Amber
-                              : AppStyle.txtOutfitRegular14Red,
-                    )),
-                  )
+                  Container( 
+                      height: getSize(32), 
+                      width: getSize(102), 
+                      decoration: BoxDecoration( 
+                        borderRadius: BorderRadius.circular(getHorizontalSize(16)), 
+                        border: Border.all( 
+                          color: myOrdersItemModelObj.status!.toLowerCase() == "canceled" 
+                            ? ColorConstant.red  // Bordure bleue pour "onTheWay" 
+                            : myOrdersItemModelObj.status!.toLowerCase() == "pending" 
+                              ? ColorConstant.amber700 // Bordure jaune pour "pending" 
+                              : myOrdersItemModelObj.status!.toLowerCase() == "delivered" 
+                                ? ColorConstant.greenA700 // Bordure verte pour "delivered" 
+                                : ColorConstant.blue700, // Bordure rouge par défaut 
+                        ), 
+                      ), 
+                      child: Center( 
+                        child: Text( 
+                          myOrdersItemModelObj.status!.toLowerCase() == "canceled" 
+                            ? "Annulé" 
+                            : myOrdersItemModelObj.status!.toLowerCase() == "pending" 
+                              ? "En attente" 
+                              : myOrdersItemModelObj.status!.toLowerCase() == "delivered" 
+                                ? "Livré" 
+                                : "En transit", 
+                          style: myOrdersItemModelObj.status!.toLowerCase() == "canceled" 
+                            ? AppStyle.txtOutfitRegular14Red // Texte bleu pour "onTheWay" 
+                            : myOrdersItemModelObj.status!.toLowerCase() == "pending" 
+                              ? AppStyle.txtOutfitRegular14Amber // Texte jaune pour "pending" 
+                              : myOrdersItemModelObj.status!.toLowerCase() == "delivered" 
+                                ? AppStyle.txtOutfitRegular14Green // Texte vert pour "delivered" 
+                                : AppStyle.txtOutfitBlue, // Texte rouge par défaut 
+                        ), 
+                      ), 
+                    )
                 ],
               ),
               Padding(
@@ -130,7 +138,7 @@ class MyOrdersItemWidget extends StatelessWidget {
                   top: 17,
                 ),
                 child: Text(
-                  "Date: $formattedDate",
+                  "Date: $formattedDateTime",
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.left,
                   style: AppStyle.txtSFProTextRegular14,

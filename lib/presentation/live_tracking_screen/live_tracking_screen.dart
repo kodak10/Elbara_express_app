@@ -40,63 +40,71 @@ class LiveTrackingScreen extends GetWidget<LiveTrackingController> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                        width: getHorizontalSize(146),
-                        margin: getMargin(top: 1),
-                        child: RichText(
-                            text: TextSpan(children: [
-                              TextSpan(
-                                  text: "Destination".tr,
+                   Container(
+                    width: getHorizontalSize(146),
+                    margin: getMargin(top: 1),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Placeholder pour l'image du livreur
+                        Container(
+                          width: getHorizontalSize(60), // Largeur de l'image du livreur
+                          height: getVerticalSize(60), // Hauteur de l'image du livreur
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey, // Couleur de fond de l'image
+                          ),
+                          // Vous pouvez remplacer ce Container par un widget Image pour afficher l'image du livreur
+                        ),
+                        SizedBox(width: getHorizontalSize(8)), // Espacement entre l'image et le texte
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Nom & prénoms du livreur".tr,
+                                  //overflow: TextOverflow.ellipsis, // Tronquer le texte avec des points de suspension s'il est trop long
                                   style: TextStyle(
-                                      color: ColorConstant.gray600,
-                                      fontSize: getFontSize(16),
-                                      fontFamily: 'SF Pro Text',
-                                      fontWeight: FontWeight.w400)),
-                              TextSpan(
-                                  text: " \n".tr,
-                                  style: TextStyle(
-                                      color: ColorConstant.black900,
-                                      fontSize: getFontSize(16),
-                                      fontFamily: 'SF Pro Text',
-                                      fontWeight: FontWeight.w400)),
-                              TextSpan(
-                                  text: "msg_express_delivery".tr,
-                                  style: TextStyle(
-                                      color: ColorConstant.black900,
-                                      fontSize: getFontSize(18),
-                                      fontFamily: 'SF Pro Text',
-                                      fontWeight: FontWeight.w600))
-                            ]),
-                            textAlign: TextAlign.left)),
+                                    color: ColorConstant.black900,
+                                    fontSize: getFontSize(18),
+                                    fontFamily: 'SF Pro Text',
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                     Container(
                         width: getHorizontalSize(99),
                         margin: getMargin(top: 1),
-                        child: RichText(
-                            text: TextSpan(children: [
-                              TextSpan(
-                                  text: "lbl_status".tr,
-                                  style: TextStyle(
-                                      color: ColorConstant.gray600,
-                                      fontSize: getFontSize(16),
-                                      fontFamily: 'SF Pro Text',
-                                      fontWeight: FontWeight.w400)),
-                              TextSpan(
-                                  text: " \n".tr,
-                                  style: TextStyle(
-                                      color: ColorConstant.black900,
-                                      fontSize: getFontSize(16),
-                                      fontFamily: 'SF Pro Text',
-                                      fontWeight: FontWeight.w400)),
-                              TextSpan(
-                                  text: "Colis en chemin".tr,
-                                  style: TextStyle(
-                                      color: ColorConstant.black900,
-                                      fontSize: getFontSize(18),
-                                      fontFamily: 'SF Pro Text',
-                                      fontWeight: FontWeight.w600))
-                            ]),
-                            textAlign: TextAlign.left)),
+                        child:IconButton(
+                          icon: Image.asset(
+                            ImageConstant.phone,
+                            width: 32, // Largeur de l'image
+                            height: 32, // Hauteur de l'image
+                          ),
+                          onPressed: () {
+                            // Ajoutez ici la logique pour lancer le numéro de téléphone
+                            // Par exemple, vous pouvez utiliser la méthode launch de url_launcher pour lancer un appel téléphonique
+                            // Assurez-vous d'ajouter le package url_launcher à votre pubspec.yaml
+                            // Par exemple :
+                            // launch('tel:$phoneNumber');
+                          },
+                        )
+
+                            ),
+
+                            
                   ])),
+
+                  
+
+                  
           SizedBox(
             height: getVerticalSize(16),
           )

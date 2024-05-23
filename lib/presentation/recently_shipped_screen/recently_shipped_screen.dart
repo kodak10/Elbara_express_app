@@ -218,7 +218,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                           arguments: {
                                             'orderId': data['orderId'], // Numéro de commande
                                             'docID': document.id, // Numéro de commande
-                                            'dateRegister': data['dateRegister'], // Date de la commande
+                                            'dateRegister': (data['dateRegister'] as Timestamp).toDate(), // Date de la commande
                                             'status': data['deliveryStatus'],
                                           }
                                         );

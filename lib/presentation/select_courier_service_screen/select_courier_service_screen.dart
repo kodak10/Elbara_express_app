@@ -54,6 +54,9 @@ class _SelectCourierServiceScreenState
 
   late String paymentUrl = "";
   late String paymentRef = "";
+  late String imageUrl = "";
+
+  String documentId = "";
 
   String mode_paiement =
       ''; // Définir une variable pour stocker la valeur sélectionnée
@@ -193,8 +196,6 @@ class _SelectCourierServiceScreenState
 
       'price': selectedPrice,
       'paymentMethod': mode_paiement,
-      'payementQrCode': "", // le lien de l'image generer
-      'paymentStatus': "", // Statut de payement si il a bien payer ou pas
     };
 
     Map<String, dynamic> addressModel = {
@@ -215,6 +216,13 @@ class _SelectCourierServiceScreenState
       // Enregistrez toutes ces données dans la collection Firestore
       DocumentReference documentReference =
           await _firestore.collection('orders').add(combinedData);
+
+      // Récupérer l'ID du document nouvellement ajouté
+      documentId = documentReference.id;
+
+      // Afficher l'ID du document dans un print
+      print('ID du document ajouté: $documentId');
+
       // Naviguez vers l'écran suivant si nécessaire
     } catch (error) {
       print('Erreur lors de l\'enregistrement des données: $error');
@@ -265,7 +273,9 @@ class _SelectCourierServiceScreenState
         paymentRef = responseData['reference_number'];
 
         //generateQRAndUpload(context, paymentUrl);
-        saveCommande(paymentUrl);
+        await saveCommande(paymentUrl);
+        await saveQRImage(context, paymentUrl, documentId);
+
 
         // Ouvrir l'URL de paiement dans le navigateur par défaut
         launch(paymentUrl);
@@ -332,10 +342,8 @@ class _SelectCourierServiceScreenState
         // generateQRAndUpload(context, paymentUrl);
         await saveCommande(paymentUrl);
 
-        // Save QR code image to Firebase Storage
-        await saveQRImage(
-          paymentUrl,
-        ); // Assuming paymentRef is the file name
+        // Appeler saveQRImage en passant le context actuel
+        await saveQRImage(context, paymentUrl, documentId);
 
         print('okay');
       } else {
@@ -357,75 +365,71 @@ class _SelectCourierServiceScreenState
     }
   }
 
-  Future<void> saveQRImage(String paymentUrl) async {
-    print('0');
+  Future<void> saveQRImage(
+      BuildContext context, String paymentUrl, String documentId) async {
     // Créer une clé pour le RepaintBoundary
     final boundaryKey = GlobalKey();
-    print('1');
 
-    // Utiliser Builder pour accéder au contexte de construction
-    Builder(
-      builder: (context) {
-            print('2');
+    // Construire le widget pour générer le QR code
+    final qrImageView = QrImageView(
+      data: paymentUrl,
+      version: QrVersions.auto,
+      size: 50.0, // Taille du code QR
+    );
 
-        // Créer une nouvelle instance de QrImageView avec les données appropriées
-        final qrImageView = QrImageView(
-          data: paymentUrl,
-          version: QrVersions.auto,
-          size: 200.0, // Taille du code QR
-        );
-    print('3');
+    // Attendre que le widget soit rendu pour capturer l'image
+    final qrWidget = RepaintBoundary(
+      key: boundaryKey,
+      child: qrImageView,
+    );
 
-        // Attendre que le widget soit construit
-        WidgetsBinding.instance!.addPostFrameCallback((_) async {
-              print('4');
-
-          // Récupérer le contexte de la clé
-          final RenderRepaintBoundary boundary = boundaryKey.currentContext!
-              .findRenderObject() as RenderRepaintBoundary;
-
-          // Dessiner le QR code sur un canevas
-          final image = await boundary.toImage(pixelRatio: 3.0);
-          final byteData =
-              await image.toByteData(format: ui.ImageByteFormat.png);
-    print('5');
-
-          if (byteData != null) {
-                print('6');
-
-            final Uint8List bytes = byteData.buffer.asUint8List();
-
-            // Enregistrer les bytes dans Firebase Storage
-            try {
-              await FirebaseStorage.instance
-                  .ref()
-                  .child(
-                      'payment/codeQr.png') // Nom du fichier dans Firebase Storage
-                  .putData(bytes);
-              print('Image du code QR enregistrée avec succès.');
-            } catch (error) {
-              print(
-                  "Erreur lors de l'enregistrement de l'image du code QR : $error");
-            }
-          } else {
-            print('Erreur lors de la conversion du code QR en bytes.');
-          }
-        });
-
-        return RepaintBoundary(
-          key: boundaryKey,
-          child: qrImageView,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: qrWidget,
         );
       },
     );
-  }
 
-  void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+    // Attendre pendant 2 secondes avant de capturer l'image
+    await Future.delayed(Duration(seconds: 2));
+
+    // Rendre le widget hors écran
+    final RenderRepaintBoundary? boundary = boundaryKey.currentContext
+        ?.findRenderObject() as RenderRepaintBoundary?;
+
+    if (boundary != null) {
+      // Dessiner le QR code sur un canevas
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+      if (byteData != null) {
+        final Uint8List bytes = byteData.buffer.asUint8List();
+
+        // Enregistrer les bytes dans Firebase Storage
+        final ref = FirebaseStorage.instance.ref().child(
+            'paymentQrCode/$documentId.png'); // Nom du fichier dans Firebase Storage
+        await ref.putData(bytes);
+
+        // Récupérer le lien de téléchargement de l'image
+        final imageUrl = await ref.getDownloadURL();
+
+        // // Mettre à jour le champ paymentLink dans la collection orders
+        await FirebaseFirestore.instance
+            .collection('orders')
+            .doc(documentId)
+            .update({
+          'paymentQrCodeLink': imageUrl,
+        });
+
+        print('Image du code QR enregistrée avec succès. Lien : $imageUrl');
+      } else {
+        print('Erreur lors de la conversion du code QR en bytes.');
+      }
+    } else {
+      print('Erreur: Impossible de trouver le RenderRepaintBoundary.');
+    }
   }
 
   @override

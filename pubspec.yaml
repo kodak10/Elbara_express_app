@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: '>=3.3.0 <4.0.0'
@@ -31,11 +31,11 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.5
-  connectivity_plus:
+  connectivity_plus: ^6.0.3
   shared_preferences: ^2.2.0
   cached_network_image: ^3.3.1
   flutter_svg:
-  country_pickers: ^2.0.0
+  country_pickers: ^3.0.1
   flutter_svg_provider:
   carousel_slider: ^4.2.1
   smooth_page_indicator: ^1.1.0
@@ -92,6 +92,10 @@ dependencies:
   cloud_functions: ^4.7.4
   flutter_local_notifications: ^17.1.2
   pretty_qr_code: ^3.3.0
+  googleapis: ^13.1.0
+  googleapis_auth: ^1.5.1
+  firebase_analytics: ^10.10.6
+  
 
 dev_dependencies:
   flutter_test:
@@ -105,9 +109,10 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
+  # android: "launcher_icon"
   image_path: "assets/images/icon.png"
+  android: true
+  ios: true
   adaptive_icon_background: "#FF0000"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -122,6 +127,8 @@ flutter:
     - assets/images/login_background.png
     - assets/images/loading_1.json
     - assets/images/loading_2.json
+    - assets/images/custom_splash_animation.json
+    - assets/images/appBar.png
 
 
   fonts:

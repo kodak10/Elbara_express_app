@@ -65,7 +65,9 @@ class _SelectCourierServiceScreenState
 
   String selectedVehicle = 'Moto';
 
-  double selectedPrice = 0.0;
+  int selectedPrice = 0;
+  int price = 0;
+
   GeoPoint geoPoint =
       GeoPoint(37.4219983, -122.084); // en attente de api google maps
 
@@ -80,18 +82,8 @@ class _SelectCourierServiceScreenState
     return orderId;
   }
 
-  void sendNotification(String userToken, String title, String body) {
-    // Remplacez cet appel par l'envoi de la notification via Firebase Cloud Messaging
-    // Exemple fictif :
-    // firebaseMessaging.send(notification: {
-    //   'title': title,
-    //   'body': body,
-    //   'token': userToken,
-    // });
-    print('Notification envoyée à $userToken : $title - $body');
-  }
-
   Map<String, dynamic>? DataInfos;
+  // Récupérer le prix depuis les données
 
   void _showLoadingDialog() {
     showDialog(
@@ -139,7 +131,7 @@ class _SelectCourierServiceScreenState
 
     // Récupérer les données transmises depuis l'écran précédent
     DataInfos = Get.arguments as Map<String, dynamic>;
-    selectedPrice = calculatePrice("Moto", 3.0, 1.0, 1.0);
+    price = DataInfos!['priceCalculed'];
   }
 
   Future<void> _loadUserData() async {
@@ -166,8 +158,7 @@ class _SelectCourierServiceScreenState
 
     // Collectez toutes les données de l'écran 2
     Map<String, dynamic> screen2Data = {
-      'dateRegister': date,
-      'date': 57755,
+      'date': date,
       'deliveryGeoPoint': geoPoint,
       'deliveryId': '',
       'deliveryStatus': 'pending',
@@ -177,25 +168,19 @@ class _SelectCourierServiceScreenState
       'order_confirm': true,
       'order_delivered': false,
       'order_on_delivery': false,
-
       'pickupOption': "delivery",
       'selectedVehicle': selectedVehicle,
       'status': 'accepte',
-      'lieu_depart': 'Abidjan, Abobo',
-      'lieu_arrive': 'Abidjan, Cocody',
-
       'userNote': "",
       'order_confirm_date': FieldValue.serverTimestamp(),
       'order_delivered_date': FieldValue.serverTimestamp(),
       'order_on_delivery_date': FieldValue.serverTimestamp(),
-
       'userId': _currentUser.uid,
       'userName': name,
       'userPhone': phoneNumber,
       'userImage': image,
-
-      'price': selectedPrice,
       'paymentMethod': mode_paiement,
+      'price': selectedPrice
     };
 
     Map<String, dynamic> addressModel = {
@@ -214,14 +199,16 @@ class _SelectCourierServiceScreenState
 
     try {
       // Enregistrez toutes ces données dans la collection Firestore
-      DocumentReference documentReference =
-          await _firestore.collection('orders').add(combinedData);
+      // DocumentReference documentReference =
+      //     await _firestore.collection('orders').add(combinedData);
 
+      
+
+      //DocumentReference documentReference = await _firestore.collection('orders').doc(orderId).set(combinedData); // Utiliser l'identifiant unique comme nom de document
+      await _firestore.collection('orders').doc(orderId).set(combinedData); // Utiliser l'identifiant unique comme nom de document
+      
       // Récupérer l'ID du document nouvellement ajouté
-      documentId = documentReference.id;
-
-      // Afficher l'ID du document dans un print
-      print('ID du document ajouté: $documentId');
+      //documentId = documentReference.id;
 
       // Naviguez vers l'écran suivant si nécessaire
     } catch (error) {
@@ -231,6 +218,8 @@ class _SelectCourierServiceScreenState
   }
 
   Future<void> initiatePayment(BuildContext context) async {
+        print('prix: $selectedPrice');
+
     // Remplacez ces valeurs par vos véritables identifiants API PayDunya
     String masterKey = 'fhRrUGWg-Upkg-0r3x-Z7DI-d8fR0aIHgxc2';
 
@@ -241,7 +230,6 @@ class _SelectCourierServiceScreenState
     String url = 'https://app.paydunya.com/api/v1/dmp-api'; // production
 
     String phoneNumberWithoutPlus = phoneNumber.substring(1);
-    print('Numéro de téléphone sans le symbole + : $phoneNumberWithoutPlus');
 
     // Payload pour initier le paiement (remplacez-le par les données réelles de votre paiement)
     Map<String, dynamic> payload = {
@@ -274,7 +262,11 @@ class _SelectCourierServiceScreenState
 
         //generateQRAndUpload(context, paymentUrl);
         await saveCommande(paymentUrl);
-        await saveQRImage(context, paymentUrl, documentId);
+        //await saveQRImage(context, paymentUrl, documentId);
+
+        await Future.delayed(Duration(seconds: 1));
+
+        selectDelivery(); // Utilisez this pour appeler les méthodes de classe
 
 
         // Ouvrir l'URL de paiement dans le navigateur par défaut
@@ -301,6 +293,7 @@ class _SelectCourierServiceScreenState
   }
 
   Future<void> initiatePaymentLivraison(BuildContext context) async {
+    print('prix: $selectedPrice');
     // Remplacez ces valeurs par vos véritables identifiants API PayDunya
     String masterKey = 'fhRrUGWg-Upkg-0r3x-Z7DI-d8fR0aIHgxc2';
 
@@ -343,7 +336,7 @@ class _SelectCourierServiceScreenState
         await saveCommande(paymentUrl);
 
         // Appeler saveQRImage en passant le context actuel
-        await saveQRImage(context, paymentUrl, documentId);
+        //await saveQRImage(context, paymentUrl, documentId);
 
         print('okay');
       } else {
@@ -383,14 +376,20 @@ class _SelectCourierServiceScreenState
       child: qrImageView,
     );
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: qrWidget,
-        );
-      },
-    );
+
+    Navigator.of(context, rootNavigator: true).push(
+  PageRouteBuilder(
+    opaque: false, // Rend le fond transparent
+    pageBuilder: (BuildContext context, _, __) {
+      return Dialog(
+        elevation: 0, // Supprime l'ombre de la boîte de dialogue
+        backgroundColor: Colors.transparent, // Rend le fond transparent
+        child: qrWidget,
+      );
+    },
+  ),
+);
+
 
     // Attendre pendant 2 secondes avant de capturer l'image
     await Future.delayed(Duration(seconds: 2));
@@ -423,6 +422,9 @@ class _SelectCourierServiceScreenState
           'paymentQrCodeLink': imageUrl,
         });
 
+        Navigator.pop(context);
+
+
         print('Image du code QR enregistrée avec succès. Lien : $imageUrl');
       } else {
         print('Erreur lors de la conversion du code QR en bytes.');
@@ -430,13 +432,13 @@ class _SelectCourierServiceScreenState
     } else {
       print('Erreur: Impossible de trouver le RenderRepaintBoundary.');
     }
+
+        Navigator.pop(context);
+
   }
 
   @override
   Widget build(BuildContext context) {
-    double distance = 50.0;
-    double weight = 1.0;
-    double size = 1.0;
     return Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -455,8 +457,7 @@ class _SelectCourierServiceScreenState
                   onPressed: () {
                     setState(() {
                       selectedVehicle = 'Moto';
-                      selectedPrice =
-                          calculatePrice("Moto", distance, weight, size);
+                      selectedPrice = price;
                     });
                   },
                   style: ButtonStyle(
@@ -490,7 +491,7 @@ class _SelectCourierServiceScreenState
                           ],
                         ),
                         Text(
-                          '${calculatePrice("Moto", distance, weight, size)} \FCFA',
+                          '$price \FCFA',
                           style: TextStyle(
                             fontWeight:
                                 FontWeight.bold, // Applique le style gras
@@ -510,8 +511,7 @@ class _SelectCourierServiceScreenState
                   onPressed: () {
                     setState(() {
                       selectedVehicle = 'Tricycle';
-                      selectedPrice =
-                          calculatePrice("Tricycle", distance, weight, size);
+                      selectedPrice = (price * 2.60).toInt();
                     });
                   },
                   style: ButtonStyle(
@@ -545,7 +545,7 @@ class _SelectCourierServiceScreenState
                           ],
                         ),
                         Text(
-                          '${calculatePrice("Tricycle", distance, weight, size)} \FCFA',
+                          '${price * 2.60} \FCFA',
                           style: TextStyle(
                             fontWeight:
                                 FontWeight.bold, // Applique le style gras
@@ -565,8 +565,7 @@ class _SelectCourierServiceScreenState
                   onPressed: () {
                     setState(() {
                       selectedVehicle = 'Camion';
-                      selectedPrice =
-                          calculatePrice("Camion", distance, weight, size);
+                      selectedPrice = (price * 3.70).toInt();
                     });
                   },
                   style: ButtonStyle(
@@ -600,7 +599,7 @@ class _SelectCourierServiceScreenState
                           ],
                         ),
                         Text(
-                          '${calculatePrice("Camion", distance, weight, size)} \FCFA',
+                          '${price * 3.70} \FCFA',
                           style: TextStyle(
                             fontWeight:
                                 FontWeight.bold, // Applique le style gras
@@ -703,84 +702,56 @@ class _SelectCourierServiceScreenState
                           ),
                         ])),
               ),
-
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       child: Container(
-              //         padding: EdgeInsets.all(8),
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(8),
-              //         ),
-              //         child: CustomButtonSelect(
-              //           buttonText: 'Payer Maintenant',
-              //           isSelected: selectedButton == 'now',
-              //           onPressed: () {
-              //             setState(() {
-              //               selectedButton = 'now';
-              //             });
-              //           },
-              //         ),
-              //       ),
-              //     ),
-              //     SizedBox(width: 20),
-              //     Expanded(
-              //       child: Container(
-              //         padding: EdgeInsets.all(8),
-              //         decoration: BoxDecoration(
-              //           borderRadius: BorderRadius.circular(8),
-              //         ),
-              //         child: CustomButtonSelect(
-              //           buttonText: 'Payer à la Livraison',
-              //           isSelected: selectedButton == 'delivery',
-              //           onPressed: () {
-              //             setState(() {
-              //               selectedButton = 'delivery';
-              //             });
-              //           },
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
             ]),
-        // bottomNavigationBar: CustomButton(
-        //   height: getVerticalSize(54),
-        //   text: "Suivant".tr,
-        //   margin: getMargin(left: 16, right: 16, bottom: 40),
-        //   onTap: () {
-        //     if (mode_paiement == 'Payer Maintenant') {
-        //       initiatePayment(context);
-        //       saveCommande();
-        //       // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
-        //     } else if (mode_paiement == 'Payer à la livraison') {
-        //       saveCommande();
-
-        //       this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
-        //     } else {
-        //       // Echec de l'initiation de paiement
-        //       ScaffoldMessenger.of(context).showSnackBar(
-        //         SnackBar(
-        //           content: Text('Erreur survenue'),
-        //         ),
-        //       );
-
-        //       // printError(info: 'Veuillez choisir un mode de paiement');
-        //     }
-        //   },
-        // )
-
+        
         bottomNavigationBar: CustomButton(
           height: getVerticalSize(54),
           text: "Valider".tr,
           margin: getMargin(left: 16, right: 16, bottom: 40),
           onTap: () {
+
+            if (selectedVehicle == '') {
+                        // Afficher un SnackBar si selectedD1 est null
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Veuillez sélectionner un engin'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        return;
+            }
+
+             if (selectedPrice == 0) {
+                        // Afficher un SnackBar si selectedD1 est null
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Veuillez sélectionner un engin'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        return;
+            }
+
+            if (mode_paiement == '') {
+                        // Afficher un SnackBar si selectedD1 est null
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Veuillez sélectionner le mode de payement'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        return;
+            }
+
+           
+            
+
             if (mode_paiement == 'Payer Maintenant') {
               _showLoadingDialog(); // Afficher le modal de chargement
               initiatePayment(context);
               //saveCommande(paymentUrl);
               // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
-            } else if (mode_paiement == 'Payer à la livraison') {
+            } else if (mode_paiement == 'Payer Cash') {
               _showLoadingDialog(); // Afficher le modal de chargement
               initiatePaymentLivraison(context);
               //saveCommande(paymentUrl);
@@ -794,7 +765,7 @@ class _SelectCourierServiceScreenState
                 ),
               );
 
-              // printError(info: 'Veuillez choisir un mode de paiement');
+              printError(info: 'Veuillez choisir un mode de paiement');
             }
           },
         ));
@@ -810,36 +781,6 @@ class _SelectCourierServiceScreenState
     Get.toNamed(
       AppRoutes.orderSuccessScreen,
     );
-  }
-
-// Fonction pour calculer le prix en fonction de la distance, du poids et de la taille du colis
-  double calculatePrice(
-      String selectedVehicle, double distance, double weight, double size) {
-    double basePrice = 0.0;
-    double additionalCost = 0.0;
-
-    // Déterminer le tarif de base en fonction du type de véhicule
-    switch (selectedVehicle) {
-      case 'Moto':
-        basePrice = 5.0; // Tarif de base pour la moto
-        break;
-      case 'Tricycle':
-        basePrice = 8.0; // Tarif de base pour le tricycle
-        break;
-      case 'Camion':
-        basePrice = 12.0; // Tarif de base pour le camion
-        break;
-      default:
-        basePrice = 0.0;
-    }
-
-    // Calculer les frais supplémentaires en fonction du poids et de la taille du colis
-    additionalCost = (weight * 2) + (size * 3);
-
-    // Calculer le prix total en combinant le tarif de base, les frais supplémentaires et la distance
-    double totalPrice = (basePrice * distance) + additionalCost;
-
-    return totalPrice;
   }
 }
 

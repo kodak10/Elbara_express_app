@@ -35,7 +35,7 @@ class SplashOneScreen extends GetWidget<SplashOneController> {
                   bottom: 5,
                 ),
                 child: Text(
-                  "Elbara Express".tr,
+                  "Elbara Express on splash".tr,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.left,
                   style: AppStyle.txtSFProTextBold30,

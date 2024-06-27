@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -78,6 +79,18 @@ void _showLoadingDialog() {
       child: ColorfulSafeArea(
         color: ColorConstant.whiteA700,
         child: Scaffold(
+          
+
+        appBar: CustomAppBar(
+          height: 79.0,
+          title: Image.asset(
+            'assets/images/appBar.png', // Chemin de votre image
+            height: 200.0, // Hauteur de l'image, ajustez selon vos besoins
+          ),
+          
+          centerTitle: false, // Centrez l'image si vous le souhaitez
+          styleType: Style.bgFillWhiteA700, // Utilisez le style défini
+        ),
           resizeToAvoidBottomInset: false,
           backgroundColor: ColorConstant.whiteA700,
           body: Form(
@@ -88,7 +101,7 @@ void _showLoadingDialog() {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Padding(
+                   Padding(
                     padding: getPadding(top: 5),
                     child: Text(
                       "Content de vous revoir!",
@@ -101,8 +114,8 @@ void _showLoadingDialog() {
                     padding: getPadding(top: 22),
                     child: Text(
                       "Utilisez le formulaire ci-dessous pour accéder à votre compte.",
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left,
+                      //overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                       style: AppStyle.txtBody,
                     ),
                   ),

@@ -1,5 +1,7 @@
 import 'package:elbara_express/presentation/home_container_page/models/home_slider_model.dart';
+import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import '../home_container_page/widgets/slidermaskgroup_item_widget.dart';
@@ -46,8 +48,22 @@ class HomeContainerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
-
-    return Container(
+// Initialiser la locale en français
+    initializeDateFormatting('fr_FR', null);
+    
+    return Scaffold(
+      appBar: CustomAppBar(
+          height: 69.0,
+          title: Image.asset(
+            'assets/images/appBar.png', // Chemin de votre image
+            height: 180.0, // Hauteur de l'image, ajustez selon vos besoins
+          ),
+          
+          centerTitle: false, // Centrez l'image si vous le souhaitez
+          styleType: Style.bgFillWhiteA700, // Utilisez le style défini
+        ),
+      body: Container(
+      
       decoration: AppDecoration.white,
       child: Column(
         children: [
@@ -60,7 +76,7 @@ class HomeContainerPage extends StatelessWidget {
                 // Carousel Slider
                 CarouselSlider.builder(
                   options: CarouselOptions(
-                    height: getVerticalSize(140),
+                    height: getVerticalSize(150),
                     initialPage: 0,
                     autoPlay: true,
                     viewportFraction: 0.8,
@@ -313,6 +329,7 @@ class HomeContainerPage extends StatelessWidget {
                     stream: FirebaseFirestore.instance
                         .collection('orders')
                         .where('userId', isEqualTo: user?.uid)
+                         .orderBy('date', descending: true)
                         .limit(5)
                         .snapshots(),
                     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -373,7 +390,7 @@ class HomeContainerPage extends StatelessWidget {
                                       ),
                                       SizedBox(height: getVerticalSize(15)),
                                       Text(
-                                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
+                                        "Date: ${DateFormat("d MMMM y à HH:mm:ss", 'fr_FR').format(data['date'].toDate())}",
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
                                         style: AppStyle.txtSFProTextRegular14,
@@ -398,7 +415,7 @@ class HomeContainerPage extends StatelessWidget {
                                       ),
                                       SizedBox(height: getVerticalSize(15)),
                                       CustomButton(
-                                        onTap: () {
+                                         onTap: () {
                                           print('status_avant: $status');
                                           Get.toNamed(
                                               AppRoutes.trackingDetailsScreen,
@@ -407,7 +424,7 @@ class HomeContainerPage extends StatelessWidget {
                                                     'orderId'], // Numéro de commande
                                                 'docID': document
                                                     .id, // Numéro de commande
-                                               'dateRegister': (data['dateRegister'] as Timestamp).toDate(), // Date de la commande
+                                               'dateRegister': (data['date'] as Timestamp).toDate(), // Date de la commande
                                                 'status': status,
                                               });
                                         },
@@ -437,7 +454,12 @@ class HomeContainerPage extends StatelessWidget {
           ),
         ],
       ),
+
+
+      )
     );
+
+
   }
 
   onTapTxtViewall() {

@@ -47,6 +47,10 @@ class ColorConstant {
   static Color cyan400 = fromHex('#30acc7');
   static Color red = fromHex('#D93636');
 
+  static Color bleuElbara = fromHex('#11078c');
+
+  static const Color customAppBarColor = Color(0xFF11078C);
+
   static Color fromHex(String hexString) {
     final buffer = StringBuffer();
     if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');

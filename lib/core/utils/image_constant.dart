@@ -15,7 +15,7 @@ class ImageConstant {
   static String imgArrowdownBlack900 =
       'assets/images/img_arrowdown_black_900.svg';
 
-  static String imgCar = 'assets/images/img_car.svg';
+  static String imgCar = 'assets/images/icon.svg';
 
 
   static String imgUSerIcon = 'assets/images/user_icon.svg';
@@ -44,7 +44,7 @@ class ImageConstant {
   static String imgApplePayIcon = 'assets/images/moov.svg';
   static String imgGooglePayIcon = 'assets/images/mtn.svg';
 
-  static String imgVector = 'assets/images/img_vector.svg';
+  static String imgVector = 'assets/images/icon.svg';
   static String imgTickIcon = 'assets/images/tick_icon.svg';
   static String imgTimeLineIcon = 'assets/images/time_line_icon.svg';
 

@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 
 import 'controller/splash_controller.dart';
 import 'package:elbara_express/core/app_export.dart';
@@ -28,22 +29,27 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-            backgroundColor: ColorConstant.whiteA700,
+            backgroundColor: ColorConstant.bleuElbara,
             body: SizedBox(
                 width: double.maxFinite,
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CustomImageView(
-                          svgPath: ImageConstant.imgVector,
-                          height: getVerticalSize(79),
-                          width: getHorizontalSize(100)),
+                      FractionallySizedBox(
+                        widthFactor: 0.64,
+                        child:  Lottie.asset(
+                         'assets/images/custom_splash_animation.json',
+                          
+                        ),
+                      ),
                       Padding(
                           padding: getPadding(top: 24, bottom: 5),
-                          child: Text("Elbara Express".tr,
+                          child: Text("ELBARA EXPRESS".tr,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.left,
-                              style: AppStyle.txtSFProTextBold32))
+                              style: AppStyle.txtSFProTextBold32.copyWith(color: ColorConstant.whiteA700)
+)
+                      )
                     ]))));
   }
 }

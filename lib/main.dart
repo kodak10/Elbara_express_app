@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/app_export.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 //import 'firebase_options.dart';
 
 Future main() async {
@@ -18,16 +20,8 @@ Future main() async {
         storageBucket: "elbaraexpress-9b834.appspot.com", // Nom du bucket uniquement
       ),
     );
-      FirebaseNotificationService().setupFirebase(); // Initialiser le service de notifications Firebase
-
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   const SystemUiOverlayStyle(
-  //     statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-  //     statusBarIconBrightness: Brightness.dark, // For Android: (dark icons)
-  //   ),
-  // );
-
-
+  FirebaseNotificationService().setupFirebase(); // Initialiser le service de notifications Firebase
+  
   runApp(MyApp());
 }
 
@@ -55,7 +49,7 @@ class MyApp extends StatelessWidget {
       translations: AppLocalization(),
       locale: Get.deviceLocale, //for setting localization strings
       fallbackLocale: Locale('en', 'US'),
-      title: 'Elbara Express',
+      title: 'Elbara Express main',
       initialBinding: InitialBindings(),
       initialRoute: AppRoutes.initialRoute,
       getPages: AppRoutes.pages,

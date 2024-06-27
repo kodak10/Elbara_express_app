@@ -103,7 +103,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                       arguments: {
                                         'orderId': orderId, // Numéro de commande
                                         'docID': doc.id, // Numéro de commande
-                                        'dateRegister': (data['dateRegister'] as Timestamp).toDate(), // Date de la commande
+                                        'dateRegister': (data['date'] as Timestamp).toDate(), // Date de la commande
                                         'status': data['deliveryStatus'], 
                                         
                                       },);

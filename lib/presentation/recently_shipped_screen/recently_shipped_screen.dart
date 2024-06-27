@@ -5,6 +5,7 @@ import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_icon_button.dart';
@@ -41,6 +42,8 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
+        initializeDateFormatting('fr_FR', null);
+
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -68,6 +71,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                   stream: FirebaseFirestore.instance
                       .collection('orders')
                       .where('userId', isEqualTo: user?.uid)
+                      .orderBy('date', descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -105,7 +109,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                           var data = document.data() as Map<String, dynamic>;
                           String name =
                               documents[index].get('nom_receptioneur');
-                          Timestamp timestamp = document.get('dateRegister');
+                          Timestamp timestamp = document.get('date');
                           DateTime date = timestamp.toDate();
 
                           String status =
@@ -188,7 +192,8 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                         ]),
                                     SizedBox(height: 12),
                                     Text(
-                                        "Date: ${DateFormat("d MMMM y à HH:mm:ss").format(data['dateRegister'].toDate())}",
+                                        "Date: ${DateFormat("d MMMM y à HH:mm:ss", 'fr_FR').format(data['date'].toDate())}",
+
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.left,
                                         style: AppStyle.txtSFProTextRegular14),
@@ -212,17 +217,19 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                     Padding(
                                         padding: getPadding(left: 8, right: 8),
                                         child: CustomButton(
-                                          onTap: () {
-                                             Get.toNamed(
-                                          AppRoutes.trackingDetailsScreen,
-                                          arguments: {
-                                            'orderId': data['orderId'], // Numéro de commande
-                                            'docID': document.id, // Numéro de commande
-                                            'dateRegister': (data['dateRegister'] as Timestamp).toDate(), // Date de la commande
-                                            'status': data['deliveryStatus'],
-                                          }
-                                        );
-                                          },
+                                           onTap: () {
+                                          print('status_avant: $status');
+                                          Get.toNamed(
+                                              AppRoutes.trackingDetailsScreen,
+                                              arguments: {
+                                                'orderId': data[
+                                                    'orderId'], // Numéro de commande
+                                                'docID': document
+                                                    .id, // Numéro de commande
+                                               'dateRegister': (data['date'] as Timestamp).toDate(), // Date de la commande
+                                                'status': status,
+                                              });
+                                        },
                                           height: getSize(40),
                                           text: "Suivre la commande",
                                           fontStyle: ButtonFontStyle

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
+import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
 import 'package:elbara_express/widgets/custom_floating_edit_text.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'controller/sign_up_controller.dart';
 import 'package:lottie/lottie.dart';
 
+import 'package:url_launcher/url_launcher.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -26,6 +28,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
+  final _promoCodeController = TextEditingController();
+
+  bool _isPolicyAccepted = false;
+  bool _isPromoCodeValid = true;
 
   @override
   void initState() {
@@ -37,34 +43,71 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.initState();
   }
 
-void _showLoadingDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Lottie.asset(
-                'assets/images/loading_1.json',
-                height: 150,
-                width: 150,
-              ),
-              ],
-            ),
+  @override
+  void dispose() {
+    _promoCodeController.dispose();
+    super.dispose();
+  }
 
-            // SizedBox(height: 16),
-            // Text('Traitement en cours...'), // Texte de chargement
-          ],
-        ),
-      );
-    },
-  );
-}
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Empêcher la fermeture du modal en cliquant en dehors
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/images/loading_1.json',
+                    height: 150,
+                    width: 150,
+                  ),
+                ],
+              ),
+
+              // SizedBox(height: 16),
+              // Text('Traitement en cours...'), // Texte de chargement
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _validatePromoCode() async {
+    final promoCode = _promoCodeController.text;
+    print('code1 : $promoCode');
+    if (promoCode.isEmpty) {
+      setState(() {
+        _isPromoCodeValid = true;
+        print('code2 : $promoCode');
+      });
+      return;
+    }
+
+    try {
+      final promoCodeDoc = await FirebaseFirestore.instance
+          .collection('codePromo')
+          .doc(promoCode)
+          .get();
+
+      setState(() {
+        _isPromoCodeValid = promoCodeDoc.exists;
+        print('code3 : $promoCode');
+      });
+    } catch (e) {
+      setState(() {
+        _isPromoCodeValid = false;
+      });
+      print('code4 : $promoCode');
+      print('Erreur lors de la validation du code promo: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +119,17 @@ void _showLoadingDialog() {
         child: ColorfulSafeArea(
             color: ColorConstant.whiteA700,
             child: Scaffold(
+                appBar: CustomAppBar(
+                  height: 79.0,
+                  title: Image.asset(
+                    'assets/images/appBar.png', // Chemin de votre image
+                    height:
+                        200.0, // Hauteur de l'image, ajustez selon vos besoins
+                  ),
+
+                  centerTitle: false, // Centrez l'image si vous le souhaitez
+                  styleType: Style.bgFillWhiteA700, // Utilisez le style défini
+                ),
                 resizeToAvoidBottomInset: false,
                 backgroundColor: ColorConstant.whiteA700,
                 body: Form(
@@ -96,10 +150,10 @@ void _showLoadingDialog() {
                               Padding(
                                   padding: getPadding(top: 22),
                                   child: Text(
-                                      "Créez un compte en utilisant le formulaire ci-dessous."
+                                      "Créez un compte en remplissant le formulaire ci-dessous."
                                           .tr,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
+                                      //overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
                                       style: AppStyle.txtBody)),
                               CustomFloatingEditText(
                                   controller: controller.nameController,
@@ -183,16 +237,92 @@ void _showLoadingDialog() {
                                       return null;
                                     }),
                               ),
+                              SizedBox(
+                                height: getVerticalSize(16),
+                              ),
+                              TextFormField(
+                                controller: _promoCodeController,
+                                decoration: InputDecoration(
+                                  labelText: 'Code promo',
+                                  border: OutlineInputBorder(),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: _isPromoCodeValid
+                                            ? Colors.green
+                                            : Colors.red),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: _isPromoCodeValid
+                                            ? Colors.green
+                                            : Colors.red),
+                                  ),
+                                  errorText: _isPromoCodeValid
+                                      ? null
+                                      : 'Code promo invalide!',
+                                ),
+                                onEditingComplete: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  _validatePromoCode();
+                                },
+                              ),
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _isPolicyAccepted,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        _isPolicyAccepted = value!;
+                                      });
+                                    },
+                                  ),
+                                  Expanded(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        launch(
+                                            "https://sites.google.com/view/elbara-express");
+                                      },
+                                      child: Text(
+                                        "En m'inscrivant, je reconnais avoir lu et accepté la Politique de Confidentialité",
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               CustomButton(
-                                  height: getVerticalSize(54),
-                                  text: "S'inscrire".tr,
-                                  margin: getMargin(top: 30),
-                                  onTap: () {
-                                    if (_formKey.currentState!.validate()) {
-                                       _showLoadingDialog(); // Afficher le modal de chargement
-                                      onTapSignup();
+                                height: getVerticalSize(54),
+                                text: "S'inscrire".tr,
+                                margin: getMargin(top: 30),
+                                onTap: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (!_isPolicyAccepted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              "Vous devez accepter la politique de confidentialité pour vous inscrire."),
+                                        ),
+                                      );
+                                    } else if (!_isPromoCodeValid) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              "Le code promo saisi n'est pas valide."),
+                                        ),
+                                      );
+                                    } else {
+                                      _showLoadingDialog(); // Afficher le modal de chargement
+                                      onTapSignup(); // Procéder à l'inscription
                                     }
-                                  }),
+                                  }
+                                },
+                              ),
                               Spacer(),
                               GestureDetector(
                                   onTap: () {
@@ -221,34 +351,32 @@ void _showLoadingDialog() {
                             ]))))));
   }
 
-  
-
-  
-
   onTapSignup() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: controller.emailController.text,
           password: controller.passwordController.text,
-
         );
 
         await postDetailsToFirestore(
           controller.emailController.text,
-          controller.nameController.text, // Pass the name from the nameController
+          controller
+              .nameController.text, // Pass the name from the nameController
           defaultRole,
-          controller.phoneNumberController.text, // Pass the phoneNumber from the phoneNumberController
-        );    
+          controller.phoneNumberController
+              .text, // Pass the phoneNumber from the phoneNumberController
+          _promoCodeController.text,
+        );
         PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
 
-          Get.toNamed(AppRoutes.homeContainer1Screen);
+        Get.toNamed(AppRoutes.homeContainer1Screen);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
-           _showSnackBar('Le mot de passe fourni est trop faible.');
+          _showSnackBar('Le mot de passe fourni est trop faible.');
         } else if (e.code == 'email-already-in-use') {
           _showSnackBar('Le compte existe déjà.');
-
         }
       } catch (e) {
         print(e);
@@ -256,49 +384,47 @@ void _showLoadingDialog() {
     }
   }
 
-postDetailsToFirestore(
-  String email,
-  String name,
-  String role,
-  String phoneNumber,
-) async {
-  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  var user = FirebaseAuth.instance.currentUser;
-  CollectionReference ref = firebaseFirestore.collection('users');
+  postDetailsToFirestore(String email, String name, String role,
+      String phoneNumber, String codePromo) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    var user = FirebaseAuth.instance.currentUser;
+    CollectionReference ref = firebaseFirestore.collection('users');
 
-  // Utilisez l'UID de l'utilisateur comme ID du document
-  DocumentReference docRef = ref.doc(user!.uid);
+    // Utilisez l'UID de l'utilisateur comme ID du document
+    DocumentReference docRef = ref.doc(user!.uid);
 
-  // Ajoutez les détails de l'utilisateur à Firestore
-  await docRef.set({
-    'email': email,
-    'displayName': name,
-    'role': defaultRole,
-    'phoneNumber': '+225${controller.phoneNumberController.text}',
-    'photoURL': 'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
-    // Ajoutez d'autres champs selon vos besoins
-  });
+    // Ajoutez les détails de l'utilisateur à Firestore
+    await docRef.set({
+      'email': email,
+      'displayName': name,
+      'role': defaultRole,
+      'phoneNumber': '+225${controller.phoneNumberController.text}',
+      'photoURL':
+          'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
+      'codePromo': codePromo
+      // Ajoutez d'autres champs selon vos besoins
+    });
 
-   // Récupérez l'ID généré par Firebase
-  String documentId = docRef.id;
+    // Récupérez l'ID généré par Firebase
+    String documentId = docRef.id;
 
-  // Mettez à jour le document avec l'ID généré
-  await docRef.update({'id': documentId});
+    // Mettez à jour le document avec l'ID généré
+    await docRef.update({'id': documentId});
 
-  // Redirigez vers la page de connexion
-  Get.toNamed(AppRoutes.logInScreen);
-}
+    // Redirigez vers la page de connexion
+    Get.toNamed(AppRoutes.logInScreen);
+  }
 
-_showSnackBar(String message) {
-  Get.snackbar(
-    "Erreur",
-    message,
-    snackPosition: SnackPosition.BOTTOM,
-    backgroundColor: Colors.red,
-    colorText: Colors.white,
-    duration: Duration(seconds: 3),
-  );
-}
+  _showSnackBar(String message) {
+    Get.snackbar(
+      "Erreur",
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+      duration: Duration(seconds: 3),
+    );
+  }
 
   onTapTxtAlreadyhavean() {
     Get.back();

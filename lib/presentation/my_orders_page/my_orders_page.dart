@@ -47,10 +47,8 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
   Future<void> fetchRecentlyShippedData() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('orders')
-          .where('userId',
-              isEqualTo: user!
-                  .uid) // Remplacez 'userID' par le nom du champ contenant l'ID de l'utilisateur
+          .collection('orders').where('userId',isEqualTo: user!.uid).orderBy('date', descending: true) 
+
           .get();
 
       setState(() {
@@ -59,7 +57,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
 
           String docID = doc.id;
 
-          Timestamp timestamp = data['dateRegister'] as Timestamp;
+          Timestamp timestamp = data['date'] as Timestamp;
           DateTime date = timestamp.toDate();
 
           return RecentlyShipped(

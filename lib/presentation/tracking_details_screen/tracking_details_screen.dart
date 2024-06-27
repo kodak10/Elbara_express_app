@@ -99,11 +99,11 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
           }
 
           if (orderDelivered) {
-            Timestamp orderDeliveredTimestamp =
-                documentSnapshot['order_delivered_date'];
+            Timestamp orderDeliveredTimestamp = documentSnapshot['order_delivered_date'];
             DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
-            statusOrderDelivered =
-                DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+            statusOrderDelivered = DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+            deliveryConfirm = DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+          
           } else {
             statusOrderDelivered = 'En attente';
           }
@@ -247,28 +247,28 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                             radius: BorderRadius.circular(
                                                 getHorizontalSize(8)),
                                             alignment: Alignment.center),
-                                        Visibility(
-                                          visible: status == "onTheWay",
-                                          child: Padding(
-                                            padding:
-                                                getPadding(left: 8, right: 8),
-                                            child: CustomButton(
-                                              height: getVerticalSize(40),
-                                              width: getHorizontalSize(143),
-                                              text: "Suivre le livreur".tr,
-                                              margin:
-                                                  getMargin(left: 8, bottom: 8),
-                                              padding:
-                                                  ButtonPadding.PaddingAll11,
-                                              fontStyle: ButtonFontStyle
-                                                  .SFProTextBold15WhiteA700,
-                                              onTap: () {
-                                                onTapLivetracking();
-                                              },
-                                              alignment: Alignment.bottomLeft,
-                                            ),
-                                          ),
-                                        )
+                                        // Visibility(
+                                        //   visible: status == "onTheWay",
+                                        //   child: Padding(
+                                        //     padding:
+                                        //         getPadding(left: 8, right: 8),
+                                        //     child: CustomButton(
+                                        //       height: getVerticalSize(40),
+                                        //       width: getHorizontalSize(143),
+                                        //       text: "Suivre le livreur".tr,
+                                        //       margin:
+                                        //           getMargin(left: 8, bottom: 8),
+                                        //       padding:
+                                        //           ButtonPadding.PaddingAll11,
+                                        //       fontStyle: ButtonFontStyle
+                                        //           .SFProTextBold15WhiteA700,
+                                        //       onTap: () {
+                                        //         onTapLivetracking();
+                                        //       },
+                                        //       alignment: Alignment.bottomLeft,
+                                        //     ),
+                                        //   ),
+                                        // )
                                       ])),
                               Padding(
                                   padding: getPadding(top: 21),
@@ -346,14 +346,15 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Text("Colis en transit".tr,
+                                            Text("Livreur en transit".tr,
                                                 overflow: TextOverflow.ellipsis,
                                                 textAlign: TextAlign.left,
                                                 style: AppStyle.txtHeadline),
                                             Padding(
                                                 padding: getPadding(top: 15),
                                                 child: Text(
-                                                    deliveryConfirm,
+                                                  "Terminé le: $deliveryConfirm",
+                                                    //deliveryConfirm,
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,
@@ -377,7 +378,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                             Padding(
                                                 padding: getPadding(top: 13),
                                                 child: Text(
-                                                    "Terminé le: $statusOrderDelivered",
+                                                    "Livré le: $statusOrderDelivered",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     textAlign: TextAlign.left,

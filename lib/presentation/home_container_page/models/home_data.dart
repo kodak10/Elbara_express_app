@@ -8,9 +8,36 @@ import 'home_slider_model.dart';
 class HomeData {
   static List<HomeSlider> getSliderData() {
     return [
-      HomeSlider(ImageConstant.imgSlider1st, "Livraisons", "Détails sur les livraisons"),
-      HomeSlider(ImageConstant.imgSlider2nd, "Courses", "Détails sur les courses"),
-      HomeSlider(ImageConstant.imgSlider3rd, "Déménagements", "Détails sur les déménagements"),
+      HomeSlider(
+        ImageConstant.imgSlider1st,
+        "Livraisons",
+        "Les étapes à suivre pour une Livraison.\n"
+        "Etape 01 : Cliquez sur le bouton ‘Envoyer un colis‘\n"
+        "Etape 02 : Sélectionnez 'Livraisons' comme type de service \n"
+        "Etape 03 : Sélectionnez la zone de ramassage et de destination puis précisé les lieux.\n"
+        "Etape 04 : Entrez les informations de personne à contacter en cas d’urgence et les informations complémentaires de votre livraison puis cliquez sur ‘Suivant’\n"
+        "Etape 05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
+        "Etape 06 : Sélectionnez le mode de paiement :\n"
+        "• Payer maintenant : Payez via les services de mobile money\n"
+        "• Payer à la livraison : le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la livraison.",
+      ),
+      HomeSlider(
+        ImageConstant.imgSlider2nd, 
+        "Courses", 
+        "Les étapes à suivre pour une Course.\n"
+        "Etape 01 : Cliquez sur le bouton ‘Envoyer un colis‘\n"
+        "Etape 02 : Sélectionnez 'Courses' comme type de service \n"
+        "Etape 03 : Sélectionnez la zone et le lieu où vous souhaitez faire votre course et la zone de destination.\n"
+        "Etape 04 : Entrez les informations de la personne à contacter en cas d’urgence et les informations complémentaires de votre course puis cliquez sur ‘Suivant’\n"
+        "Etape 05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
+        "Etape 06 : Sélectionnez le mode de paiement :\n"
+        "• Payer maintenant : Payez via les services de mobile money\n"
+        "• Payer à la livraison : Le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la course.",
+      ),
+      HomeSlider(
+        ImageConstant.imgSlider3rd, 
+        "Déménagements", 
+        "Ce service sera disponible très bientôt."),
     ];
   }
 

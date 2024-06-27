@@ -9,7 +9,7 @@ class RecentlyShipped{
   final String destination;
   final DateTime date;
   final String docID;
-  final double cout;
+  final int cout;
   final String modePayment;
   final String payemenStatus;
 

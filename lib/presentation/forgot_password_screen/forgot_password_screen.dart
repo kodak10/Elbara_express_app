@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
@@ -14,6 +15,7 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 import '../../widgets/custom_floating_edit_text.dart';
 import 'controller/forgot_password_controller.dart';
+import 'package:elbara_express/core/utils/snackbar.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -41,71 +43,64 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.initState();
   }
 
-  Future<void> _resetPassword(BuildContext context) async {
-    // Fermer le clavier avant d'afficher le modal de chargement
-    FocusScope.of(context).unfocus();
+Future<void> _resetPassword(BuildContext context) async {
+  // Fermer le clavier avant d'afficher le modal de chargement
+  FocusScope.of(context).unfocus();
 
-    if (_formKey.currentState!.validate()) {
-      // Retirer le focus de tous les champs de saisie
-      FocusScope.of(context).requestFocus(FocusNode());
+  if (_formKey.currentState!.validate()) {
+    // Retirer le focus de tous les champs de saisie
+    FocusScope.of(context).requestFocus(FocusNode());
 
-      _showLoadingDialog(); // Afficher le modal de chargement
+    _showLoadingDialog(); // Afficher le modal de chargement
 
-      try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(
-          email: controller.emailController.text.trim(),
-        );
-        Navigator.of(context).pop(); // Fermer le modal de chargement en cas de succès
+    String email = controller.emailController.text.trim();
 
-        // Afficher le snackbar après avoir fermé le modal
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showCustomSnackBar(context, "Un email de réinitialisation a été envoyé.", false);
-        });
-      } on FirebaseAuthException catch (e) {
-        Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+    try {
+      // Vérifier si l'utilisateur existe dans la collection 'users'
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
 
-        String errorMessage;
-        if (e.code == 'user-not-found') {
-          errorMessage = "Aucun utilisateur trouvé avec cet email.";
-        } else {
-          errorMessage = "Erreur lors de l'envoi de l'email de réinitialisation.";
-        }
-
-        // Afficher le snackbar après avoir fermé le modal
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showCustomSnackBar(context, errorMessage, true);
-        });
-      } catch (error) {
-        Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
-
-        // Afficher le snackbar après avoir fermé le modal
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showCustomSnackBar(context, "Erreur inconnue lors de l'envoi de l'email de réinitialisation.", true);
-        });
+      if (querySnapshot.docs.isEmpty) {
+        Navigator.of(context).pop(); // Fermer le modal de chargement
+        showCustomSnackBar(context, "Aucun utilisateur trouvé avec cet email.", isError: true);
+        return;
       }
+
+      // Envoyer l'email de réinitialisation de mot de passe
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      Navigator.of(context).pop(); // Fermer le modal de chargement en cas de succès
+      showCustomSnackBar(context, "Un email de réinitialisation a été envoyé.", isError: false);
+
+    } on FirebaseAuthException catch (e) {
+      Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+
+      String errorMessage;
+      if (e.code == 'user-not-found') {
+        errorMessage = "Aucun utilisateur trouvé pour cet email.";
+      } else {
+        errorMessage = "Erreur lors de l'envoi de l'email de réinitialisation.";
+      }
+
+      // Afficher le snackbar après avoir fermé le modal
+      showCustomSnackBar(context, errorMessage, isError: true);
+
+    } catch (error) {
+      Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+      showCustomSnackBar(context, "Une erreur s'est produite: $error", isError: true);
     }
   }
+}
 
-  void showCustomSnackBar(BuildContext context, String message, bool isError) {
-    final snackBar = SnackBar(
-      content: AwesomeSnackbarContent(
-        title: isError ? 'Erreur' : 'Information',
-        message: message,
-        contentType: isError ? ContentType.failure : ContentType.success,
-      ),
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      duration: Duration(seconds: 10), // Augmentez le délai ici
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
 
   void _showLoadingDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
+      barrierDismissible:
+          false, // Empêcher la fermeture du modal en cliquant en dehors
       builder: (BuildContext context) {
         return AlertDialog(
           content: Column(
@@ -185,8 +180,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     textInputType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || (!isValidEmail(value, isRequired: true))) {
-                        return "Adresse email non valide";
+                      if (value == null ||
+                          (!isValidEmail(value, isRequired: true))) {
+                        showCustomSnackBar(context, "Adresse email non valide", isError: true);
+                        return;
                       }
                       return null;
                     },

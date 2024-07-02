@@ -139,7 +139,7 @@ class HomeContainerPage extends StatelessWidget {
                         () {
                           Get.toNamed(AppRoutes.sendPackageScreen);
                         },
-                        "Envoyer un colis".tr,
+                        "Livraisons".tr,
                         ImageConstant.imgSendPackegeIcon,
                       ),
                       SizedBox(
@@ -149,11 +149,42 @@ class HomeContainerPage extends StatelessWidget {
                         () {
                           Get.toNamed(AppRoutes.orderTrackingScreen);
                         },
-                        "Suivre un colis".tr,
+                        "Courses".tr,
                         ImageConstant.imgOrderTracingIcon,
                       ),
                     ],
                   ),
+                  
+                  
+                ),
+                 SizedBox(
+                  height: getHorizontalSize(8),
+                ),
+                Padding(
+                  padding: getPadding(left: 16, right: 16),
+                  child: Row(
+                    children: [
+                      category_button(
+                        () {
+                          Get.toNamed(AppRoutes.sendPackageScreen);
+                        },
+                        "Expéditions".tr,
+                        ImageConstant.imgSendPackegeIcon,
+                      ),
+                      SizedBox(
+                        width: getHorizontalSize(8),
+                      ),
+                      category_button(
+                        () {
+                          Get.toNamed(AppRoutes.orderTrackingScreen);
+                        },
+                        "Déménagements".tr,
+                        ImageConstant.imgOrderTracingIcon,
+                      ),
+                    ],
+                  ),
+                  
+                  
                 ),
                 SizedBox(
                   width: getHorizontalSize(16),
@@ -165,7 +196,7 @@ class HomeContainerPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Nos Compagnies".tr,
+                        "Compagnies de Transport".tr,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.left,
                         style: AppStyle.txtSFProTextBold20,

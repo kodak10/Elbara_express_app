@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_button.dart';
@@ -31,7 +32,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _promoCodeController = TextEditingController();
 
   bool _isPolicyAccepted = false;
-  bool _isPromoCodeValid = true;
 
   @override
   void initState() {
@@ -48,6 +48,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _promoCodeController.dispose();
     super.dispose();
   }
+
+Future<bool> checkPhoneNumberExists(String phoneNumber) async {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  QuerySnapshot querySnapshot = await firebaseFirestore
+      .collection('users')
+      .where('phoneNumber', isEqualTo: '+225$phoneNumber')
+      .get();
+
+  return querySnapshot.docs.isNotEmpty;
+}
+
+Future<bool> checkPseudoExists(String name) async {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  QuerySnapshot querySnapshot = await firebaseFirestore
+      .collection('users')
+      .where('name', isEqualTo: name)
+      .get();
+
+  return querySnapshot.docs.isNotEmpty;
+}
 
   void _showLoadingDialog() {
     showDialog(
@@ -69,44 +89,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ],
               ),
-
-              // SizedBox(height: 16),
-              // Text('Traitement en cours...'), // Texte de chargement
             ],
           ),
         );
       },
     );
-  }
-
-  void _validatePromoCode() async {
-    final promoCode = _promoCodeController.text;
-    print('code1 : $promoCode');
-    if (promoCode.isEmpty) {
-      setState(() {
-        _isPromoCodeValid = true;
-        print('code2 : $promoCode');
-      });
-      return;
-    }
-
-    try {
-      final promoCodeDoc = await FirebaseFirestore.instance
-          .collection('codePromo')
-          .doc(promoCode)
-          .get();
-
-      setState(() {
-        _isPromoCodeValid = promoCodeDoc.exists;
-        print('code3 : $promoCode');
-      });
-    } catch (e) {
-      setState(() {
-        _isPromoCodeValid = false;
-      });
-      print('code4 : $promoCode');
-      print('Erreur lors de la validation du code promo: $e');
-    }
   }
 
   @override
@@ -137,7 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                         width: double.maxFinite,
                         padding: getPadding(
-                            left: 16, top: 41, right: 16, bottom: 41),
+                            left: 16, top: 20, right: 16, bottom: 41),
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -166,7 +153,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   textInputType: TextInputType.text,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return "Veuillez entrer un Pseudo";
+                                      showCustomSnackBar(context, "Le champs Pseudo est requis", isError: true);
+                                      return;
                                     }
                                     return null;
                                   }),
@@ -183,7 +171,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     if (value == null ||
                                         (!isValidEmail(value,
                                             isRequired: true))) {
-                                      return "Veuillez entrer une adresse e-mail valide";
+                                      showCustomSnackBar(context, "Veuillez entrer une adresse e-mail valide", isError: true);
+                                      return;
                                     }
                                     return null;
                                   }),
@@ -194,7 +183,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 controller.phoneNumberController,
                                 (p0) {
                                   if (p0 == null || p0.number.isEmpty) {
-                                    return "Entrez un numéro valide";
+                                    showCustomSnackBar(context, "Entrez un numéro de téléphone valide", isError: true);
+                                    return;
                                   }
                                   return null;
                                 },
@@ -230,9 +220,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         maxHeight: getVerticalSize(63)),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return "Veuillez entrer un mot de passe valide";
+                                        showCustomSnackBar(context, "Le champs Mot de passe est requis", isError: true);
+                                        return;
                                       } else if (value.length < 8) {
-                                        return "Veuillez saisir un mot de passe à 8 chiffres";
+                                        showCustomSnackBar(context, "Veuillez saisir un mot de passe à 8 chiffres", isError: true);
+                                        return;
                                       }
                                       return null;
                                     }),
@@ -240,33 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               SizedBox(
                                 height: getVerticalSize(16),
                               ),
-                              TextFormField(
-                                controller: _promoCodeController,
-                                decoration: InputDecoration(
-                                  labelText: 'Code promo',
-                                  border: OutlineInputBorder(),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: _isPromoCodeValid
-                                            ? Colors.green
-                                            : Colors.red),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: _isPromoCodeValid
-                                            ? Colors.green
-                                            : Colors.red),
-                                  ),
-                                  errorText: _isPromoCodeValid
-                                      ? null
-                                      : 'Code promo invalide!',
-                                ),
-                                onEditingComplete: () {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  _validatePromoCode();
-                                },
-                              ),
+                              
                               Row(
                                 children: [
                                   Checkbox(
@@ -283,11 +249,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         launch(
                                             "https://sites.google.com/view/elbara-express");
                                       },
-                                      child: Text(
-                                        "En m'inscrivant, je reconnais avoir lu et accepté la Politique de Confidentialité",
+                                      child: const Text(
+                                        "En m'inscrivant, j'accepte la Politique de Confidentialité",
                                         style: TextStyle(
                                           color: Colors.blue,
-                                          decoration: TextDecoration.underline,
+                                          //decoration: TextDecoration.underline,
                                         ),
                                       ),
                                     ),
@@ -301,23 +267,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 onTap: () {
                                   if (_formKey.currentState!.validate()) {
                                     if (!_isPolicyAccepted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "Vous devez accepter la politique de confidentialité pour vous inscrire."),
-                                        ),
-                                      );
-                                    } else if (!_isPromoCodeValid) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "Le code promo saisi n'est pas valide."),
-                                        ),
-                                      );
+                                      showCustomSnackBar(context, 'Vous devez accepter la politique de confidentialité pour vous inscrire.', isError: true);
                                     } else {
-                                      _showLoadingDialog(); // Afficher le modal de chargement
+                                      // Retirer le focus de tous les champs de saisie
+                                      FocusScope.of(context).requestFocus(FocusNode());
+
+                                      _showLoadingDialog(); 
+
                                       onTapSignup(); // Procéder à l'inscription
                                     }
                                   }
@@ -360,23 +316,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
           password: controller.passwordController.text,
         );
 
+      Navigator.of(context).pop(); // Fermer le modal de chargement
+
+    // Vérifier si le pseudo est déjà utilisé
+    bool isPseudoTaken = await checkPseudoExists(controller.nameController.text);
+    if (isPseudoTaken) {
+      showCustomSnackBar(context, 'Un compte existe déjà avec ce Pseudo.', isError: true);
+      return;
+    }
+
+       // Vérifier si le numéro de téléphone est déjà utilisé
+      bool isPhoneNumberTaken = await checkPhoneNumberExists(controller.phoneNumberController.text);
+      if (isPhoneNumberTaken) {
+        showCustomSnackBar(context, 'Un compte existe déjà avec ce numéro de téléphone.', isError: true);
+
+        return;
+      }
+
         await postDetailsToFirestore(
           controller.emailController.text,
-          controller
-              .nameController.text, // Pass the name from the nameController
+          controller.nameController.text, 
           defaultRole,
-          controller.phoneNumberController
-              .text, // Pass the phoneNumber from the phoneNumberController
+          controller.phoneNumberController.text, 
           _promoCodeController.text,
         );
         PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
 
         Get.toNamed(AppRoutes.homeContainer1Screen);
+
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          _showSnackBar('Le mot de passe fourni est trop faible.');
-        } else if (e.code == 'email-already-in-use') {
-          _showSnackBar('Le compte existe déjà.');
+       if (e.code == 'email-already-in-use') {
+          showCustomSnackBar(context, 'Un compte existe déjà avec cet email', isError: true);
         }
       } catch (e) {
         print(e);
@@ -399,10 +369,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'displayName': name,
       'role': defaultRole,
       'phoneNumber': '+225${controller.phoneNumberController.text}',
-      'photoURL':
-          'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
+      'photoURL':'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
       'codePromo': codePromo
-      // Ajoutez d'autres champs selon vos besoins
+      
     });
 
     // Récupérez l'ID généré par Firebase
@@ -413,17 +382,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     // Redirigez vers la page de connexion
     Get.toNamed(AppRoutes.logInScreen);
-  }
-
-  _showSnackBar(String message) {
-    Get.snackbar(
-      "Erreur",
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: Duration(seconds: 3),
-    );
   }
 
   onTapTxtAlreadyhavean() {

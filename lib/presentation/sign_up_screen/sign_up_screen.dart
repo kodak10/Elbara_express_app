@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/core/utils/loading.dart';
 import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
@@ -115,32 +116,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Empêcher la fermeture du modal en cliquant en dehors
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/images/loading_1.json',
-                    height: 150,
-                    width: 150,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +305,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       FocusScope.of(context)
                                           .requestFocus(FocusNode());
 
-                                      _showLoadingDialog();
+Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoadingPage()),
+                          );
+                                     
 
                                       onTapSignup(); // Procéder à l'inscription
                                     }

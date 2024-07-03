@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/utils/snackbar.dart';
+import 'package:elbara_express/core/utils/loading.dart';
+
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,36 +40,6 @@ class _LogInScreenState extends State<LogInScreen> {
     );
     super.initState();
   }
-
-void _showLoadingDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Lottie.asset(
-                'assets/images/loading_1.json',
-                height: 150,
-                width: 150,
-              ),
-              ],
-            ),
-
-            // SizedBox(height: 16),
-            // Text('Traitement en cours...'), // Texte de chargement
-          ],
-        ),
-      );
-    },
-  );
-}
-
 
 
   @override
@@ -208,8 +180,11 @@ void _showLoadingDialog() {
                         if (_formKey.currentState!.validate()) {
                           // Retirer le focus de tous les champs de saisie
                           FocusScope.of(context).requestFocus(FocusNode());
+                          // Navigate to the LoadingPage
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoadingPage()),
+                          );
 
-                          _showLoadingDialog(); // Afficher le modal de chargement
 
                           try {
                             UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(

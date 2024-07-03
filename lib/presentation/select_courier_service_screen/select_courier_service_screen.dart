@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/utils/color_constant.dart';
 import 'package:elbara_express/core/utils/image_constant.dart';
+import 'package:elbara_express/core/utils/loading.dart';
 import 'package:elbara_express/core/utils/size_utils.dart';
 import 'package:elbara_express/presentation/payment_method_screen/controller/payment_method_controller.dart';
 import 'package:elbara_express/presentation/payment_method_screen/models/payment_method_model.dart';
@@ -85,35 +86,7 @@ class _SelectCourierServiceScreenState
   Map<String, dynamic>? DataInfos;
   // Récupérer le prix depuis les données
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Empêcher la fermeture du modal en cliquant en dehors
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/images/loading_1.json',
-                    height: 150,
-                    width: 150,
-                  ),
-                ],
-              ),
 
-              // SizedBox(height: 16),
-              // Text('Traitement en cours...'), // Texte de chargement
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   void initState() {
@@ -747,12 +720,17 @@ class _SelectCourierServiceScreenState
             
 
             if (mode_paiement == 'Payer Maintenant') {
-              _showLoadingDialog(); // Afficher le modal de chargement
+              Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoadingPage()),
+                          );
+
               initiatePayment(context);
               //saveCommande(paymentUrl);
               // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
             } else if (mode_paiement == 'Payer Cash') {
-              _showLoadingDialog(); // Afficher le modal de chargement
+              Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoadingPage()),
+                          );
               initiatePaymentLivraison(context);
               //saveCommande(paymentUrl);
 

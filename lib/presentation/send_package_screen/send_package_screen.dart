@@ -193,36 +193,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
     });
   }
 
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Empêcher la fermeture du modal en cliquant en dehors
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/images/loading_1.json',
-                    height: 150,
-                    width: 150,
-                  ),
-                ],
-              ),
-
-              // SizedBox(height: 16),
-              // Text('Traitement en cours...'), // Texte de chargement
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   final searchController = TextEditingController();
 
   DateTime _selectedDateTime = DateTime.now();
@@ -802,15 +772,6 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
                     height: getVerticalSize(54),
                     text: "Suivant".tr,
                     margin: getMargin(left: 16, right: 16, bottom: 40),
-                    // onTap: () {
-                    //   calculateMontantCourse();
-                    //   //_showLoadingDialog(); // Afficher le modal de chargement
-                    //   //saveDataToFirebase();
-                    //   onTapNext();
-                    //   print('valeur D1: ${selectedD1!.title} ');
-                    //   print('valeur D2: ${selectedD2!.title} ');
-                    //   print('Montant de la course: $montantCourse');
-                    // }
                     onTap: () {
                       if (_selectedOption =='TYPE DE SERVICES') {
                         // Afficher un SnackBar si _destinationRamassage est vide

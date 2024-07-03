@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/core/utils/loading.dart';
 import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
@@ -96,30 +97,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-// // Méthode pour choisir une image à partir de la galerie
-// Future<void> _pickImage() async {
-
-//     _showLoadingDialog();
-
-//   final picker = ImagePicker();
-//   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-//   if (pickedFile != null) {
-//     // Enregistrer l'image dans Firebase Storage
-//     final imageUrl = await _uploadImageToStorage(pickedFile.path);
-
-//     // Mettre à jour l'URL de l'image dans Firestore
-//     await _updateUserImageInFirestore(imageUrl);
-
-//     // Mettre à jour l'URL de l'image dans l'état local
-//     setState(() {
-//       _imageUrl = imageUrl;
-//     });
-//   }
-// }
 
   Future<void> _pickImage() async {
     // Afficher le modal de chargement
-    _showLoadingDialog();
+    Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoadingPage()),
+                          );
+
 
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -170,34 +154,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       Navigator.pop(context);
       Navigator.pop(context);
     }
-  }
-
-// // Fonction pour afficher le modal de chargement
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Empêcher la fermeture du modal en cliquant en dehors
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/images/loading_1.json',
-                    height: 150,
-                    width: 150,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Future<bool> _checkEmailExists(String email) async {

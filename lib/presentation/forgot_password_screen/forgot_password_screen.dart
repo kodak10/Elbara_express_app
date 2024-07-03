@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/core/utils/loading.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/presentation/verification_screen/verification_screen.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
@@ -51,7 +52,10 @@ Future<void> _resetPassword(BuildContext context) async {
     // Retirer le focus de tous les champs de saisie
     FocusScope.of(context).requestFocus(FocusNode());
 
-    _showLoadingDialog(); // Afficher le modal de chargement
+Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => LoadingPage()),
+                          );
+                          
 
     String email = controller.emailController.text.trim();
 
@@ -94,34 +98,6 @@ Future<void> _resetPassword(BuildContext context) async {
     }
   }
 }
-
-
-  void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // Empêcher la fermeture du modal en cliquant en dehors
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/images/loading_1.json',
-                    height: 150,
-                    width: 150,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

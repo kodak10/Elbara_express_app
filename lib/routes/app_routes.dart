@@ -18,6 +18,7 @@ import 'package:elbara_express/presentation/cancel_order_screen/binding/cancel_o
 import 'package:elbara_express/presentation/cancel_order_screen/cancel_order_screen.dart';
 import 'package:elbara_express/presentation/city_selection_screen/binding/city_selection_binding.dart';
 import 'package:elbara_express/presentation/city_selection_screen/city_selection_screen.dart';
+import 'package:elbara_express/presentation/code_promo_screen/discount.dart';
 import 'package:elbara_express/presentation/confirmation_screen/ConfirmationPhoneScreen.dart';
 import 'package:elbara_express/presentation/courier_services_screen/binding/courier_services_binding.dart';
 import 'package:elbara_express/presentation/courier_services_screen/courier_services_screen.dart';
@@ -106,6 +107,7 @@ import 'package:elbara_express/presentation/verification_screen/verification_scr
 import 'package:elbara_express/presentation/verification_with_error_screen/binding/verification_with_error_binding.dart';
 import 'package:elbara_express/presentation/verification_with_error_screen/verification_with_error_screen.dart';
 import 'package:elbara_express/presentation/gestionnaire_gare/pages/dashboard.dart';
+
 import 'package:get/get.dart';
 
 import '../presentation/chatbot/chatbot_screen.dart';
@@ -206,6 +208,9 @@ class AppRoutes {
   static const String notificationsPage = '/notifications_page';
 
   static const String profilePage = '/profile_page';
+
+  static const String codePromo = '/code_promo';
+
 
   static const String profileDetailsScreen = '/profile_details_screen';
 
@@ -637,13 +642,13 @@ class AppRoutes {
         CancelOrderOneBinding(),
       ],
     ),
-    // GetPage(
-    //   name: editAddressScreen,
-    //   page: () => EditAddressScreen(),
-    //   bindings: [
-    //     EditAddressBinding(),
-    //   ],
-    // ),
+    GetPage(
+      name: codePromo,
+      page: () => DiscountPageScreen(),
+      // bindings: [
+      //   EditAddressBinding(),
+      // ],
+    ),
     GetPage(
       name: customerSupportScreen,
       page: () => CustomerSupportScreen(),

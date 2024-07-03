@@ -26,6 +26,25 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:998391121356:android:c2d7d1bec42532ffee8969",
+        "android_client_info": {
+          "package_name": "com.elbara_express"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:998391121356:android:c6ff7ee4a3c47355ee8969",
         "android_client_info": {
           "package_name": "com.example.deliverzler"

@@ -1,4 +1,6 @@
 class ImageConstant {
+      static String imgTickets = 'assets/images/ticket.svg';
+
     static String bgImage = 'assets/images/login_background.png';
     static String phone = 'assets/images/phone.png';
 

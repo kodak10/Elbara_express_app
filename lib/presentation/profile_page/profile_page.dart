@@ -147,12 +147,73 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               GestureDetector(
                 onTap: () {
+                  Get.toNamed(AppRoutes.codePromo);
+                },
+                child: Container(
+                  margin: getMargin(
+                    left: 16,
+                    top: 16,
+                    right: 16,
+                  ),
+                  padding: getPadding(
+                    left: 16,
+                    top: 15,
+                    right: 16,
+                    bottom: 15,
+                  ),
+                  decoration: AppDecoration.outlineGray200,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomImageView(
+                        svgPath: ImageConstant.imgTickets,
+                        height: getSize(
+                          22,
+                        ),
+                        width: getSize(
+                          22,
+                        ),
+                      ),
+                      Padding(
+                        padding: getPadding(
+                          left: 8,
+                          top: 3,
+                        ),
+                        child: Text(
+                          "Code Promo".tr,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.left,
+                          style: AppStyle.txtBody,
+                        ),
+                      ),
+                      Spacer(),
+                      CustomImageView(
+                        svgPath: ImageConstant.imgArrowrightBlack900,
+                        height: getSize(
+                          16,
+                        ),
+                        width: getSize(
+                          16,
+                        ),
+                        margin: getMargin(
+                          top: 3,
+                          right: 1,
+                          bottom: 3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
                   Get.toNamed(AppRoutes.profileDetailsScreen);
                 },
                 child: Container(
                   margin: getMargin(
                     left: 16,
-                    top: 40,
+                    top: 16,
                     right: 16,
                   ),
                   padding: getPadding(
@@ -207,67 +268,68 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-              // GestureDetector(
-              //   onTap: () {
-              //     Get.toNamed(AppRoutes.customerSupportScreen);
-              //   },
-              //   child: Container(
-              //     margin: getMargin(
-              //       left: 16,
-              //       top: 16,
-              //       right: 16,
-              //     ),
-              //     padding: getPadding(
-              //       left: 16,
-              //       top: 15,
-              //       right: 16,
-              //       bottom: 15,
-              //     ),
-              //     decoration: AppDecoration.outlineGray200,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       mainAxisSize: MainAxisSize.min,
-              //       children: [
-              //         CustomImageView(
-              //           svgPath: ImageConstant.imgIcheadset,
-              //           height: getSize(
-              //             22,
-              //           ),
-              //           width: getSize(
-              //             22,
-              //           ),
-              //         ),
-              //         Padding(
-              //           padding: getPadding(
-              //             left: 8,
-              //             top: 3,
-              //           ),
-              //           child: Text(
-              //             "Service client",
-              //             overflow: TextOverflow.ellipsis,
-              //             textAlign: TextAlign.left,
-              //             style: AppStyle.txtBody,
-              //           ),
-              //         ),
-              //         Spacer(),
-              //         CustomImageView(
-              //           svgPath: ImageConstant.imgArrowrightBlack900,
-              //           height: getSize(
-              //             16,
-              //           ),
-              //           width: getSize(
-              //             16,
-              //           ),
-              //           margin: getMargin(
-              //             top: 3,
-              //             right: 1,
-              //             bottom: 3,
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(AppRoutes.customerSupportScreen);
+                },
+                child: Container(
+                  margin: getMargin(
+                    left: 16,
+                    top: 16,
+                    right: 16,
+                  ),
+                  padding: getPadding(
+                    left: 16,
+                    top: 15,
+                    right: 16,
+                    bottom: 15,
+                  ),
+                  decoration: AppDecoration.outlineGray200,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomImageView(
+                        svgPath: ImageConstant.imgIcheadset,
+                        height: getSize(
+                          22,
+                        ),
+                        width: getSize(
+                          22,
+                        ),
+                      ),
+                      Padding(
+                        padding: getPadding(
+                          left: 8,
+                          top: 3,
+                        ),
+                        child: Text(
+                          "Service Clients",
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.left,
+                          style: AppStyle.txtBody,
+                        ),
+                      ),
+                      Spacer(),
+                      CustomImageView(
+                        svgPath: ImageConstant.imgArrowrightBlack900,
+                        height: getSize(
+                          16,
+                        ),
+                        width: getSize(
+                          16,
+                        ),
+                        margin: getMargin(
+                          top: 3,
+                          right: 1,
+                          bottom: 3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
               GestureDetector(
                 onTap: () {
                   Get.toNamed(AppRoutes.privacyPolicyScreen);

@@ -49,25 +49,71 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-Future<bool> checkPhoneNumberExists(String phoneNumber) async {
-  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  QuerySnapshot querySnapshot = await firebaseFirestore
-      .collection('users')
-      .where('phoneNumber', isEqualTo: '+225$phoneNumber')
-      .get();
+  void sendVerificationCode(String phoneNumber) async {
+    print('numéro: $phoneNumber');
 
-  return querySnapshot.docs.isNotEmpty;
-}
+    final PhoneVerificationCompleted verificationCompleted =
+        (PhoneAuthCredential phoneAuthCredential) {
+      // Cette fonction est appelée lorsque le numéro de téléphone est vérifié automatiquement
+      // Vous pouvez ajouter ici la logique pour gérer la connexion de l'utilisateur
+    };
 
-Future<bool> checkPseudoExists(String name) async {
-  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  QuerySnapshot querySnapshot = await firebaseFirestore
-      .collection('users')
-      .where('name', isEqualTo: name)
-      .get();
+    final PhoneVerificationFailed verificationFailed =
+        (FirebaseAuthException authException) {
+      // Cette fonction est appelée en cas d'échec de la vérification du numéro de téléphone
+      print('Échec de la vérification : ${authException.message}');
+    };
 
-  return querySnapshot.docs.isNotEmpty;
-}
+    final PhoneCodeSent codeSent = (String verificationId, int? resendToken) {
+      // Cette fonction est appelée lorsque le code de vérification est envoyé avec succès
+      // Vous pouvez stocker le verificationId pour l'utiliser lors de la vérification du code
+      print('Code envoyé avec succès');
+    };
+
+    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+        (String verificationId) {
+      // Cette fonction est appelée lorsque le délai d'attente automatique pour la récupération du code expire
+      print('Délai d\'attente pour la récupération du code expiré');
+    };
+
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+        timeout: Duration(
+            seconds:
+                60), // Délai d'expiration pour la vérification du numéro de téléphone
+        //verificationId: null, // Optionnel, à utiliser si vous avez déjà un verificationId à utiliser
+      );
+      print('code $codeSent');
+    } catch (e) {
+      print("Erreur lors de l'envoi du code de vérification : $e");
+      // Gérer l'erreur ici
+    }
+  }
+
+  Future<bool> checkPhoneNumberExists(String phoneNumber) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firebaseFirestore
+        .collection('users')
+        .where('phoneNumber', isEqualTo: '+225$phoneNumber')
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<bool> checkPseudoExists(String name) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firebaseFirestore
+        .collection('users')
+        .where('name', isEqualTo: name)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
 
   void _showLoadingDialog() {
     showDialog(
@@ -153,7 +199,9 @@ Future<bool> checkPseudoExists(String name) async {
                                   textInputType: TextInputType.text,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      showCustomSnackBar(context, "Le champs Pseudo est requis", isError: true);
+                                      showCustomSnackBar(context,
+                                          "Le champs Pseudo est requis",
+                                          isError: true);
                                       return;
                                     }
                                     return null;
@@ -171,7 +219,9 @@ Future<bool> checkPseudoExists(String name) async {
                                     if (value == null ||
                                         (!isValidEmail(value,
                                             isRequired: true))) {
-                                      showCustomSnackBar(context, "Veuillez entrer une adresse e-mail valide", isError: true);
+                                      showCustomSnackBar(context,
+                                          "Veuillez entrer une adresse e-mail valide",
+                                          isError: true);
                                       return;
                                     }
                                     return null;
@@ -183,7 +233,9 @@ Future<bool> checkPseudoExists(String name) async {
                                 controller.phoneNumberController,
                                 (p0) {
                                   if (p0 == null || p0.number.isEmpty) {
-                                    showCustomSnackBar(context, "Entrez un numéro de téléphone valide", isError: true);
+                                    showCustomSnackBar(context,
+                                        "Entrez un numéro de téléphone valide",
+                                        isError: true);
                                     return;
                                   }
                                   return null;
@@ -220,10 +272,14 @@ Future<bool> checkPseudoExists(String name) async {
                                         maxHeight: getVerticalSize(63)),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        showCustomSnackBar(context, "Le champs Mot de passe est requis", isError: true);
+                                        showCustomSnackBar(context,
+                                            "Le champs Mot de passe est requis",
+                                            isError: true);
                                         return;
                                       } else if (value.length < 8) {
-                                        showCustomSnackBar(context, "Veuillez saisir un mot de passe à 8 chiffres", isError: true);
+                                        showCustomSnackBar(context,
+                                            "Veuillez saisir un mot de passe à 8 chiffres",
+                                            isError: true);
                                         return;
                                       }
                                       return null;
@@ -232,7 +288,6 @@ Future<bool> checkPseudoExists(String name) async {
                               SizedBox(
                                 height: getVerticalSize(16),
                               ),
-                              
                               Row(
                                 children: [
                                   Checkbox(
@@ -267,12 +322,15 @@ Future<bool> checkPseudoExists(String name) async {
                                 onTap: () {
                                   if (_formKey.currentState!.validate()) {
                                     if (!_isPolicyAccepted) {
-                                      showCustomSnackBar(context, 'Vous devez accepter la politique de confidentialité pour vous inscrire.', isError: true);
+                                      showCustomSnackBar(context,
+                                          'Vous devez accepter la politique de confidentialité pour vous inscrire.',
+                                          isError: true);
                                     } else {
                                       // Retirer le focus de tous les champs de saisie
-                                      FocusScope.of(context).requestFocus(FocusNode());
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
 
-                                      _showLoadingDialog(); 
+                                      _showLoadingDialog();
 
                                       onTapSignup(); // Procéder à l'inscription
                                     }
@@ -316,37 +374,44 @@ Future<bool> checkPseudoExists(String name) async {
           password: controller.passwordController.text,
         );
 
-      Navigator.of(context).pop(); // Fermer le modal de chargement
 
-    // Vérifier si le pseudo est déjà utilisé
-    bool isPseudoTaken = await checkPseudoExists(controller.nameController.text);
-    if (isPseudoTaken) {
-      showCustomSnackBar(context, 'Un compte existe déjà avec ce Pseudo.', isError: true);
-      return;
-    }
+        // Vérifier si le pseudo est déjà utilisé
+        bool isPseudoTaken =
+            await checkPseudoExists(controller.nameController.text);
+        if (isPseudoTaken) {
+          showCustomSnackBar(context, 'Un compte existe déjà avec ce Pseudo.',
+              isError: true);
+          return;
+        }
 
-       // Vérifier si le numéro de téléphone est déjà utilisé
-      bool isPhoneNumberTaken = await checkPhoneNumberExists(controller.phoneNumberController.text);
-      if (isPhoneNumberTaken) {
-        showCustomSnackBar(context, 'Un compte existe déjà avec ce numéro de téléphone.', isError: true);
+        // Vérifier si le numéro de téléphone est déjà utilisé
+        bool isPhoneNumberTaken =
+            await checkPhoneNumberExists(controller.phoneNumberController.text);
+        if (isPhoneNumberTaken) {
+          showCustomSnackBar(
+              context, 'Un compte existe déjà avec ce numéro de téléphone.',
+              isError: true);
 
-        return;
-      }
+          return;
+        }
+
+        // Envoyer le code de vérification par SMS
+        sendVerificationCode('+225${controller.phoneNumberController.text}');
 
         await postDetailsToFirestore(
           controller.emailController.text,
-          controller.nameController.text, 
+          controller.nameController.text,
           defaultRole,
-          controller.phoneNumberController.text, 
+          controller.phoneNumberController.text,
           _promoCodeController.text,
         );
         PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
 
         Get.toNamed(AppRoutes.homeContainer1Screen);
-
       } on FirebaseAuthException catch (e) {
-       if (e.code == 'email-already-in-use') {
-          showCustomSnackBar(context, 'Un compte existe déjà avec cet email', isError: true);
+        if (e.code == 'email-already-in-use') {
+          showCustomSnackBar(context, 'Un compte existe déjà avec cet email',
+              isError: true);
         }
       } catch (e) {
         print(e);
@@ -369,9 +434,9 @@ Future<bool> checkPseudoExists(String name) async {
       'displayName': name,
       'role': defaultRole,
       'phoneNumber': '+225${controller.phoneNumberController.text}',
-      'photoURL':'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
+      'photoURL':
+          'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
       'codePromo': codePromo
-      
     });
 
     // Récupérez l'ID généré par Firebase

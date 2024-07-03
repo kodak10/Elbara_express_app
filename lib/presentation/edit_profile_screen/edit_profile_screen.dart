@@ -229,46 +229,88 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  Future<void> _saveProfile() async {
-    String email = controller.emailController.text.trim();
-    String phoneNumber = controller.phoneNumberController.text.trim();
-    String name = controller.nameController.text.trim();
+ 
+ Future<void> _saveProfile() async {
+  String email = controller.emailController.text.trim();
+  String phoneNumber = controller.phoneNumberController.text.trim();
+  String name = controller.nameController.text.trim();
 
+  // Récupérer les valeurs actuelles de l'utilisateur
+  User? user = FirebaseAuth.instance.currentUser;
+  DocumentSnapshot userData = await FirebaseFirestore.instance.collection('users').doc(user?.uid).get();
+  String currentEmail = userData['email'];
+  String currentPhoneNumber = userData['phoneNumber'];
+  String currentName = userData['displayName'];
+
+  // Vérifier si les valeurs ont changé
+  bool emailChanged = email != currentEmail;
+  bool phoneNumberChanged = phoneNumber != currentPhoneNumber;
+  bool nameChanged = name != currentName;
+
+  // Vérifier l'existence des nouveaux pseudo, email et numéro de téléphone uniquement si ils ont changé
+  if (nameChanged) {
     bool pseudoExists = await _checkPseudoExists(name);
-    bool emailExists = await _checkEmailExists(email);
-    bool phoneNumberExists = await _checkPhoneNumberExists(phoneNumber);
-
     if (pseudoExists) {
-      showCustomSnackBar(context, 'Cet Pseudo est déjà utilisé.',isError: true);
-      Get.snackbar('Erreur', '');
+      showCustomSnackBar(context, 'Ce pseudo est déjà utilisé.', isError: true);
       return;
     }
+  }
 
+  if (emailChanged) {
+    bool emailExists = await _checkEmailExists(email);
     if (emailExists) {
-      showCustomSnackBar(context, 'Cet Pseudo est déjà utilisé.',isError: true);
+      showCustomSnackBar(context, 'Cet email est déjà utilisé.', isError: true);
       return;
     }
+  }
 
+  if (phoneNumberChanged) {
+    bool phoneNumberExists = await _checkPhoneNumberExists(phoneNumber);
     if (phoneNumberExists) {
-      showCustomSnackBar(context, 'Ce numéro de téléphone est déjà utilisé.',isError: true);
+      showCustomSnackBar(context, 'Ce numéro de téléphone est déjà utilisé.', isError: true);
       return;
     }
+  }
 
+  // Mettre à jour les informations de l'utilisateur
+  if (user != null) {
+    FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      'displayName': name,
+      'phoneNumber': phoneNumber,
+      'email': email,
+    }).then((_) {
+      Navigator.pop(context);
+      showCustomSnackBar(context, 'Profil mis à jour.', isError: false);
+      Get.back();
+    }).catchError((error) {
+      print("Erreur survenue lors de la mise à jour du profil: $error");
+    });
+  }
+}
+
+
+
+  Future<void> _deleteAccount() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'displayName': controller.nameController.text,
-        'phoneNumber': phoneNumber,
-        'email': email,
-      }).then((_) {
-        Navigator.pop(context);
-        showCustomSnackBar(context, 'Profil mis à jour.',isError: false);
+      try {
+        // Delete user data from Firestore
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
+        // Delete user authentication
+        await user.delete();
+        // Sign out the user
+        showCustomSnackBar(context, 'Votre compte a été supprimé avec succès.', isError: false);
 
-        Get.back();
-      }).catchError((error) {
+        await FirebaseAuth.instance.signOut();
+        PrefUtils.setIsSignIn(false);
+        Get.toNamed(AppRoutes.logInScreen);
 
-        print("Erreur survenue lors de la mise à jour du profil: $error");
-      });
+
+      } catch (e) {
+        print("Erreur lors de la suppression du compte: $e");
+        showCustomSnackBar(context, 'Une erreur s\'est produite lors de la suppression du compte.', isError: true);
+
+      }
     }
   }
 
@@ -393,6 +435,47 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 }
                                 return null;
                               }),
+
+                              SizedBox(height: getVerticalSize(16)),
+                              TextButton(
+                                onPressed: () async {
+                                  bool confirm = await showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Confirmer la suppression'),
+                                        content: Text(
+                                            'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(false); // Ne pas supprimer
+                                            },
+                                            child: Text('Annuler'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(true); // Confirmer la suppression
+                                            },
+                                            child: Text('Supprimer'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  if (confirm) {
+                                    await _deleteAccount();
+                                  }
+                                },
+                                child: Text(
+                                  'Supprimer le compte',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+
                             ]))),
                 bottomNavigationBar: CustomButton(
                     height: getVerticalSize(54),

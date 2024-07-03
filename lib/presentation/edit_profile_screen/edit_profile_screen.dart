@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
@@ -21,7 +22,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
 
@@ -33,7 +33,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   EditProfileController controller = Get.put(EditProfileController());
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late User _currentUser;
-   String? _imageUrl; // URL de l'image téléchargée
+  String? _imageUrl; // URL de l'image téléchargée
 
   @override
   void initState() {
@@ -47,7 +47,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     super.initState();
     _getUserImage();
-
   }
 
   Future<void> _loadUserData() async {
@@ -107,7 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 //   if (pickedFile != null) {
 //     // Enregistrer l'image dans Firebase Storage
 //     final imageUrl = await _uploadImageToStorage(pickedFile.path);
-    
+
 //     // Mettre à jour l'URL de l'image dans Firestore
 //     await _updateUserImageInFirestore(imageUrl);
 
@@ -118,33 +117,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 //   }
 // }
 
-Future<void> _pickImage() async {
-  // Afficher le modal de chargement
-  _showLoadingDialog();
+  Future<void> _pickImage() async {
+    // Afficher le modal de chargement
+    _showLoadingDialog();
 
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    // Enregistrer l'image dans Firebase Storage
-    final imageUrl = await _uploadImageToStorage(pickedFile.path);
-    
-    // Mettre à jour l'URL de l'image dans Firestore
-    await _updateUserImageInFirestore(imageUrl);
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      // Enregistrer l'image dans Firebase Storage
+      final imageUrl = await _uploadImageToStorage(pickedFile.path);
 
-    // Mettre à jour l'URL de l'image dans l'état local
-    setState(() {
-      _imageUrl = imageUrl;
-    });
+      // Mettre à jour l'URL de l'image dans Firestore
+      await _updateUserImageInFirestore(imageUrl);
 
-    // Fermer le modal de chargement
-    Navigator.of(context).pop();
-  } else {
-    // Fermer le modal de chargement en cas d'erreur
-    Navigator.of(context).pop();
+      // Mettre à jour l'URL de l'image dans l'état local
+      setState(() {
+        _imageUrl = imageUrl;
+      });
+
+      // Fermer le modal de chargement
+      Navigator.of(context).pop();
+    } else {
+      // Fermer le modal de chargement en cas d'erreur
+      Navigator.of(context).pop();
+    }
   }
-}
-
-
 
   // Méthode pour télécharger l'image dans Firebase Storage
   Future<String> _uploadImageToStorage(String imagePath) async {
@@ -160,7 +157,6 @@ Future<void> _pickImage() async {
 
   // Méthode pour mettre à jour le champ image dans la collection Firestore
   Future<void> _updateUserImageInFirestore(String? imageUrl) async {
-    
     if (imageUrl != null) {
       // Mettre à jour le champ image dans Firestore
       await FirebaseFirestore.instance
@@ -173,47 +169,108 @@ Future<void> _pickImage() async {
       // Revenir à la page précédente
       Navigator.pop(context);
       Navigator.pop(context);
-      
-
     }
   }
 
-
-
 // // Fonction pour afficher le modal de chargement
-void _showLoadingDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêcher la fermeture du modal en cliquant en dehors
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset(
-                  'assets/images/loading_1.json',
-                  height: 150,
-                  width: 150,
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Empêcher la fermeture du modal en cliquant en dehors
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/images/loading_1.json',
+                    height: 150,
+                    width: 150,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
- 
- 
+  Future<bool> _checkEmailExists(String email) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firebaseFirestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+    return querySnapshot.docs.isNotEmpty;
+  }
 
+  Future<bool> _checkPhoneNumberExists(String phoneNumber) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firebaseFirestore
+        .collection('users')
+        .where('phoneNumber', isEqualTo: '+225$phoneNumber')
+        .get();
 
+    return querySnapshot.docs.isNotEmpty;
+  }
 
- 
+  Future<bool> _checkPseudoExists(String name) async {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firebaseFirestore
+        .collection('users')
+        .where('name', isEqualTo: name)
+        .get();
 
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<void> _saveProfile() async {
+    String email = controller.emailController.text.trim();
+    String phoneNumber = controller.phoneNumberController.text.trim();
+    String name = controller.nameController.text.trim();
+
+    bool pseudoExists = await _checkPseudoExists(name);
+    bool emailExists = await _checkEmailExists(email);
+    bool phoneNumberExists = await _checkPhoneNumberExists(phoneNumber);
+
+    if (pseudoExists) {
+      showCustomSnackBar(context, 'Cet Pseudo est déjà utilisé.',isError: true);
+      Get.snackbar('Erreur', '');
+      return;
+    }
+
+    if (emailExists) {
+      showCustomSnackBar(context, 'Cet Pseudo est déjà utilisé.',isError: true);
+      return;
+    }
+
+    if (phoneNumberExists) {
+      showCustomSnackBar(context, 'Ce numéro de téléphone est déjà utilisé.',isError: true);
+      return;
+    }
+
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'displayName': controller.nameController.text,
+        'phoneNumber': phoneNumber,
+        'email': email,
+      }).then((_) {
+        Navigator.pop(context);
+        showCustomSnackBar(context, 'Profil mis à jour.',isError: false);
+
+        Get.back();
+      }).catchError((error) {
+
+        print("Erreur survenue lors de la mise à jour du profil: $error");
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +299,7 @@ void _showLoadingDialog() {
                           onTapArrowleft23();
                         }),
                     centerTitle: true,
-                    title: AppbarSubtitle1(text: "Editer profile".tr),
+                    title: AppbarSubtitle1(text: "Editer profil".tr),
                     styleType: Style.bgFillWhiteA700),
                 body: Form(
                     key: _formKey,
@@ -259,42 +316,44 @@ void _showLoadingDialog() {
                                   child: Stack(
                                       alignment: Alignment.bottomRight,
                                       children: [
-                                        
                                         GestureDetector(
-                onTap: () async {
-                  _pickImage();
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 150,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.grey[200]!, // Couleur de la bordure
-                          width: 2, // Largeur de la bordure
-                        ),
-                        color: Colors.grey[200],
-                        image: _imageUrl != null
-                            ? DecorationImage(
-                                image: NetworkImage(_imageUrl!),
-                                fit: BoxFit.cover)
-                            : null,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.grey[200],
-                        child: Icon(Icons.camera_alt),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
+                                          onTap: () async {
+                                            _pickImage();
+                                          },
+                                          child: Stack(
+                                            children: [
+                                              Container(
+                                                height: 150,
+                                                width: 150,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.grey[
+                                                        200]!, // Couleur de la bordure
+                                                    width:
+                                                        2, // Largeur de la bordure
+                                                  ),
+                                                  color: Colors.grey[200],
+                                                  image: _imageUrl != null
+                                                      ? DecorationImage(
+                                                          image: NetworkImage(
+                                                              _imageUrl!),
+                                                          fit: BoxFit.cover)
+                                                      : null,
+                                                ),
+                                              ),
+                                              Positioned(
+                                                bottom: 0,
+                                                right: 0,
+                                                child: CircleAvatar(
+                                                  backgroundColor:
+                                                      Colors.grey[200],
+                                                  child: Icon(Icons.camera_alt),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ])),
                               CustomFloatingEditText(
                                 controller: controller.nameController,
@@ -304,7 +363,8 @@ void _showLoadingDialog() {
                                 //enabled: false, // Disable editing
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Veuillez entrer un Pseudo';
+                                    showCustomSnackBar(context,"Veuillez entrer un Pseudo",isError: true);
+                                  return;
                                   }
                                   return null;
                                 },
@@ -316,10 +376,9 @@ void _showLoadingDialog() {
                                   //enabled: false, // désactiver le champ
 
                                   validator: (value) {
-                                    if (value == null ||
-                                        (!isValidEmail(value,
-                                            isRequired: true))) {
-                                      return "Veuillez entrer une adresse e-mail valide";
+                                    if (value == null || (!isValidEmail(value,isRequired: true))) {
+                                    showCustomSnackBar(context,"Veuillez entrer une adresse e-mail valide",isError: true);
+                                  return;
                                     }
                                     return null;
                                   }),
@@ -329,7 +388,8 @@ void _showLoadingDialog() {
                               phone_number_field(
                                   controller.phoneNumberController, (p0) {
                                 if (p0 == null || p0.number.isEmpty) {
-                                  return "Entrez un numéro valide";
+                                  showCustomSnackBar(context,"Entrez un numéro valide",isError: true);
+                                  return ;
                                 }
                                 return null;
                               }),
@@ -339,6 +399,8 @@ void _showLoadingDialog() {
                     text: "Valider".tr,
                     margin: getMargin(left: 16, right: 16, bottom: 40),
                     onTap: () {
+                       FocusScope.of(context).requestFocus(FocusNode());
+
                       if (_formKey.currentState!.validate()) {
                         _saveProfile();
                       }
@@ -346,29 +408,29 @@ void _showLoadingDialog() {
                     }))));
   }
 
-  void _saveProfile() {
-    // Code to update user profile in Firestore
-    // You can use Firebase Auth to get the current user
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      // Update user profile data here
-      // For example:
-      FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'displayName': controller.nameController.text,
-        'phoneNumber': controller.phoneNumberController.text,
-      }).then((_) {
-            Navigator.pop(context);
+  // void _saveProfile() {
+  //   // Code to update user profile in Firestore
+  //   // You can use Firebase Auth to get the current user
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     // Update user profile data here
+  //     // For example:
+  //     FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+  //       'displayName': controller.nameController.text,
+  //       'phoneNumber': controller.phoneNumberController.text,
+  //     }).then((_) {
+  //           Navigator.pop(context);
 
-        print('mis a jour');
-        // Profile updated successfully
-        Get.back();
-      }).catchError((error) {
-        // Handle error
-        print("Failed to update profile: $error");
-        // You can show an error message to the user
-      });
-    }
-  }
+  //       print('mis a jour');
+  //       // Profile updated successfully
+  //       Get.back();
+  //     }).catchError((error) {
+  //       // Handle error
+  //       print("Failed to update profile: $error");
+  //       // You can show an error message to the user
+  //     });
+  //   }
+  // }
 
   onTapSave() {
     Get.back();

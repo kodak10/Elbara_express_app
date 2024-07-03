@@ -90,18 +90,6 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> {
     }
   }
 
-  // Méthode pour choisir une image à partir de la galerie
-// Future<void> _pickImage() async {
-//   final picker = ImagePicker();
-//   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-//   if (pickedFile != null) {
-//     // Enregistrer l'image dans Firebase Storage
-//     final imageUrl = await _uploadImageToStorage(pickedFile.path);
-    
-//     // Mettre à jour l'URL de l'image dans Firestore
-//     await _updateUserImageInFirestore(imageUrl);
-//   }
-// }
 
 // Méthode pour choisir une image à partir de la galerie
 Future<void> _pickImage() async {
@@ -150,6 +138,7 @@ Future<void> _pickImage() async {
 
     }
   }
+  
   
 
   @override

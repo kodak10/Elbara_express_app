@@ -1,5 +1,10 @@
 class ImageConstant {
-      static String imgTickets = 'assets/images/ticket.svg';
+    
+    static String actionLivraisons = 'assets/images/action_livraisons.svg';
+    static String actionCourses = 'assets/images/action_courses.svg';
+    static String actionDemenagements = 'assets/images/action_demenagements.svg';
+
+    static String imgTickets = 'assets/images/ticket.svg';
 
     static String bgImage = 'assets/images/login_background.png';
     static String phone = 'assets/images/phone.png';

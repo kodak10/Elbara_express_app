@@ -140,7 +140,7 @@ class HomeContainerPage extends StatelessWidget {
                           Get.toNamed(AppRoutes.sendPackageScreen);
                         },
                         "Livraisons".tr,
-                        ImageConstant.imgSendPackegeIcon,
+                        ImageConstant.actionLivraisons,
                       ),
                       SizedBox(
                         width: getHorizontalSize(8),
@@ -150,7 +150,7 @@ class HomeContainerPage extends StatelessWidget {
                           Get.toNamed(AppRoutes.orderTrackingScreen);
                         },
                         "Courses".tr,
-                        ImageConstant.imgOrderTracingIcon,
+                        ImageConstant.actionCourses,
                       ),
                     ],
                   ),
@@ -179,7 +179,7 @@ class HomeContainerPage extends StatelessWidget {
                           Get.toNamed(AppRoutes.orderTrackingScreen);
                         },
                         "Déménagements".tr,
-                        ImageConstant.imgOrderTracingIcon,
+                        ImageConstant.actionDemenagements,
                       ),
                     ],
                   ),

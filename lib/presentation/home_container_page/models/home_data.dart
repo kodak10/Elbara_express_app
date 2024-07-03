@@ -34,6 +34,19 @@ class HomeData {
         "• Payer maintenant : Payez via les services de mobile money\n"
         "• Payer à la livraison : Le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la course.",
       ),
+       HomeSlider(
+        ImageConstant.imgSlider2nd, 
+        "Expéditions", 
+        "Les étapes à suivre pour une Expédition.\n"
+        "Etape 01 : Cliquez sur le bouton ‘Envoyer un colis‘\n"
+        "Etape 02 : Sélectionnez 'Courses' comme type de service \n"
+        "Etape 03 : Sélectionnez la zone et le lieu où vous souhaitez faire votre course et la zone de destination.\n"
+        "Etape 04 : Entrez les informations de la personne à contacter en cas d’urgence et les informations complémentaires de votre course puis cliquez sur ‘Suivant’\n"
+        "Etape 05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
+        "Etape 06 : Sélectionnez le mode de paiement :\n"
+        "• Payer maintenant : Payez via les services de mobile money\n"
+        "• Payer à la livraison : Le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la course.",
+      ),
       HomeSlider(
         ImageConstant.imgSlider3rd, 
         "Déménagements", 

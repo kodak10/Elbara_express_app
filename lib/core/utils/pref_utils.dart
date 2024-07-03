@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefUtils {
   static SharedPreferences? _sharedPreferences;
-  static String prefName = "com.elbaraexpress.app";
+  static String prefName = "com.elbara_express";
   static String isIntro = "${prefName}isIntro";
   static String signIn = "${prefName}signIn";
 

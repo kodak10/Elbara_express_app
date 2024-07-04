@@ -137,7 +137,7 @@ class HomeContainerPage extends StatelessWidget {
                     children: [
                       category_button(
                         () {
-                          Get.toNamed(AppRoutes.sendPackageScreen);
+                          //Get.toNamed(AppRoutes.sendPackageScreen);
                         },
                         "Livraisons".tr,
                         ImageConstant.actionLivraisons,
@@ -176,7 +176,7 @@ class HomeContainerPage extends StatelessWidget {
                       ),
                       category_button(
                         () {
-                          Get.toNamed(AppRoutes.orderTrackingScreen);
+                          //Get.toNamed(AppRoutes.orderTrackingScreen);
                         },
                         "Déménagements".tr,
                         ImageConstant.actionDemenagements,

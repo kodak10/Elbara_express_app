@@ -104,7 +104,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                           margin:
                                               getMargin(left: 30, right: 15),
                                           child: CustomImageView(svgPath:ImageConstant.imgArrowdown)),
-                                      hintText: "Type de courses".tr,
+                                      hintText: "TYPE DE COURSES".tr,
                                       margin: getMargin(top: 16),
                                       items: controller.addAddressModelObj.value
                                           .dropdownItemList1.value,
@@ -118,6 +118,11 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                 ),
                               ],
                             ),
+
+                            SizedBox(
+                              height: getVerticalSize(16),
+                            ),
+
                             Row(
                               children: [
                                 CustomImageView(
@@ -137,7 +142,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                         children: [
                                           CustomTextFormField(
                                               hintText:
-                                                  "Précissez le lieu de récupération"
+                                                  "Api Google Maps"
                                                       .tr,
                                               controller: _depart,
                                               suffix: Container(
@@ -170,7 +175,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                           ),
                                           CustomTextFormField(
                                               hintText:
-                                                  "Précissez le lieu de destination"
+                                                  "Api Google Maps"
                                                       .tr,
                                               controller: _destination,
                                               suffix: Container(
@@ -308,7 +313,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     FocusScope.of(context).unfocus();
 
                     if (_typeColis == null) {
-                      showCustomSnackBar(context, "Veuillez sélectionner un type de courses", isError: true);
+                      showCustomSnackBar(context, "Veuillez sélectionner le type de course", isError: true);
                       return;
                     }
                     

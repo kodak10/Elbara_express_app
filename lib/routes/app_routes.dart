@@ -49,6 +49,7 @@ import 'package:elbara_express/presentation/live_tracking_screen/binding/live_tr
 import 'package:elbara_express/presentation/live_tracking_screen/live_tracking_screen.dart';
 import 'package:elbara_express/presentation/live_tracking_two_screen/binding/live_tracking_two_binding.dart';
 import 'package:elbara_express/presentation/live_tracking_two_screen/live_tracking_two_screen.dart';
+import 'package:elbara_express/presentation/livraisons_screen/livraisons_screen.dart';
 import 'package:elbara_express/presentation/log_in_screen/binding/log_in_binding.dart';
 import 'package:elbara_express/presentation/log_in_screen/log_in_screen.dart';
 import 'package:elbara_express/presentation/log_out_screen/binding/log_out_binding.dart';
@@ -116,6 +117,8 @@ import '../presentation/chatbot/chatbot_screen.dart';
 
 class AppRoutes {
   
+  static const String livraisonsScreen = '/livraisons_screen';
+
   static const String courseScreen = '/courses_screen';
 
   static const String noConnection = '/no_internet';
@@ -695,6 +698,14 @@ class AppRoutes {
     GetPage(
       name: courseScreen,
       page: () => CoursesScreen(),
+      bindings: [
+        SplashBinding(),
+      ],
+    ),
+
+     GetPage(
+      name: livraisonsScreen,
+      page: () => LivraisonsScreen(),
       bindings: [
         SplashBinding(),
       ],

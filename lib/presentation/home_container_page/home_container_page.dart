@@ -137,7 +137,7 @@ class HomeContainerPage extends StatelessWidget {
                     children: [
                       category_button(
                         () {
-                          //Get.toNamed(AppRoutes.sendPackageScreen);
+                          Get.toNamed(AppRoutes.livraisonsScreen);
                         },
                         "Livraisons".tr,
                         ImageConstant.actionLivraisons,

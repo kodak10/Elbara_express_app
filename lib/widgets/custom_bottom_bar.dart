@@ -32,7 +32,7 @@ class CustomBottomBar extends StatelessWidget {
         selectedicon: ImageConstant.imgOrderSelected),
     BottomMenuModel(
         icon: ImageConstant.imgNotificationUnselected,
-        title: "Notifications",
+        title: "Feedback",
         type: BottomBarEnum.Notification,
         selectedicon: ImageConstant.imgNotificationSelected),
     BottomMenuModel(

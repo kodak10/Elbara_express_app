@@ -9,32 +9,16 @@ class AddAddressModel {
   Rx<List<SelectionPopupModel>> dropdownItemList1 = Rx([
     SelectionPopupModel(
       id: 1,
-      title: "Item One",
+      title: "Autres",
       isSelected: true,
     ),
     SelectionPopupModel(
       id: 2,
-      title: "Item Two",
+      title: "Administrative",
     ),
     SelectionPopupModel(
       id: 3,
-      title: "Item Three",
-    )
-  ]);
-
-  Rx<List<SelectionPopupModel>> dropdownItemList2 = Rx([
-    SelectionPopupModel(
-      id: 1,
-      title: "Item One",
-      isSelected: true,
+      title: "Vêtements, Accessoires",
     ),
-    SelectionPopupModel(
-      id: 2,
-      title: "Item Two",
-    ),
-    SelectionPopupModel(
-      id: 3,
-      title: "Item Three",
-    )
   ]);
 }

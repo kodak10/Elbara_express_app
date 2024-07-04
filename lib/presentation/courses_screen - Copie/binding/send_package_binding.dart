@@ -1,4 +1,4 @@
-import '../controller/livraisons_controller.dart';
+import '../controller/courses_controller.dart';
 import 'package:get/get.dart';
 
 /// A binding class for the SendPackageScreen.
@@ -8,6 +8,6 @@ import 'package:get/get.dart';
 class SendPackageBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => LivraisonsController());
+    Get.lazyPut(() => CoursesController());
   }
 }

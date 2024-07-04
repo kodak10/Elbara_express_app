@@ -7,6 +7,7 @@ import 'package:elbara_express/core/utils/color_constant.dart';
 import 'package:elbara_express/core/utils/image_constant.dart';
 import 'package:elbara_express/core/utils/loading.dart';
 import 'package:elbara_express/core/utils/size_utils.dart';
+import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/presentation/payment_method_screen/controller/payment_method_controller.dart';
 import 'package:elbara_express/presentation/payment_method_screen/models/payment_method_model.dart';
 import 'package:elbara_express/routes/app_routes.dart';
@@ -698,54 +699,30 @@ class _SelectCourierServiceScreenState
             }
 
              if (selectedPrice == 0) {
-                        // Afficher un SnackBar si selectedD1 est null
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Veuillez sélectionner un engin'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                        return;
+               showCustomSnackBar(context, "Veuillez sélectionner le mode de payement", isError: true);                        
+               return;
             }
 
             if (mode_paiement == '') {
-                        // Afficher un SnackBar si selectedD1 est null
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Veuillez sélectionner le mode de payement'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                        return;
+                showCustomSnackBar(context, "Veuillez sélectionner le mode de payement", isError: true);
+                return;
             }
 
-           
-            
-
             if (mode_paiement == 'Payer Maintenant') {
-              Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => LoadingPage()),
-                          );
+
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoadingPage()),);
 
               initiatePayment(context);
-              //saveCommande(paymentUrl);
+             
               // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
             } else if (mode_paiement == 'Payer à la livraison') {
-              Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => LoadingPage()),
-                          );
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoadingPage()),);
               initiatePaymentLivraison(context);
               //saveCommande(paymentUrl);
 
               this.selectDelivery(); // Utilisez this pour appeler les méthodes de classe
             } else {
-              // Echec de l'initiation de paiement
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Erreur survenue'),
-                ),
-              );
-
+              showCustomSnackBar(context, "Erreur survenue est survenue. Veuillez réssayer", isError: true);
               printError(info: 'Veuillez choisir un mode de paiement');
             }
           },
@@ -764,15 +741,6 @@ class _SelectCourierServiceScreenState
     );
   }
 
-  // onTapArrowleft() {
-  //   Get.back();
-  // }
-// void onTapArrowleft() {
-//   Get.back();
-//   if (isLoading) {
-//     Navigator.of(context).pop(); // Ferme la boîte de dialogue de chargement si elle est ouverte
-//   }
-// }
 
 void onTapArrowleft() {
     if (isLoading) {

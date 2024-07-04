@@ -1,13 +1,13 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:elbara_express/presentation/notifications_page/firebase_notification_service.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:elbara_express/core/network/no_internet.dart'; // Importez la page NoInternetPage
+import 'core/app_export.dart'; // Importez votre fichier app_export
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'core/app_export.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-//import 'firebase_options.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +25,28 @@ Future main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late NetworkInfo networkInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    networkInfo = NetworkInfo(Connectivity());
+    _checkConnectivity();
+  }
+
+  Future<void> _checkConnectivity() async {
+    bool isConnected = await networkInfo.isConnected();
+    if (!isConnected) {
+      Get.offAll(() => NoInternetPage(onRetry: _checkConnectivity));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -47,7 +66,7 @@ class MyApp extends StatelessWidget {
             surfaceTintColor: ColorConstant.whiteA700),
       ),
       translations: AppLocalization(),
-      locale: Get.deviceLocale, //for setting localization strings
+      locale: Get.deviceLocale,
       fallbackLocale: Locale('en', 'US'),
       title: 'Elbara Express main',
       initialBinding: InitialBindings(),

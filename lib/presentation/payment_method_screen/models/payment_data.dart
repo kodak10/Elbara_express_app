@@ -5,7 +5,7 @@ class PaymentData {
   static List<PaymentMethodModel> getpaymentDAta() {
     return [
       PaymentMethodModel(ImageConstant.imgPaypalIcon, "Payer Maintenant"),
-      PaymentMethodModel(ImageConstant.imgMasterCardIcon, "Payer Cash"),
+      PaymentMethodModel(ImageConstant.imgMasterCardIcon, "Payer à la livraison"),
     ];
   }
 }

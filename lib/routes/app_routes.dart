@@ -1,3 +1,4 @@
+import 'package:elbara_express/core/network/no_internet.dart';
 import 'package:elbara_express/presentation/add_address_screen/add_address_screen.dart';
 import 'package:elbara_express/presentation/add_address_screen/binding/add_address_binding.dart';
 import 'package:elbara_express/presentation/add_adress_screen/add_adress_screen.dart';
@@ -22,6 +23,7 @@ import 'package:elbara_express/presentation/code_promo_screen/discount.dart';
 import 'package:elbara_express/presentation/confirmation_screen/ConfirmationPhoneScreen.dart';
 import 'package:elbara_express/presentation/courier_services_screen/binding/courier_services_binding.dart';
 import 'package:elbara_express/presentation/courier_services_screen/courier_services_screen.dart';
+import 'package:elbara_express/presentation/courses_screen/courses_screen.dart';
 import 'package:elbara_express/presentation/customer_support_screen/binding/customer_support_binding.dart';
 import 'package:elbara_express/presentation/customer_support_screen/customer_support_screen.dart';
 import 'package:elbara_express/presentation/edit_profile_screen/binding/edit_profile_binding.dart';
@@ -113,6 +115,11 @@ import 'package:get/get.dart';
 import '../presentation/chatbot/chatbot_screen.dart';
 
 class AppRoutes {
+  
+  static const String courseScreen = '/courses_screen';
+
+  static const String noConnection = '/no_internet';
+
   static const String splashScreen = '/splash_screen';
 
   static const String gridScreen = '/grid_screen';
@@ -683,6 +690,24 @@ class AppRoutes {
       bindings: [
         SplashBinding(),
       ],
-    )
+    ),
+
+    GetPage(
+      name: courseScreen,
+      page: () => CoursesScreen(),
+      bindings: [
+        SplashBinding(),
+      ],
+    ),
+
+    GetPage(
+  name: noConnection,
+  page: () => NoInternetPage(onRetry: () {
+    Get.back();
+    // Appeler _checkConnectivity() ou Get.offAllNamed(AppRoutes.initialRoute)
+    // Si la connexion est rétablie, vous pouvez retourner à la page principale ou à une autre page spécifique.
+  }),
+)
+
   ];
 }

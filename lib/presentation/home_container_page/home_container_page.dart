@@ -147,7 +147,7 @@ class HomeContainerPage extends StatelessWidget {
                       ),
                       category_button(
                         () {
-                          Get.toNamed(AppRoutes.orderTrackingScreen);
+                          Get.toNamed(AppRoutes.courseScreen);
                         },
                         "Courses".tr,
                         ImageConstant.actionCourses,

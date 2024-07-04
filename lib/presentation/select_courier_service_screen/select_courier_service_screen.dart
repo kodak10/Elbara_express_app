@@ -47,6 +47,9 @@ class SelectCourierServiceScreen extends StatefulWidget {
 
 class _SelectCourierServiceScreenState
     extends State<SelectCourierServiceScreen> {
+
+  bool isLoading = false; // Définissez isLoading comme un état local à l'écran 2
+
   late String email = '';
   late String name = '';
   late String phoneNumber = '';
@@ -518,7 +521,7 @@ class _SelectCourierServiceScreenState
                           ],
                         ),
                         Text(
-                          '${price * 2.60} \FCFA',
+                          '${(price * 2.60).toInt()} \FCFA',
                           style: TextStyle(
                             fontWeight:
                                 FontWeight.bold, // Applique le style gras
@@ -572,7 +575,7 @@ class _SelectCourierServiceScreenState
                           ],
                         ),
                         Text(
-                          '${price * 3.70} \FCFA',
+                        '${(price * 3.70).toInt()} \FCFA',
                           style: TextStyle(
                             fontWeight:
                                 FontWeight.bold, // Applique le style gras
@@ -727,7 +730,7 @@ class _SelectCourierServiceScreenState
               initiatePayment(context);
               //saveCommande(paymentUrl);
               // this.selectNow(); // Utilisez this pour appeler les méthodes de classe
-            } else if (mode_paiement == 'Payer Cash') {
+            } else if (mode_paiement == 'Payer à la livraison') {
               Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) => LoadingPage()),
                           );
@@ -760,6 +763,26 @@ class _SelectCourierServiceScreenState
       AppRoutes.orderSuccessScreen,
     );
   }
+
+  // onTapArrowleft() {
+  //   Get.back();
+  // }
+// void onTapArrowleft() {
+//   Get.back();
+//   if (isLoading) {
+//     Navigator.of(context).pop(); // Ferme la boîte de dialogue de chargement si elle est ouverte
+//   }
+// }
+
+void onTapArrowleft() {
+    if (isLoading) {
+      Get.until((route) => route.isFirst); // Retourne à la première route
+      Navigator.of(context).pop(); // Ferme la boîte de dialogue de chargement si elle est ouverte
+    } else {
+      Get.back(); // Sinon, retourne simplement à l'écran précédent
+    }
+  }
+
 }
 
 // Déplacez ces méthodes en dehors de la classe CustomButton

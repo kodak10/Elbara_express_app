@@ -63,12 +63,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           .collection('users')
           .doc(_currentUser.uid)
           .get();
-      if (userData.exists) {
-        controller.phoneNumberController.text = userData['phoneNumber'] ?? '';
-        controller.emailController.text = userData['email'] ?? '';
 
+      if (userData.exists) {
+        controller.emailController.text = userData['email'] ?? '';
         controller.nameController.text = userData['displayName'] ?? '';
+
+        // Supprimez le préfixe +225 lors de l'affichage du numéro de téléphone
+        String phoneNumber = userData['phoneNumber'] ?? '';
+        if (phoneNumber.startsWith('+225')) {
+          phoneNumber = phoneNumber.substring(4);
+        }
+        controller.phoneNumberController.text = phoneNumber;
       }
+    
+
+
     }
   }
 

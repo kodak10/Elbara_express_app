@@ -131,7 +131,7 @@ class _DiscountPageScreenState extends State<DiscountPageScreen> {
                     width: getHorizontalSize(355),
                     margin: getMargin(left: 20, right: 19),
                     child: Text(
-                      "Veuillez entrer votre code promo pour obtenir une réduction.",
+                      "Veuillez entrer un code promo pour obtenir une réduction.",
                       maxLines: null,
                       textAlign: TextAlign.center,
                       style: AppStyle.txtBody,

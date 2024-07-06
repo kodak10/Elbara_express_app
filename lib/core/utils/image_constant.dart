@@ -70,6 +70,9 @@ class ImageConstant {
   static String imgProfileUnselected = 'assets/images/profile_icon.svg';
   static String imgHomeSelected = 'assets/images/home_icon_selected.svg';
   static String imgOrderSelected = 'assets/images/order_icon_selected.svg';
+  static String imgFeedbackUnselected = 'assets/images/feedback_simple.svg';
+  static String imgFeedbackSelected = 'assets/images/feedback.svg';
+
   static String imgNotificationSelected = 'assets/images/notification_icon_selected.svg';
   static String imgProfileSelected = 'assets/images/profile_icon_selected.svg';
 

@@ -1,4 +1,3 @@
-import 'package:elbara_express/presentation/notifications_page/firebase_notification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +18,7 @@ Future main() async {
         projectId: 'elbaraexpress-9b834',
         storageBucket: "elbaraexpress-9b834.appspot.com", // Nom du bucket uniquement
       ),
-    );
-  FirebaseNotificationService().setupFirebase(); // Initialiser le service de notifications Firebase
-  
+    );  
   runApp(MyApp());
 }
 

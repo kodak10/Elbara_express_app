@@ -80,4 +80,10 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    // Add the dependency for the Firebase Authentication library
+    implementation "com.google.firebase:firebase-auth"
+
+    // Add the dependency for the Firebase SDK for Google Analytics
+    implementation("com.google.firebase:firebase-analytics")
+}

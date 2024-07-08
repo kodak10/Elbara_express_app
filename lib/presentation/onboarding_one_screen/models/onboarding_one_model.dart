@@ -12,11 +12,8 @@ class OnboardingOneModel {
     return [
       SlidertrackyourItemModel(
           ImageConstant.imgOnboarding1st,
-          "Rapidité, fiabilité, satisfaction garantie",
-          "Notre service de livraison, votre tranquillité d'esprit!"
-          // "Suivez votre colis en temps réel, où que vous soyez.",
-          // "Restez connecté à votre livraison où que vous soyez, avec des mises à jour en temps réel."
-          ),
+          "Suivez votre colis en temps réel, où que vous soyez.",
+          "Restez connecté à votre livraison où que vous soyez, avec des mises à jour en temps réel."),
       SlidertrackyourItemModel(
           ImageConstant.imgOnboarding2nd,
           "Une livraison de colis personnalisée, juste pour vous.",

@@ -36,6 +36,7 @@ import 'package:elbara_express/presentation/empty_notifications_screen/binding/e
 import 'package:elbara_express/presentation/empty_notifications_screen/empty_notifications_screen.dart';
 import 'package:elbara_express/presentation/empty_payment_screen/binding/empty_payment_binding.dart';
 import 'package:elbara_express/presentation/empty_payment_screen/empty_payment_screen.dart';
+import 'package:elbara_express/presentation/feedback_page/feedback_details.dart';
 import 'package:elbara_express/presentation/forgot_password_screen/binding/forgot_password_binding.dart';
 import 'package:elbara_express/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:elbara_express/presentation/gestionnaire_gare/pages/OrderDetails.dart';
@@ -117,6 +118,8 @@ import '../presentation/chatbot/chatbot_screen.dart';
 
 class AppRoutes {
   
+  static const String feedbackDetailsScreen = '/details_feedbacks';
+
   static const String livraisonsScreen = '/livraisons_screen';
 
   static const String courseScreen = '/courses_screen';
@@ -710,6 +713,15 @@ class AppRoutes {
         SplashBinding(),
       ],
     ),
+
+    GetPage(
+      name: feedbackDetailsScreen,
+      page: () => FeedbacksDetailsPage(),
+      bindings: [
+        SplashBinding(),
+      ],
+    ),
+    
 
     GetPage(
   name: noConnection,

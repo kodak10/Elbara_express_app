@@ -1,4 +1,6 @@
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:elbara_express/core/utils/snackbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pinput/pinput.dart';
 
 import 'controller/verification_controller.dart';
@@ -12,7 +14,6 @@ import 'package:flutter/services.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({Key? key}) : super(key: key);
-  
 
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
@@ -21,6 +22,7 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   VerificationController controller = Get.put(VerificationController());
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
@@ -33,9 +35,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    String _code = '';
-
     return WillPopScope(
         onWillPop: () async {
           Get.back();
@@ -115,8 +114,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                                   getPadding(left: 9, right: 9),
                                               decoration: BoxDecoration(
                                                   color: Colors.red)),
-                                          controller:
-                                              controller.otpController.value,
+                                          // controller:
+                                          //     controller.otpController.value,
                                           length: 6,
                                           validator: (value) {
                                             if (value == null ||
@@ -171,42 +170,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                               ),
                                             ),
                                           ),
-                                        )
-
-                                    // PinCodeTextField(
-                                    // appContext: context,
-                                    // controller: controller.otpController.value,
-                                    // length: 6,
-                                    // obscureText: false,
-                                    // obscuringCharacter: '*',
-                                    // keyboardType: TextInputType.number,
-                                    // autoDismissKeyboard: true,
-                                    // enableActiveFill: true,
-                                    // inputFormatters: [
-                                    //   FilteringTextInputFormatter.digitsOnly
-                                    // ],
-                                    // onChanged: (value) {},
-                                    // pinTheme: PinTheme(
-                                    //     fieldHeight: getHorizontalSize(50),
-                                    //     fieldWidth: getHorizontalSize(50),
-                                    //     shape: PinCodeFieldShape.box,
-                                    //     borderRadius: BorderRadius.circular(
-                                    //         getHorizontalSize(8)),
-                                    //     selectedFillColor: ColorConstant.whiteA700,
-                                    //     activeFillColor: ColorConstant.whiteA700,
-                                    //     inactiveFillColor: ColorConstant.whiteA700,
-                                    //     inactiveColor: ColorConstant.gray300,
-                                    //     selectedColor: ColorConstant.gray300,
-                                    //     activeColor: ColorConstant.gray300))
-
-                                    )),
+                                        ))),
                             CustomButton(
                                 height: getVerticalSize(54),
                                 text: "Vérifier".tr,
                                 margin: getMargin(top: 30),
-                                onTap: () {
+                                onTap: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    onTapVerify();
+                                    await onTapVerify();
                                   }
                                 }),
                             Padding(
@@ -234,13 +205,26 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 ))));
   }
 
-  onTapVerify() {
-    Get.toNamed(
-      AppRoutes.resetPasswordScreen,
+ Future<void> onTapVerify() async {
+  try {
+    // Créer les credentials à partir du code de vérification
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      verificationId: controller.verificationId.value,
+      smsCode: controller.otpController.value,
     );
-  }
 
-  onTapArrowleft1() {
+    // Signer avec les credentials
+    await FirebaseAuth.instance.signInWithCredential(credential);
+
+    // Rediriger vers la page de réinitialisation du mot de passe
+    Get.toNamed(AppRoutes.resetPasswordScreen);
+  } catch (e) {
+    showCustomSnackBar(context, 'Échec de la vérification : $e', isError: true);
+  }
+}
+
+
+  void onTapArrowleft1() {
     Get.back();
   }
 }

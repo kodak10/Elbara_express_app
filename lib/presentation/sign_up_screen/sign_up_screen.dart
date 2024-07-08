@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:country_pickers/utils/utils.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/core/phone_field/countries.dart';
 import 'package:elbara_express/core/utils/loading.dart';
 import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/core/utils/validation_functions.dart';
@@ -24,12 +26,19 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   SignUpController controller = Get.put(SignUpController());
   static const String defaultRole = 'user'; // Définir le rôle par défaut
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
+
+  var otpController = TextEditingController().obs;
+  var verificationId = ''.obs;
+ // Rx<Country> selectedCountry = CountryPickerUtils.getCountryByPhoneCode('1').obs;
+
+
   final _promoCodeController = TextEditingController();
 
   bool _isPolicyAccepted = false;
@@ -343,89 +352,6 @@ Navigator.of(context).push(
                             ]))))));
   }
 
-  // onTapSignup() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     try {
-  //       UserCredential userCredential =
-  //           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-  //         email: controller.emailController.text,
-  //         password: controller.passwordController.text,
-  //       );
-
-
-  //       // Vérifier si le pseudo est déjà utilisé
-  //       bool isPseudoTaken =
-  //           await checkPseudoExists(controller.nameController.text);
-  //       if (isPseudoTaken) {
-  //         showCustomSnackBar(context, 'Un compte existe déjà avec ce Pseudo.',
-  //             isError: true);
-  //         return;
-  //       }
-
-  //       // Vérifier si le numéro de téléphone est déjà utilisé
-  //       bool isPhoneNumberTaken =
-  //           await checkPhoneNumberExists(controller.phoneNumberController.text);
-  //       if (isPhoneNumberTaken) {
-  //         showCustomSnackBar(
-  //             context, 'Un compte existe déjà avec ce numéro de téléphone.',
-  //             isError: true);
-
-  //         return;
-  //       }
-
-  //       // Envoyer le code de vérification par SMS
-  //       sendVerificationCode('+225${controller.phoneNumberController.text}');
-
-  //       await postDetailsToFirestore(
-  //         controller.emailController.text,
-  //         controller.nameController.text,
-  //         defaultRole,
-  //         controller.phoneNumberController.text,
-  //         _promoCodeController.text,
-  //       );
-  //       PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
-
-  //       Get.toNamed(AppRoutes.homeContainer1Screen);
-  //     } on FirebaseAuthException catch (e) {
-  //       if (e.code == 'email-already-in-use') {
-  //         showCustomSnackBar(context, 'Un compte existe déjà avec cet email',
-  //             isError: true);
-  //       }
-  //     } catch (e) {
-  //       print(e);
-  //     }
-  //   }
-  // }
-
-  // postDetailsToFirestore(String email, String name, String role,
-  //     String phoneNumber, String codePromo) async {
-  //   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  //   var user = FirebaseAuth.instance.currentUser;
-  //   CollectionReference ref = firebaseFirestore.collection('users');
-
-  //   // Utilisez l'UID de l'utilisateur comme ID du document
-  //   DocumentReference docRef = ref.doc(user!.uid);
-
-  //   // Ajoutez les détails de l'utilisateur à Firestore
-  //   await docRef.set({
-  //     'email': email,
-  //     'displayName': name,
-  //     'role': defaultRole,
-  //     'phoneNumber': '+225${controller.phoneNumberController.text}',
-  //     'photoURL':
-  //         'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
-  //     'codePromo': codePromo
-  //   });
-
-  //   // Récupérez l'ID généré par Firebase
-  //   String documentId = docRef.id;
-
-  //   // Mettez à jour le document avec l'ID généré
-  //   await docRef.update({'id': documentId});
-
-  //   // Redirigez vers la page de connexion
-  //   Get.toNamed(AppRoutes.logInScreen);
-  // }
 
   Future<void> onTapSignup(BuildContext context) async {
   if (_formKey.currentState!.validate()) {
@@ -458,7 +384,26 @@ Navigator.of(context).push(
       }
 
       // Envoyer le code de vérification par SMS
-      sendVerificationCode('+225${controller.phoneNumberController.text}');
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+225${controller.phoneNumberController.text}',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-retrieve or instant verification
+          await FirebaseAuth.instance.signInWithCredential(credential);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          Navigator.pop(context); // Remove the loading page
+          showCustomSnackBar(context, 'Échec de la vérification : ${e.message}', isError: true);
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          controller.verificationId.value = verificationId;
+          Navigator.pop(context); // Remove the loading page
+          Get.toNamed(AppRoutes.verificationScreen); // Navigate to the verification screen
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          controller.verificationId.value = verificationId;
+        },
+      );
+
 
       await postDetailsToFirestore(
         controller.emailController.text,

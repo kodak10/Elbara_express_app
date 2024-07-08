@@ -1,7 +1,7 @@
 import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
 
-import '../controller/notifications_controller.dart';
+import '../controller/feedbacks_controller.dart';
 import '../models/notifications_item_model.dart';
 
 // ignore: must_be_immutable
@@ -15,7 +15,7 @@ class NotificationsItemWidget extends StatelessWidget {
 
   NotificationsItemModel notificationsItemModelObj;
 
-  NotificationsController controller = Get.put(NotificationsController());
+  FeedbacksController controller = Get.put(FeedbacksController());
 
   @override
   Widget build(BuildContext context) {

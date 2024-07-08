@@ -7,13 +7,17 @@ import 'package:flutter/material.dart';
 ///
 /// This class manages the state of the VerificationScreen, including the
 /// current verificationModelObj
-class VerificationController extends GetxController with CodeAutoFill {
-  Rx<TextEditingController> otpController = TextEditingController().obs;
-
-  Rx<VerificationModel> verificationModelObj = VerificationModel().obs;
+class VerificationController extends GetxController {
+  Rx<String> verificationId = ''.obs;
+  Rx<String> otpController = ''.obs;
 
   @override
-  void codeUpdated() {
-    otpController.value.text = code ?? '';
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
   }
 }

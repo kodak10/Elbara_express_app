@@ -18,6 +18,10 @@ class SignUpController extends GetxController {
   TextEditingController passwordController = TextEditingController();
 
   Rx<SignUpModel> signUpModelObj = SignUpModel().obs;
+   var verificationId = ''.obs;
+   
+ var otpController = TextEditingController().obs;
+
 
   Rx<Country> selectedCountry =
       CountryPickerUtils.getCountryByPhoneCode('1').obs;

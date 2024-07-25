@@ -60,19 +60,33 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
           Timestamp timestamp = data['date'] as Timestamp;
           DateTime date = timestamp.toDate();
 
+          Timestamp timestampDateRecuperation = data['date'] as Timestamp;
+          DateTime dateRecuperation = timestampDateRecuperation.toDate();
+
           return RecentlyShipped(
             docID: docID,
             orderID: data['orderId'] ?? '', // Valeur pour l'ID de la commande
             name: data['name'] ?? '', // Valeur pour le nom
             date: date,
+            dateRecup: dateRecuperation,
+
             status: data['deliveryStatus'] ?? '', // Valeur pour le statut
-            typCourse: data['type_colis'] ?? '', // Valeur pour le statut
+            typeColis: data['typeColis'] ?? '', // Valeur pour le statut
+            typeServive: data['typeService'] ?? '', // Valeur pour le statut
+
             typeEngin: data['selectedVehicle'] ?? '', // Valeur pour le statut
-            depart: data['lieu_depart'] ?? '', // Valeur pour le statut
-            destination: data['lieu_arrive'] ?? '', // Valeur pour le statut
+            depart: data['lieuDepart'] ?? '', // Valeur pour le statut
+            destination: data['lieuDestination'] ?? '', // Valeur pour le statut
             cout: data['price'] ?? '', // Valeur pour le statut
             modePayment: data[' paymentMethod'] ?? '',
             payemenStatus: data['paymentStatus'] ?? '', // Valeur pour le statut
+
+            recevoirArgent: data['recevoirArgent'] ?? '', // Valeur pour le statut
+            modePaiement: data['modePaiement'] ?? '', // Valeur pour le statut
+            numeroDeReception: data['numeroDeReception'] ?? '', // Valeur pour le statut
+            montantRecevoir: data['montantRecevoir'] ?? '', // Valeur pour le statut
+
+
 
           );
         }).toList();
@@ -170,7 +184,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                 GestureDetector(
                   onTap: () {
                     print('send');
-                    Get.toNamed(AppRoutes.sendPackageScreen);
+                    Get.toNamed(AppRoutes.livraisonsScreen);
                   },
                   child: CustomButton(
                     height: getVerticalSize(

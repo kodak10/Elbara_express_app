@@ -17,6 +17,10 @@ import 'controller/livraisons_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+
 class LivraisonsScreen extends StatefulWidget {
   LivraisonsScreen({Key? key}) : super(key: key);
 
@@ -38,11 +42,19 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
   final TextEditingController _montantController = TextEditingController();
   final TextEditingController _numeroReception = TextEditingController();
 
-  int montantCourse = 0;
+  //int montantCourse = 0; // Parfait a modifier pour des tests
+  int montantCourse = 2000;
+
   bool isLoading = false;
   bool recevoirArgent = false;
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // FocusNodes for managing focus
+  final FocusNode _departFocusNode = FocusNode();
+  final FocusNode _destinationFocusNode = FocusNode();
+String? _selectedOption;
+  List<String> _options = [];
 
   @override
   void initState() {
@@ -55,6 +67,75 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
     );
     initializeDateFormatting('fr_FR',
         null); // Initialisez les données de localisation pour le français
+    _getCurrentLocation();
+
+    _fetchOptions();
+
+    // Adding listeners to focus nodes for debugging
+    _departFocusNode.addListener(() {
+      if (_departFocusNode.hasFocus) {
+        print('Depart field has focus');
+      }
+    });
+
+    _destinationFocusNode.addListener(() {
+      if (_destinationFocusNode.hasFocus) {
+        print('Destination field has focus');
+      }
+    });
+  }
+
+Future<void> _fetchOptions() async {
+    // Fetch data from Firestore
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot snapshot = await firestore.collection('TypeColis').get();
+
+    setState(() {
+      _options = snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Vérifier si le service de localisation est activé
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Service de localisation désactivé, afficher un message ou demander à l'utilisateur d'activer la localisation
+      return;
+    }
+
+    // Demander l'autorisation d'accéder à la localisation
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permission refusée, afficher un message ou gérer le cas où l'utilisateur refuse l'accès à la localisation
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // L'utilisateur a refusé définitivement l'accès à la localisation, proposer d'ouvrir les paramètres de l'appareil pour modifier les autorisations
+      return;
+    }
+
+    // Obtenir la position actuelle de l'utilisateur
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // Obtenir les détails du lieu à partir des coordonnées
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+    Placemark place = placemarks.first;
+
+    setState(() {
+      _depart.text = "${place.locality}, ${place.postalCode}, ${place.country}";
+    });
   }
 
   final searchController = TextEditingController();
@@ -97,85 +178,95 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(width: 20),
-
                             Row(
                               children: [
-                                CustomImageView(
-                                  svgPath: ImageConstant.imgTimeLineIcon,
-                                ),
-                                SizedBox(
-                                  width: getHorizontalSize(16),
-                                ),
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          CustomTextFormField(
-                                              hintText: "Api Google Maps".tr,
-                                              controller: _depart,
-                                              suffix: Container(
-                                                  margin: getMargin(
-                                                      left: 15,
-                                                      top: 15,
-                                                      right: 15,
-                                                      bottom: 15),
-                                                  child: CustomImageView(
-                                                      onTap: () {
-                                                        // Get.toNamed(AppRoutes
-                                                        //     .selectDeliveryAddressScreen);
-                                                      },
-                                                      svgPath: ImageConstant
-                                                          .imgLocationBlack900)),
-                                              suffixConstraints: BoxConstraints(
-                                                  maxHeight:
-                                                      getVerticalSize(54)))
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: getVerticalSize(16),
-                                      ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(
-                                            height: getVerticalSize(8),
-                                          ),
-                                          CustomTextFormField(
-                                              hintText: "Api Google Maps".tr,
-                                              controller: _destination,
-                                              suffix: Container(
-                                                  margin: getMargin(
-                                                      left: 15,
-                                                      top: 15,
-                                                      right: 15,
-                                                      bottom: 15),
-                                                  child: CustomImageView(
-                                                      onTap: () {
-                                                        // Get.toNamed(AppRoutes
-                                                        //     .selectDeliveryAddressScreen);
-                                                      },
-                                                      svgPath: ImageConstant
-                                                          .imgLocationBlack900)),
-                                              suffixConstraints: BoxConstraints(
-                                                  maxHeight:
-                                                      getVerticalSize(54)))
-                                        ],
-                                      ),
-                                    ],
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: DropdownButton<String>(
+                            value: _selectedOption,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedOption = newValue;
+                              });
+                            },
+                            isExpanded: true,
+                            items: _options.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
                                   ),
-                                )
+                                ),
                               ],
                             ),
+                            Row(children: [
+                              CustomImageView(
+                                svgPath: ImageConstant.imgTimeLineIcon,
+                              ),
+                              SizedBox(
+                                width: getHorizontalSize(16),
+                              ),
+                              Expanded(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                    CustomTextFormField(
+                                      hintText: "Localisation départ",
+                                      controller: _depart,
+                                      focusNode: _departFocusNode,
+                                      suffix: Container(
+                                        margin: EdgeInsets.all(15),
+                                        child: const Icon(Icons.my_location),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    GooglePlaceAutoCompleteTextField(
+                                      textEditingController: _destination,
+                                      googleAPIKey:
+                                          "AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY",
+                                      inputDecoration: InputDecoration(
+                                        hintText: "Localisation destination",
+                                        suffixIcon: const Icon(Icons.search),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                            width:
+                                                1, // Ajustez cette valeur pour modifier l'épaisseur de la bordure
+                                            color: Colors
+                                                .grey, // Couleur de la bordure
+                                          ),
+                                        ),
+                                      ),
+                                      focusNode: _destinationFocusNode,
+                                      debounceTime: 800,
+                                      countries: const ["ci"],
+                                      isLatLngRequired: true,
+                                      getPlaceDetailWithLatLng: (prediction) {
+                                        print(
+                                            "placeDetails: ${prediction.description}");
+                                      },
+                                      itemClick: (prediction) {
+                                        _destination.text =
+                                            prediction.description!;
+                                        _destination.selection =
+                                            TextSelection.fromPosition(
+                                          TextPosition(
+                                            offset:
+                                                prediction.description!.length,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ]))
+                            ]),
                             SizedBox(
                               height: getVerticalSize(16),
                             ),
-
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -276,135 +367,164 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
                             SwitchListTile(
                               title: Text("Recevoir de l'argent ?"),
                               value: recevoirArgent,
+                              activeColor: ColorConstant.bleuElbara,
                               onChanged: (bool value) {
                                 setState(() {
                                   recevoirArgent = value;
                                 });
                               },
                             ),
-                            
                             if (recevoirArgent)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Montant à recevoir",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8), // Espace entre le texte et le champ
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CustomTextFormField(
-                                hintText: "Montant",
-                                controller: _montantController,
-                                textInputAction: TextInputAction.done,
-                                variant: TextFormFieldVariant.OutlineGray300,
-                                prefixConstraints: BoxConstraints(maxHeight: getVerticalSize(54)),
-                                textInputType: TextInputType.number,
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.help_outline),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text("Information"),
-                                      content: Text("1% de cette somme vous sera prélévé."),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text("OK"),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Montant à recevoir",
+                                        style: AppStyle.txtSubheadline,
+                                      ),
+                                      SizedBox(
+                                          height:
+                                              8), // Espace entre le texte et le champ
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: CustomTextFormField(
+                                              hintText: "Montant",
+                                              controller: _montantController,
+                                              textInputAction:
+                                                  TextInputAction.done,
+                                              variant: TextFormFieldVariant
+                                                  .OutlineGray300,
+                                              prefixConstraints: BoxConstraints(
+                                                  maxHeight:
+                                                      getVerticalSize(54)),
+                                              textInputType:
+                                                  TextInputType.number,
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: Icon(Icons.help_outline),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text("Information"),
+                                                    content: Text(
+                                                        "1% de cette somme vous sera prélévé."),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: Text("OK"),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: getVerticalSize(8)),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: getPadding(top: 19),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Mode de reception".tr,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtSubheadline,
+                                              ),
+                                              SizedBox(
+                                                  height: getVerticalSize(
+                                                      8)), // Espacement entre le texte et le champ
+                                              CustomDropDown(
+                                                //padding: DropDownPadding.PaddingT17,
+                                                icon: Container(
+                                                  margin: getMargin(
+                                                      left: 0,
+                                                      right: 15,
+                                                      top: 0,
+                                                      bottom: 0),
+                                                  child: CustomImageView(
+                                                      svgPath: ImageConstant
+                                                          .imgArrowdown),
+                                                ),
+                                                hintText: "Mode".tr,
+                                                items: controller
+                                                    .addAddressModelObj
+                                                    .value
+                                                    .dropdownItemList1
+                                                    .value,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    _modePaiement = value;
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: getVerticalSize(8)),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: getPadding(top: 19),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Mode de reception".tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: AppStyle.txtSubheadline,
-                                ),
-                                SizedBox(height: getVerticalSize(8)), // Espacement entre le texte et le champ
-                                CustomDropDown(
-                                  padding: DropDownPadding.PaddingT17,
-                                  icon: Container(
-                                    margin: getMargin(left: 0, right: 15),
-                                    child: CustomImageView(svgPath: ImageConstant.imgArrowdown),
+                                      ),
+                                      SizedBox(width: getHorizontalSize(10)),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: getPadding(top: 19),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Numéro de téléphone".tr,
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.left,
+                                                style: AppStyle.txtSubheadline,
+                                              ),
+                                              SizedBox(
+                                                  height: getVerticalSize(
+                                                      8)), // Espacement entre le texte et le champ
+                                              CustomTextFormField(
+                                                hintText: "ex:  0101010101",
+                                                controller: _numeroReception,
+                                                textInputAction:
+                                                    TextInputAction.done,
+                                                variant: TextFormFieldVariant
+                                                    .OutlineGray300,
+                                                prefixConstraints:
+                                                    BoxConstraints(
+                                                  maxHeight:
+                                                      getVerticalSize(54),
+                                                ),
+                                                textInputType:
+                                                    TextInputType.phone,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  hintText: "Mode".tr,
-                                  items: controller.addAddressModelObj.value.dropdownItemList1.value,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _modePaiement = value;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: getHorizontalSize(10)),
-                        Expanded(
-                          child: Padding(
-                            padding: getPadding(top: 19),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Numéro de téléphone".tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: AppStyle.txtSubheadline,
-                                ),
-                                SizedBox(height: getVerticalSize(8)), // Espacement entre le texte et le champ
-                                CustomTextFormField(
-                                  hintText: "ex:  0101010101",
-                                  controller: _numeroReception,
-                                  textInputAction: TextInputAction.done,
-                                  variant: TextFormFieldVariant.OutlineGray300,
-                                  prefixConstraints: BoxConstraints(
-                                    maxHeight: getVerticalSize(54),
+                                  SizedBox(
+                                    height: getVerticalSize(16),
                                   ),
-                                  textInputType: TextInputType.phone,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                  
-                                SizedBox(
-                                  height: getVerticalSize(16),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
                           ],
                         ),
                       ),
@@ -419,7 +539,12 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
                     // Fermer le clavier
                     FocusScope.of(context).unfocus();
 
-                   
+                    if (_selectedOption == '') {
+                      showCustomSnackBar(
+                          context, "Veuillez sélectionner le type de colis.",
+                          isError: true);
+                      return;
+                    }
 
                     if (_depart.text.isEmpty) {
                       showCustomSnackBar(context,
@@ -437,15 +562,21 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
 
                     if (recevoirArgent) {
                       if (_montantController.text.isEmpty) {
-                        showCustomSnackBar(context, "Veuillez entrer le montant", isError: true);
+                        showCustomSnackBar(
+                            context, "Veuillez entrer le montant",
+                            isError: true);
                         return;
                       }
                       if (_modePaiement == null) {
-                        showCustomSnackBar(context, "Veuillez sélectionner un mode de reception des fonds", isError: true);
+                        showCustomSnackBar(context,
+                            "Veuillez sélectionner un mode de reception des fonds",
+                            isError: true);
                         return;
                       }
                       if (_numeroReception.text.isEmpty) {
-                        showCustomSnackBar(context, "Veuillez entrer le numéro téléphone", isError: true);
+                        showCustomSnackBar(
+                            context, "Veuillez entrer le numéro téléphone",
+                            isError: true);
                         return;
                       }
                     }
@@ -487,7 +618,8 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
 
     // Collectez toutes les données de l'écran 1
     Map<String, dynamic> DataInfos = {
-      //'typeColis': _typeColis,
+      'typeService': "Livraison",
+      'typeColis': _selectedOption,
       'nomReceptioneur': _nomRecepteur.text,
       'telephoneReceptioneur': '+225 ${_telephoneRecepteur.text}',
       'infosComplementaire': _infosComplementaire.text,
@@ -495,8 +627,9 @@ class _LivraisonsScreenState extends State<LivraisonsScreen> {
       'lieuDepart': _depart.text,
       'lieuDestination': _destination.text,
       'recevoirArgent': recevoirArgent,
-      'modePaiement': _modePaiement,
+      'modePaiement': _modePaiement!.title,
       'numeroDeReception': '+225${_numeroReception.text}',
+      'montantRecevoir': _montantController.text
     };
 
     // Passez les données à l'écran suivant et naviguez

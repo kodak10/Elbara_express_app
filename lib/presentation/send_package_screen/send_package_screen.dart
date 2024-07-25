@@ -48,12 +48,15 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
 
   String? selectedValue;
   String? selectedGare;
-  String? _selectedOption = 'TYPE DE COLIS';
+  //String? _selectedOption = 'TYPE DE COLIS';
   String? birthday;
 
-  int montantCourse = 0;
+  int montantCourse = 2000; //Parfait
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String? _selectedOption;
+  List<String> _options = [];
 
   @override
   void initState() {
@@ -64,7 +67,19 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
-    initializeDateFormatting('fr_FR',null); // Initialisez les données de localisation pour le français
+    initializeDateFormatting('fr_FR',
+        null); // Initialisez les données de localisation pour le français
+    _fetchOptions();
+  }
+
+  Future<void> _fetchOptions() async {
+    // Fetch data from Firestore
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot snapshot = await firestore.collection('TypeColis').get();
+
+    setState(() {
+      _options = snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
   }
 
   final searchController = TextEditingController();
@@ -72,34 +87,33 @@ class _SendPackageScreenState extends State<SendPackageScreen> {
   DateTime _selectedDateTime = DateTime.now();
   @override
   Widget build(BuildContext context) {
-final formattedDate = DateFormat.yMMMMd('fr').format(_selectedDateTime);
+    final formattedDate = DateFormat.yMMMMd('fr').format(_selectedDateTime);
 
-final birthdayTile = Material(
-  color: Colors.transparent,
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      SizedBox(
-        height: getVerticalSize(12),
+    final birthdayTile = Material(
+      color: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            height: getVerticalSize(12),
+          ),
+          Text(
+            "Date de récupération",
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.left,
+            style: AppStyle.txtSubheadline,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 5.0),
+          ),
+          CupertinoDateTextBox(
+            initialValue: _selectedDateTime,
+            onDateChange: onBirthdayChange,
+            hintText: formattedDate,
+          ),
+        ],
       ),
-      Text(
-        "Date de récupération",
-        overflow: TextOverflow.ellipsis,
-        textAlign: TextAlign.left,
-        style: AppStyle.txtSubheadline,
-      ),
-      const Padding(
-        padding: EdgeInsets.only(bottom: 5.0),
-      ),
-      CupertinoDateTextBox(
-        initialValue: _selectedDateTime,
-        onDateChange: onBirthdayChange,
-        hintText: formattedDate,
-      ),
-    ],
-  ),
-);
-
+    );
 
     return WillPopScope(
         onWillPop: () async {
@@ -135,7 +149,6 @@ final birthdayTile = Material(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(width: 20),
-
                             Row(
                               children: [
                                 Expanded(
@@ -148,192 +161,202 @@ final birthdayTile = Material(
                                           _selectedOption = newValue;
                                         });
                                       },
-                                      isExpanded:
-                                          true, // Permet au bouton de remplir l'espace horizontalement
-                                      items: <String>[
-                                        'TYPE DE COLIS',
-                                        'Autres',
-                                        'Documents',
-                                        'Produits Vivriers',
-                                      ].map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
+                                      isExpanded: true,
+                                      items: _options.isNotEmpty
+                                          ? _options
+                                              .map<DropdownMenuItem<String>>(
+                                                  (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList()
+                                          : [
+                                              DropdownMenuItem<String>(
+                                                  child: Text('Chargement...'))
+                                            ],
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                    child: Padding(
-                                      padding: getPadding(
-                                        top: 1,
-                                        bottom: 1,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          StreamBuilder<QuerySnapshot>(
-                                            stream: FirebaseFirestore.instance
-                                                .collection("compagnie")
-                                                .snapshots(),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasError) {
-                                                return Center(
-                                                  child: Text(
-                                                      "Some error occured ${snapshot.error}"),
-                                                );
-                                              }
-                                              List<DropdownMenuItem>
-                                                  programItems = [];
-                                              if (!snapshot.hasData) {
-                                                return const CircularProgressIndicator();
-                                              } else {
-                                                final selectProgram = snapshot
-                                                    .data?.docs.reversed
-                                                    .toList();
-                                                if (selectProgram != null) {
-                                                  for (var program
-                                                      in selectProgram) {
-                                                    programItems.add(
-                                                      DropdownMenuItem(
-                                                        value: program['name'],
-                                                        child: Text(
-                                                          program['name'],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                }
-                                                return Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      10.0),
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                      right: 15,
-                                                      left: 15,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Colors.grey,
-                                                        width: 1,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                    ),
-                                                    child: DropdownButton(
-                                                      underline:
-                                                          const SizedBox(),
-                                                      isExpanded: true,
-                                                      hint: const Text(
-                                                        "La compagnie",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                        ),
-                                                      ),
-                                                      value:
-                                                          selectedValue, //parfait
-                                                      items: programItems,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          selectedValue = value;
-                                                          //selectedGare = "";
-                                                        });
-                                                      },
-                                                    ),
-                                                    
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                  child: Padding(
+                                    padding: getPadding(
+                                      top: 1,
+                                      bottom: 1,
                                     ),
-                                  ),                                
-                              ],
-                            ),
-
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    child: Padding(
-                                      padding: getPadding(
-                                        top: 1,
-                                        bottom: 10,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          StreamBuilder<QuerySnapshot>(
-                                            stream: FirebaseFirestore.instance.collection("gare").where('compagnie', isEqualTo: selectedValue).snapshots(),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasError) {
-                                                return Center(child: Text("Une erreur est survenue: ${snapshot.error}"));
-                                              }
-                                              List<DropdownMenuItem<String>> gareItems = [];
-                                              if (!snapshot.hasData) {
-                                                return CircularProgressIndicator();
-                                              } else {
-                                                final gares = snapshot.data?.docs;
-                                                if (gares != null) {
-                                                  for (var gare in gares) {
-                                                    gareItems.add(
-                                                      DropdownMenuItem(
-                                                        value: gare['nom'],
-                                                        child: Text(gare['nom']),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection("compagnie")
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasError) {
+                                              return Center(
+                                                child: Text(
+                                                    "Some error occured ${snapshot.error}"),
+                                              );
+                                            }
+                                            List<DropdownMenuItem>
+                                                programItems = [];
+                                            if (!snapshot.hasData) {
+                                              return const CircularProgressIndicator();
+                                            } else {
+                                              final selectProgram = snapshot
+                                                  .data?.docs.reversed
+                                                  .toList();
+                                              if (selectProgram != null) {
+                                                for (var program
+                                                    in selectProgram) {
+                                                  programItems.add(
+                                                    DropdownMenuItem(
+                                                      value: program['name'],
+                                                      child: Text(
+                                                        program['name'],
                                                       ),
-                                                    );
-                                                  }
+                                                    ),
+                                                  );
                                                 }
-                                                return Padding(
-                                                  padding: const EdgeInsets.all(10.0),
-                                                  child: Container(
-                                                    padding: const EdgeInsets.only(right: 15, left: 15),
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(color: Colors.grey, width: 1),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    ),
-                                                    child: DropdownButton<String>(
-                                                      underline: SizedBox(),
-                                                      isExpanded: true,
-                                                      hint: Text("La gare", style: TextStyle(fontSize: 14)),
-                                                      value: selectedGare,
-                                                      items: gareItems,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          selectedGare = value;
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                );
                                               }
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                    right: 15,
+                                                    left: 15,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color: Colors.grey,
+                                                      width: 1,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: DropdownButton(
+                                                    underline: const SizedBox(),
+                                                    isExpanded: true,
+                                                    hint: const Text(
+                                                      "La compagnie",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                    value:
+                                                        selectedValue, //parfait
+                                                    items: programItems,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        selectedValue = value;
+                                                        //selectedGare = "";
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                ),
                               ],
                             ),
-
-                          SizedBox(
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: getPadding(
+                                      top: 1,
+                                      bottom: 10,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection("gare")
+                                              .where('compagnie',
+                                                  isEqualTo: selectedValue)
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasError) {
+                                              return Center(
+                                                  child: Text(
+                                                      "Une erreur est survenue: ${snapshot.error}"));
+                                            }
+                                            List<DropdownMenuItem<String>>
+                                                gareItems = [];
+                                            if (!snapshot.hasData) {
+                                              return CircularProgressIndicator();
+                                            } else {
+                                              final gares = snapshot.data?.docs;
+                                              if (gares != null) {
+                                                for (var gare in gares) {
+                                                  gareItems.add(
+                                                    DropdownMenuItem(
+                                                      value: gare['nom'],
+                                                      child: Text(gare['nom']),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 15, left: 15),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.grey,
+                                                        width: 1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: DropdownButton<String>(
+                                                    underline: SizedBox(),
+                                                    isExpanded: true,
+                                                    hint: Text("La gare",
+                                                        style: TextStyle(
+                                                            fontSize: 14)),
+                                                    value: selectedGare,
+                                                    items: gareItems,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        selectedGare = value;
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
                               height: getVerticalSize(16),
                             ),
-
                             Row(
                               children: [
                                 CustomImageView(
@@ -352,9 +375,7 @@ final birthdayTile = Material(
                                             CrossAxisAlignment.start,
                                         children: [
                                           CustomTextFormField(
-                                              hintText:
-                                                  "Api Google Maps"
-                                                      .tr,
+                                              hintText: "Api Google Maps".tr,
                                               controller: _lieuRamassage,
                                               suffix: Container(
                                                   margin: getMargin(
@@ -381,14 +402,11 @@ final birthdayTile = Material(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          
                                           SizedBox(
                                             height: getVerticalSize(8),
                                           ),
                                           CustomTextFormField(
-                                              hintText:
-                                                  "Api Google Maps"
-                                                      .tr,
+                                              hintText: "Api Google Maps".tr,
                                               controller: _destinationRamassage,
                                               suffix: Container(
                                                   margin: getMargin(
@@ -413,81 +431,75 @@ final birthdayTile = Material(
                                 )
                               ],
                             ),
-
-                            
                             SizedBox(
                               height: getVerticalSize(16),
                             ),
-
                             Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: getPadding(top: 19),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text("Poids".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle.txtSubheadline),
-                                          CustomTextFormField(
-                                            hintText: "Poids",
-                                            suffix: Padding(
-                                              padding: getPadding(
-                                                  top: 16, bottom: 16),
-                                              child: Text(
-                                                "Kg",
-                                                style: AppStyle
-                                                    .txtSFProDisplayRegular16,
-                                                textAlign: TextAlign.center,
-                                              ),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: getPadding(top: 19),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Poids".tr,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.left,
+                                            style: AppStyle.txtSubheadline),
+                                        CustomTextFormField(
+                                          hintText: "Poids",
+                                          suffix: Padding(
+                                            padding:
+                                                getPadding(top: 16, bottom: 16),
+                                            child: Text(
+                                              "Kg",
+                                              style: AppStyle
+                                                  .txtSFProDisplayRegular16,
+                                              textAlign: TextAlign.center,
                                             ),
-                                            controller: _poids,
-                                            margin: getMargin(top: 9),
-                                            textInputAction:
-                                                TextInputAction.done,
-                                            variant: TextFormFieldVariant
-                                                .OutlineGray300,
-                                            prefix: Container(
-                                                margin: getMargin(
-                                                    left: 16,
-                                                    top: 15,
-                                                    right: 16,
-                                                    bottom: 15),
-                                                child: CustomImageView(
-                                                    svgPath:
-                                                        ImageConstant.imgMail)),
-                                            prefixConstraints: BoxConstraints(
-                                                maxHeight: getVerticalSize(54),),
-                                                textInputType: TextInputType.phone,
                                           ),
-                                        ],
-                                      ),
+                                          controller: _poids,
+                                          margin: getMargin(top: 9),
+                                          textInputAction: TextInputAction.done,
+                                          variant: TextFormFieldVariant
+                                              .OutlineGray300,
+                                          prefix: Container(
+                                              margin: getMargin(
+                                                  left: 16,
+                                                  top: 15,
+                                                  right: 16,
+                                                  bottom: 15),
+                                              child: CustomImageView(
+                                                  svgPath:
+                                                      ImageConstant.imgMail)),
+                                          prefixConstraints: BoxConstraints(
+                                            maxHeight: getVerticalSize(54),
+                                          ),
+                                          textInputType: TextInputType.phone,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 20), // Adjust as needed
-                                  Expanded(
-                                    child: Padding(
-                                      padding: getPadding(top: 5, bottom: 19),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          //selectedText,
-                                          const SizedBox(height: 5),
-                                          birthdayTile
-                                        ],
-                                      ),
+                                ),
+                                SizedBox(width: 20), // Adjust as needed
+                                Expanded(
+                                  child: Padding(
+                                    padding: getPadding(top: 5, bottom: 19),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        //selectedText,
+                                        const SizedBox(height: 5),
+                                        birthdayTile
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
-
-                            
-
+                                ),
+                              ],
+                            ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -545,11 +557,9 @@ final birthdayTile = Material(
                                 ),
                               ],
                             ),
-
-                             SizedBox(
+                            SizedBox(
                               height: getVerticalSize(16),
                             ),
-
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -565,7 +575,8 @@ final birthdayTile = Material(
                                             textAlign: TextAlign.left,
                                             style: AppStyle.txtSubheadline),
                                         CustomTextFormField(
-                                          hintText: "Saisissez des informations complémentaire ici.",
+                                          hintText:
+                                              "Saisissez des informations complémentaire ici.",
                                           controller: _infosComplementaire,
                                           suffix: Padding(
                                             padding:
@@ -584,11 +595,9 @@ final birthdayTile = Material(
                                 ),
                               ],
                             ),
-
-                             SizedBox(
+                            SizedBox(
                               height: getVerticalSize(16),
                             ),
-                            
                           ],
                         ),
                       ),
@@ -596,48 +605,57 @@ final birthdayTile = Material(
                   ),
                 ),
                 bottomNavigationBar: CustomButton(
-                    height: getVerticalSize(54),
-                    text: "Suivant".tr,
-                    margin: getMargin(left: 16, right: 16, bottom: 40),
-                    onTap: () {
-                      FocusScope.of(context).unfocus();
+                  height: getVerticalSize(54),
+                  text: "Suivant".tr,
+                  margin: getMargin(left: 16, right: 16, bottom: 40),
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
 
-                      if (_selectedOption =='TYPE DE COLIS') {
-                        showCustomSnackBar(context, "Veuillez sélectionner le type de colis.", isError: true);
-                        return;
-                      }
+                    if (_selectedOption == null) {
+                      showCustomSnackBar(
+                          context, "Veuillez sélectionner le type de colis.",
+                          isError: true);
+                      return;
+                    }
 
-                      if (selectedValue == null) {
-                        showCustomSnackBar(context, "Veuillez sélectionner la compagnie.", isError: true);
-                        return;
-                      }
+                    if (selectedValue == null) {
+                      showCustomSnackBar(
+                          context, "Veuillez sélectionner la compagnie.",
+                          isError: true);
+                      return;
+                    }
 
-                      if (selectedGare == null) {
-                        showCustomSnackBar(context, "Veuillez sélectionner une gare de destination.", isError: true);
-                        return;
-                      }
-                      
-                      if (_lieuRamassage.text.isEmpty) {
-                        showCustomSnackBar(context, "Veuillez entrer le lieu de ramassage.", isError: true);
-                        return;
-                      }
+                    if (selectedGare == null) {
+                      showCustomSnackBar(context,
+                          "Veuillez sélectionner une gare de destination.",
+                          isError: true);
+                      return;
+                    }
 
-                     if (_poids.text == "0" || _poids.text.isEmpty) {
-                        showCustomSnackBar(context, "Veuillez entrer une estimation du poids du colis", isError: true);
-                        return;
-                      }
+                    if (_lieuRamassage.text.isEmpty) {
+                      showCustomSnackBar(
+                          context, "Veuillez entrer le lieu de ramassage.",
+                          isError: true);
+                      return;
+                    }
 
-                      if (_telephoneRecepteur.text.isEmpty) {
-                        showCustomSnackBar(context, "Veuillez entrer le numéro d'une personne à contacter.", isError: true);
-                        return;
-                      }
+                    if (_poids.text == "0" || _poids.text.isEmpty) {
+                      showCustomSnackBar(context,
+                          "Veuillez entrer une estimation du poids du colis",
+                          isError: true);
+                      return;
+                    }
 
-                
-                      onTapNext(context);
-                     
-                    },
-                    
-                    ))));
+                    if (_telephoneRecepteur.text.isEmpty) {
+                      showCustomSnackBar(context,
+                          "Veuillez entrer le numéro d'une personne à contacter.",
+                          isError: true);
+                      return;
+                    }
+
+                    onTapNext(context);
+                  },
+                ))));
   }
 
   void onBirthdayChange(DateTime birthday) {
@@ -645,7 +663,6 @@ final birthdayTile = Material(
       _selectedDateTime = birthday;
     });
   }
-
 
   onTapDeliverto() {
     Get.toNamed(
@@ -659,52 +676,51 @@ final birthdayTile = Material(
     );
   }
 
-Future<void> onTapNext(BuildContext context) async {
-  setState(() {
-    isLoading = true;
-  });
+  Future<void> onTapNext(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
 
-  // Afficher la page de chargement
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêche de fermer la boîte de dialogue en cliquant à l'extérieur
-    builder: (BuildContext context) {
-      return LoadingPage(); // Vous devez créer et afficher votre widget LoadingPage
-    },
-  );
+    // Afficher la page de chargement
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Empêche de fermer la boîte de dialogue en cliquant à l'extérieur
+      builder: (BuildContext context) {
+        return LoadingPage(); // Vous devez créer et afficher votre widget LoadingPage
+      },
+    );
 
-  // Simuler un délai de collecte de données
-  await Future.delayed(Duration(seconds: 2));
+    // Simuler un délai de collecte de données
+    await Future.delayed(Duration(seconds: 2));
 
     // Collectez toutes les données de l'écran 1
     Map<String, dynamic> DataInfos = {
       'typeColis': _selectedOption,
+      'typeService': "Expéditions",
       'nomReceptioneur': _nomRecepteur.text,
       'telephoneReceptioneur': _telephoneRecepteur.text,
       'infosComplementaire': _infosComplementaire.text,
-      'idCompagny': selectedValue,
+      'compagny': selectedValue,
       'gare': selectedGare,
       'poids': _poids.text,
       'dateRamassage': _selectedDateTime,
-      'priceCalculed' : montantCourse,
-      'lieu_depart': _lieuRamassage.text,
-      'lieu_arrive': _destinationRamassage.text,
-
+      'priceCalculed': montantCourse,
+      'lieuDepart': _lieuRamassage.text,
+      'lieuDestination': _destinationRamassage.text,
+      'recevoirArgent': false,
     };
 
-   
     // Passez les données à l'écran suivant et naviguez
-  Get.toNamed(AppRoutes.selectCourierServiceScreen, arguments: DataInfos)?.then((_) {
-    setState(() {
-      isLoading = false;
+    Get.toNamed(AppRoutes.selectCourierServiceScreen, arguments: DataInfos)
+        ?.then((_) {
+      setState(() {
+        isLoading = false;
+      });
+      // Fermer la boîte de dialogue de chargement après la navigation
+      Navigator.of(context)
+          .pop(); // Cela fermera la boîte de dialogue de chargement
     });
-    // Fermer la boîte de dialogue de chargement après la navigation
-    Navigator.of(context).pop(); // Cela fermera la boîte de dialogue de chargement
-  });
-
-    // Get.toNamed(
-    //   AppRoutes.selectCourierServiceScreen,
-    //);
   }
 
   onTapArrowleft4() {

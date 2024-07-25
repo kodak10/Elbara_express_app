@@ -35,12 +35,13 @@ class _CoursesScreenState extends State<CoursesScreen> {
   final TextEditingController _telephoneRecepteur = TextEditingController();
   final TextEditingController _infosComplementaire = TextEditingController();
 
-  int montantCourse = 0;
+  int montantCourse = 2000; // pARFAIT
   bool isLoading = false;
-
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  String? _selectedOption;
+  List<String> _options = [];
   @override
   void initState() {
     super.initState();
@@ -50,7 +51,19 @@ class _CoursesScreenState extends State<CoursesScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
-    initializeDateFormatting('fr_FR',null); // Initialisez les données de localisation pour le français
+    initializeDateFormatting('fr_FR',
+        null); // Initialisez les données de localisation pour le français
+    _fetchOptions();
+  }
+
+  Future<void> _fetchOptions() async {
+    // Fetch data from Firestore
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot snapshot = await firestore.collection('TypeColis').get();
+
+    setState(() {
+      _options = snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
   }
 
   final searchController = TextEditingController();
@@ -98,31 +111,35 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                 Expanded(
                                   child: Padding(
                                     padding: EdgeInsets.all(10.0),
-                                    child: CustomDropDown(
-                                      padding: DropDownPadding.PaddingT17,
-                                      icon: Container(
-                                          margin:
-                                              getMargin(left: 30, right: 15),
-                                          child: CustomImageView(svgPath:ImageConstant.imgArrowdown)),
-                                      hintText: "TYPE DE COURSES".tr,
-                                      margin: getMargin(top: 16),
-                                      items: controller.addAddressModelObj.value
-                                          .dropdownItemList1.value,
-                                      onChanged: (value) {
+                                    child: DropdownButton<String>(
+                                      value: _selectedOption,
+                                      onChanged: (String? newValue) {
                                         setState(() {
-                                          _typeColis = value;
+                                          _selectedOption = newValue;
                                         });
                                       },
+                                      isExpanded: true,
+                                      items: _options.isNotEmpty
+                                          ? _options
+                                              .map<DropdownMenuItem<String>>(
+                                                  (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList()
+                                          : [
+                                              DropdownMenuItem<String>(
+                                                  child: Text('Chargement...'))
+                                            ],
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-
                             SizedBox(
                               height: getVerticalSize(16),
                             ),
-
                             Row(
                               children: [
                                 CustomImageView(
@@ -141,9 +158,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           CustomTextFormField(
-                                              hintText:
-                                                  "Api Google Maps"
-                                                      .tr,
+                                              hintText: "Api Google Maps".tr,
                                               controller: _depart,
                                               suffix: Container(
                                                   margin: getMargin(
@@ -174,9 +189,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                             height: getVerticalSize(8),
                                           ),
                                           CustomTextFormField(
-                                              hintText:
-                                                  "Api Google Maps"
-                                                      .tr,
+                                              hintText: "Api Google Maps".tr,
                                               controller: _destination,
                                               suffix: Container(
                                                   margin: getMargin(
@@ -287,7 +300,7 @@ class _CoursesScreenState extends State<CoursesScreen> {
                                           textInputAction: TextInputAction.done,
                                           variant: TextFormFieldVariant
                                               .OutlineGray300,
-                                          maxLines:2,
+                                          maxLines: 2,
                                         ),
                                       ],
                                     ),
@@ -312,13 +325,17 @@ class _CoursesScreenState extends State<CoursesScreen> {
                     // Fermer le clavier
                     FocusScope.of(context).unfocus();
 
-                    if (_typeColis == null) {
-                      showCustomSnackBar(context, "Veuillez sélectionner le type de course", isError: true);
+                    if (_selectedOption == null) {
+                      showCustomSnackBar(
+                          context, "Veuillez sélectionner le type de course",
+                          isError: true);
                       return;
                     }
-                    
+
                     if (_destination.text.isEmpty) {
-                      showCustomSnackBar(context, "Veuillez entrer le lieu de destination",isError: true);
+                      showCustomSnackBar(
+                          context, "Veuillez entrer le lieu de destination",
+                          isError: true);
                       return;
                     }
 
@@ -339,44 +356,49 @@ class _CoursesScreenState extends State<CoursesScreen> {
     );
   }
 
-Future<void> onTapNext(BuildContext context) async {
-  setState(() {
-    isLoading = true;
-  });
-
-  // Afficher la page de chargement
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Empêche de fermer la boîte de dialogue en cliquant à l'extérieur
-    builder: (BuildContext context) {
-      return LoadingPage(); // Vous devez créer et afficher votre widget LoadingPage
-    },
-  );
-
-  // Simuler un délai de collecte de données
-  await Future.delayed(Duration(seconds: 2));
-
-  // Collectez toutes les données de l'écran 1
-  Map<String, dynamic> DataInfos = {
-    'typeColis': _typeColis,
-    'nomReceptioneur': _nomRecepteur.text,
-    'telephoneReceptioneur': '+225 ${_telephoneRecepteur.text}',
-    'infosComplementaire': _infosComplementaire.text,
-    'priceCalculed': montantCourse,
-    'lieuDepart': _depart.text,
-    'lieuDestination': _destination.text,
-  };
-
-  // Passez les données à l'écran suivant et naviguez
-  Get.toNamed(AppRoutes.selectCourierServiceScreen, arguments: DataInfos)?.then((_) {
+  Future<void> onTapNext(BuildContext context) async {
     setState(() {
-      isLoading = false;
+      isLoading = true;
     });
-    // Fermer la boîte de dialogue de chargement après la navigation
-    Navigator.of(context).pop(); // Cela fermera la boîte de dialogue de chargement
-  });
-}
 
+    // Afficher la page de chargement
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Empêche de fermer la boîte de dialogue en cliquant à l'extérieur
+      builder: (BuildContext context) {
+        return LoadingPage(); // Vous devez créer et afficher votre widget LoadingPage
+      },
+    );
+
+    // Simuler un délai de collecte de données
+    await Future.delayed(Duration(seconds: 2));
+
+    // Collectez toutes les données de l'écran 1
+    Map<String, dynamic> DataInfos = {
+      //'typeColis': _typeColis,
+      'typeColis': _selectedOption,
+      'typeService': "Courses",
+      'nomReceptioneur': _nomRecepteur.text,
+      'telephoneReceptioneur': '+225 ${_telephoneRecepteur.text}',
+      'infosComplementaire': _infosComplementaire.text,
+      'priceCalculed': montantCourse,
+      'lieuDepart': _depart.text,
+      'lieuDestination': _destination.text,
+      'recevoirArgent': false,
+    };
+
+    // Passez les données à l'écran suivant et naviguez
+    Get.toNamed(AppRoutes.selectCourierServiceScreen, arguments: DataInfos)
+        ?.then((_) {
+      setState(() {
+        isLoading = false;
+      });
+      // Fermer la boîte de dialogue de chargement après la navigation
+      Navigator.of(context)
+          .pop(); // Cela fermera la boîte de dialogue de chargement
+    });
+  }
 
   onTapArrowleft4() {
     Get.back();

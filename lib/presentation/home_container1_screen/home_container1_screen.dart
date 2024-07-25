@@ -1,4 +1,4 @@
-import 'package:elbara_express/presentation/feedback_page/feedbacks_page.dart';
+import 'package:elbara_express/presentation/partenaires_page/partenaires_page.dart';
 import 'package:flutter/services.dart';
 
 import '../../widgets/custom_button.dart';
@@ -31,7 +31,7 @@ class _HomeContainer1ScreenState extends State<HomeContainer1Screen> {
   List<Widget> screen = [
     HomeContainerPage(),
     MyOrdersPage(),
-    FeedbacksPage(),
+    PartenairePage(),
     ProfilePage()
   ];
   @override
@@ -161,7 +161,7 @@ class _HomeContainer1ScreenState extends State<HomeContainer1Screen> {
       case AppRoutes.myOrdersPage:
         return MyOrdersPage();
       case AppRoutes.notificationsPage:
-        return FeedbacksPage();
+        return PartenairePage();
       case AppRoutes.profilePage:
         return ProfilePage();
       default:

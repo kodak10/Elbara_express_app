@@ -51,7 +51,7 @@ android {
         applicationId "com.elbara_express"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -81,9 +81,17 @@ flutter {
 }
 
 dependencies {
-    // Add the dependency for the Firebase Authentication library
-    implementation "com.google.firebase:firebase-auth"
-
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.1.0'
+    implementation 'com.google.android.gms:play-services-maps:19.0.0'
     // Add the dependency for the Firebase SDK for Google Analytics
-    implementation("com.google.firebase:firebase-analytics")
-}
+    implementation 'com.google.android.gms:play-services-analytics:18.1.0'
+
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-appcheck-playintegrity'
+    
+    }

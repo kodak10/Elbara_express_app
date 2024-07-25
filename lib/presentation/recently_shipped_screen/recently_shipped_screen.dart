@@ -108,7 +108,7 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                           var orderId = document.id;
                           var data = document.data() as Map<String, dynamic>;
                           String name =
-                              documents[index].get('nom_receptioneur');
+                              documents[index].get('nomReceptioneur');
                           Timestamp timestamp = document.get('date');
                           DateTime date = timestamp.toDate();
 
@@ -200,14 +200,14 @@ class _RecentlyShippedScreenState extends State<RecentlyShippedScreen> {
                                     Padding(
                                         padding: getPadding(top: 16),
                                         child: Text(
-                                            "Depart: ${data['lieu_depart']}",
+                                            "Depart: ${data['lieuDepart']}",
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.left,
                                             style: AppStyle.txtFootnote)),
                                     Padding(
                                         padding: getPadding(top: 16),
                                         child: Text(
-                                            "Destination: ${data['lieu_arrive']}",
+                                            "Destination: ${data['lieuDestination']}",
                                             overflow: TextOverflow.ellipsis,
                                             textAlign: TextAlign.left,
                                             style: AppStyle.txtFootnote)),

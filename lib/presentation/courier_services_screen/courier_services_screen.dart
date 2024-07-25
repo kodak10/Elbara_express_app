@@ -63,6 +63,7 @@ class _CourierServicesScreenState extends State<CourierServicesScreen> {
               body: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('compagnie')
+                      .orderBy('name') // Trie les documents par le champ Parfait
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {

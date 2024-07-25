@@ -117,7 +117,7 @@ class _OrderDetailsInTransitScreenState
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: AppStyle.txtSFProTextBold20),
-                                  Text('${widget.orderData.cout}',
+                                  Text('${widget.orderData.cout} FCFA',
                                       overflow: TextOverflow.ellipsis,
                                       textAlign: TextAlign.left,
                                       style: AppStyle.txtSFProTextBold20)
@@ -148,6 +148,20 @@ class _OrderDetailsInTransitScreenState
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
+
+                        Padding(
+                            padding: getPadding(top: 21),
+                            child: Text("Date de recuperation du colis".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text( DateFormat('dd/MM/yyyy HH:mm').format(widget.orderData.dateRecup),
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
+
                         Padding(
                             padding: getPadding(top: 22),
                             child: Text("Référence du colis".tr,
@@ -168,7 +182,20 @@ class _OrderDetailsInTransitScreenState
                                 style: AppStyle.txtBodyGray600)),
                         Padding(
                             padding: getPadding(top: 10, bottom: 0),
-                            child: Text(widget.orderData.typCourse,
+                            child: Text(widget.orderData.typeServive,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
+                        
+                        Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Type de Colis".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.typeColis,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBody)),
@@ -188,7 +215,7 @@ class _OrderDetailsInTransitScreenState
                        
                         Padding(
                             padding: getPadding(top: 20),
-                            child: Text("Statut de la livraison".tr,
+                            child: Text("Statut".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
@@ -250,6 +277,71 @@ class _OrderDetailsInTransitScreenState
                                         : AppStyle.txtOutfitBlue, // Texte rouge par défaut 
                                 ), 
                                 ),
+
+                                SizedBox(
+                          height: getVerticalSize(16),
+                        ),
+
+                                Divider(
+                            height: getVerticalSize(1),
+                            thickness: getVerticalSize(1),
+                            color: ColorConstant.gray300),
+                        SizedBox(
+                          height: getVerticalSize(8),
+                        ),
+
+                         Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Montant à recevoir".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.montantRecevoir,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
+
+
+                         Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Mode de reception".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.modePaiement,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
+                       
+                       Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Numéro de téléphone".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.numeroDeReception,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
+
+                       Padding(
+                            padding: getPadding(top: 22),
+                            child: Text("Status de la transaction".tr,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBodyGray600)),
+                        Padding(
+                            padding: getPadding(top: 10, bottom: 0),
+                            child: Text(widget.orderData.orderID,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.left,
+                                style: AppStyle.txtBody)),
 
                       ],
                     )),

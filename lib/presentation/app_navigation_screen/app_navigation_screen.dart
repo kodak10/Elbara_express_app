@@ -1,9 +1,21 @@
 import 'controller/app_navigation_controller.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppNavigationScreen extends GetWidget<AppNavigationController> {
   const AppNavigationScreen({Key? key}) : super(key: key);
+
+
+Future<void> _launchURL() async {
+  const url = 'https://sites.google.com/view/elbara-express';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -2399,8 +2411,8 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
                                                                   .blueGray400))
                                                     ]))),
                                         GestureDetector(
-                                            onTap: () {
-                                              onTapPrivacypolicy();
+                                            onTap: () async {
+                                              _launchURL();
                                             },
                                             child: Container(
                                                 decoration: AppDecoration.white,
@@ -3019,11 +3031,11 @@ class AppNavigationScreen extends GetWidget<AppNavigationController> {
 
   /// When the action is triggered, this function uses the `Get` package to
   /// push the named route for the privacyPolicyScreen.
-  onTapPrivacypolicy() {
-    Get.toNamed(
-      AppRoutes.privacyPolicyScreen,
-    );
-  }
+  // onTapPrivacypolicy() {
+  //   Get.toNamed(
+  //     AppRoutes.privacyPolicyScreen,
+  //   );
+  // }
 
   /// Navigates to the logOutScreen when the action is triggered.
 

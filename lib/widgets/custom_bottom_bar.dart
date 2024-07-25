@@ -31,10 +31,10 @@ class CustomBottomBar extends StatelessWidget {
         type: BottomBarEnum.Order,
         selectedicon: ImageConstant.imgOrderSelected),
     BottomMenuModel(
-        icon: ImageConstant.imgFeedbackUnselected,
-        title: "Feedback",
+        icon: ImageConstant.partenaire,
+        title: "Partenaires",
         type: BottomBarEnum.Notification,
-        selectedicon: ImageConstant.imgFeedbackSelected),
+        selectedicon: ImageConstant.partenaireFond),
     BottomMenuModel(
         icon: ImageConstant.imgProfileUnselected,
         title: "Mon Profil",

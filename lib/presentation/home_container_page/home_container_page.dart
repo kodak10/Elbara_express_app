@@ -429,7 +429,7 @@ class HomeContainerPage extends StatelessWidget {
                                       Padding(
                                         padding: getPadding(top: 4),
                                         child: Text(
-                                          "Depart: ${data['lieu_depart']}",
+                                          "Depart: ${data['lieuDepart']}",
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.left,
                                           style: AppStyle.txtFootnote,
@@ -438,7 +438,7 @@ class HomeContainerPage extends StatelessWidget {
                                       Padding(
                                         padding: getPadding(top: 4),
                                         child: Text(
-                                          "Destination: ${data['lieu_arrive']}",
+                                          "Destination: ${data['lieuDestination']}",
                                           overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.left,
                                           style: AppStyle.txtFootnote,
@@ -451,10 +451,8 @@ class HomeContainerPage extends StatelessWidget {
                                           Get.toNamed(
                                               AppRoutes.trackingDetailsScreen,
                                               arguments: {
-                                                'orderId': data[
-                                                    'orderId'], // Numéro de commande
-                                                'docID': document
-                                                    .id, // Numéro de commande
+                                                'orderId': data['orderId'], // Numéro de commande
+                                                'docID': document.id, // Numéro de commande
                                                'dateRegister': (data['date'] as Timestamp).toDate(), // Date de la commande
                                                 'status': status,
                                               });

@@ -306,4 +306,9 @@ class ImageConstant {
   static String imgOverflowmenu = 'assets/images/img_overflowmenu.svg';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
+
+    static String partenaireFond = 'assets/images/partenaires_fond.svg';
+    static String partenaire = 'assets/images/partenaire.svg';
+
+
 }

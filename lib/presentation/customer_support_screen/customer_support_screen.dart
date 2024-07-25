@@ -6,8 +6,10 @@ import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:elbara_express/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'controller/customer_support_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerSupportScreen extends StatefulWidget {
   const CustomerSupportScreen({Key? key}) : super(key: key);
@@ -27,6 +29,35 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+  }
+
+  Future<void> _launchCaller(String phoneNumber) async {
+    final Uri url = Uri(path: phoneNumber);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _openWhatsApp() async {
+    const String url = 'https://wa.me/message/5YBZZS742R6CD1';
+    final Uri uri = Uri.parse(url);
+    try {
+      if (await canLaunch(uri.toString())) {
+        await launch(uri.toString());
+      } else {
+        throw 'Could not launch $url';
+      }
+    } catch (e) {
+      // Gérez les erreurs ici
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $e'),
+        ),
+      );
+    }
   }
 
   @override
@@ -58,299 +89,152 @@ class _CustomerSupportScreenState extends State<CustomerSupportScreen> {
               body: Stack(
                 children: [
                   Padding(
-                    padding: getPadding(left: 16, right: 16),
+                    padding: getPadding(left: 24, right: 24, top: 24),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                              padding: getPadding(right: 91),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomImageView(
-                                        imagePath: ImageConstant.imgEllipse24,
-                                        height: getSize(50),
-                                        width: getSize(50),
-                                        radius: BorderRadius.circular(
-                                            getHorizontalSize(25)),
-                                        margin: getMargin(bottom: 55)),
-                                    Expanded(
-                                        child: Padding(
-                                            padding:
-                                                getPadding(left: 8, top: 4),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      "msg_customer_support".tr,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textAlign: TextAlign.left,
-                                                      style: AppStyle
-                                                          .txtFootnoteGray600),
-                                                  Container(
-                                                      margin: getMargin(top: 6),
-                                                      padding: getPadding(
-                                                          left: 16,
-                                                          top: 4,
-                                                          right: 16,
-                                                          bottom: 4),
-                                                      decoration: AppDecoration
-                                                          .fillGray50
-                                                          .copyWith(
-                                                              borderRadius:
-                                                                  BorderRadiusStyle
-                                                                      .customBorderTL16),
-                                                      child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Container(
-                                                                width:
-                                                                    getHorizontalSize(
-                                                                        215),
-                                                                margin: getMargin(
-                                                                    top: 2),
-                                                                child: Text(
-                                                                    "msg_hello_welcome_customer"
-                                                                        .tr,
-                                                                    maxLines:
-                                                                        null,
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                    style: AppStyle
-                                                                        .txtBody))
-                                                          ])),
-                                                  Padding(
-                                                      padding: getPadding(
-                                                          left: 2, top: 8),
-                                                      child: Text(
-                                                          "lbl_09_55_am".tr,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: AppStyle
-                                                              .txtFootnoteGray600))
-                                                ])))
-                                  ])),
-                          Align(
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                  padding: getPadding(left: 58, top: 15),
-                                  child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                            child: Padding(
-                                                padding: getPadding(top: 3),
-                                                child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Text("lbl_you".tr,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: AppStyle
-                                                              .txtFootnoteGray600),
-                                                      Container(
-                                                          margin:
-                                                              getMargin(top: 7),
-                                                          padding: getPadding(
-                                                              left: 16,
-                                                              top: 4,
-                                                              right: 16,
-                                                              bottom: 4),
-                                                          decoration: AppDecoration
-                                                              .fillDeeppurple50
-                                                              .copyWith(
-                                                                  borderRadius:
-                                                                      BorderRadiusStyle
-                                                                          .customBorderTL16),
-                                                          child: Column(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Container(
-                                                                    width:
-                                                                        getHorizontalSize(
-                                                                            244),
-                                                                    margin: getMargin(
-                                                                        right:
-                                                                            3),
-                                                                    child: Text(
-                                                                        "msg_how_can_i_track"
-                                                                            .tr,
-                                                                        maxLines:
-                                                                            null,
-                                                                        textAlign:
-                                                                            TextAlign
-                                                                                .left,
-                                                                        style: AppStyle
-                                                                            .txtAvenirRegular16))
-                                                              ])),
-                                                      Padding(
-                                                          padding: getPadding(
-                                                              top: 8),
-                                                          child: Text(
-                                                              "lbl_09_55_am".tr,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .left,
-                                                              style: AppStyle
-                                                                  .txtFootnoteGray600))
-                                                    ]))),
-                                        CustomImageView(
-                                            imagePath:
-                                                ImageConstant.imgEllipse2450x50,
-                                            height: getSize(50),
-                                            width: getSize(50),
-                                            radius: BorderRadius.circular(
-                                                getHorizontalSize(25)),
-                                            margin:
-                                                getMargin(left: 8, bottom: 55))
-                                      ]))),
-                          Padding(
-                              padding: getPadding(top: 15, right: 31),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomImageView(
-                                        imagePath: ImageConstant.imgEllipse24,
-                                        height: getSize(50),
-                                        width: getSize(50),
-                                        radius: BorderRadius.circular(
-                                            getHorizontalSize(25)),
-                                        margin: getMargin(bottom: 74)),
-                                    Expanded(
-                                        child: Padding(
-                                            padding:
-                                                getPadding(left: 8, top: 4),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      "msg_customer_support".tr,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textAlign: TextAlign.left,
-                                                      style: AppStyle
-                                                          .txtFootnoteGray600),
-                                                  Container(
-                                                      width: getHorizontalSize(
-                                                          307),
-                                                      margin: getMargin(top: 6),
-                                                      padding: getPadding(
-                                                          left: 16,
-                                                          top: 4,
-                                                          right: 16,
-                                                          bottom: 4),
-                                                      decoration: AppDecoration
-                                                          .fillGray50
-                                                          .copyWith(
-                                                              borderRadius:
-                                                                  BorderRadiusStyle
-                                                                      .customBorderTL16),
-                                                      child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Container(
-                                                                width:
-                                                                    getHorizontalSize(
-                                                                        269),
-                                                                margin:
-                                                                    getMargin(
-                                                                        top: 2,
-                                                                        right:
-                                                                            5),
-                                                                child: Text(
-                                                                    "msg_if_you_don_t_have"
-                                                                        .tr,
-                                                                    maxLines:
-                                                                        null,
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .left,
-                                                                    style: AppStyle
-                                                                        .txtBody))
-                                                          ])),
-                                                  Padding(
-                                                      padding: getPadding(
-                                                          left: 2, top: 8),
-                                                      child: Text(
-                                                          "lbl_09_55_am".tr,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: AppStyle
-                                                              .txtFootnoteGray600))
-                                                ])))
-                                  ]))
-                        ]),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: getPadding(left: 16, right: 16, bottom: 40),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Expanded(
-                              child: CustomTextFormField(
-                                  controller: controller.messagefourController,
-                                  hintText: "Message".tr,
-                                  variant: TextFormFieldVariant.FillGray50,
-                                  shape: TextFormFieldShape.RoundedBorder16,
-                                  padding: TextFormFieldPadding.PaddingT20,
-                                  textInputAction: TextInputAction.done)),
-                          SizedBox(
-                            width: getHorizontalSize(16),
-                          ),
-                          Container(
-                            height: getSize(58),
-                            width: getSize(58),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorConstant.deepPurple600),
-                            child: CustomImageView(
-                              svgPath: ImageConstant.imgSendmsgIcon,
-                              height: getVerticalSize(35.4),
-                              width: getHorizontalSize(35.4),
-                              margin: getMargin(all: 11.28),
+                            padding: getPadding(right: 1),
+                            child: Row(
+                              children: [
+                                FaIcon(FontAwesomeIcons.whatsapp),
+                                SizedBox(
+                                    width:
+                                        16), // Espacement entre l'icône et le champ
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _openWhatsApp();
+                                    },
+                                    child: AbsorbPointer(
+                                      child: CustomTextFormField(
+                                        hintText: "+225 0716225556",
+                                        textInputAction: TextInputAction.done,
+                                        variant:
+                                            TextFormFieldVariant.OutlineGray300,
+                                        prefixConstraints: BoxConstraints(
+                                            maxHeight: getVerticalSize(54)),
+                                        textInputType: TextInputType.number,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        ],
-                      ),
-                    ),
+                          ),
+                          SizedBox(height: getVerticalSize(16)),
+                          Padding(
+                            padding: getPadding(right: 1),
+                            child: Row(
+                              children: [
+                                FaIcon(FontAwesomeIcons.squarePhone),
+                                SizedBox(
+                                    width:
+                                        16), // Espacement entre l'icône et le champ
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      final Uri url = Uri(
+                                          scheme: 'tel',
+                                          path: "+2250716225556");
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(url);
+                                      } else {
+                                        print('erreur envoi de tel');
+                                      }
+
+                                      // await _launchCaller('+');
+                                    },
+                                    child: AbsorbPointer(
+                                      child: CustomTextFormField(
+                                        hintText:
+                                            "0716225556",
+                                        textInputAction: TextInputAction.done,
+                                        variant:
+                                            TextFormFieldVariant.OutlineGray300,
+                                        prefixConstraints: BoxConstraints(
+                                            maxHeight: getVerticalSize(54)),
+                                        textInputType: TextInputType.number,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+SizedBox(
+                                    width:
+                                        16),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      final Uri url = Uri(
+                                          scheme: 'tel',
+                                          path: "+2250501146545");
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(url);
+                                      } else {
+                                        print('erreur envoi de tel');
+                                      }
+
+                                      // await _launchCaller('+');
+                                    },
+                                    child: AbsorbPointer(
+                                      child: CustomTextFormField(
+                                        hintText:
+                                            "0501146545",
+                                        textInputAction: TextInputAction.done,
+                                        variant:
+                                            TextFormFieldVariant.OutlineGray300,
+                                        prefixConstraints: BoxConstraints(
+                                            maxHeight: getVerticalSize(54)),
+                                        textInputType: TextInputType.number,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: getVerticalSize(16)),
+                          Padding(
+                            padding: getPadding(right: 1),
+                            child: Row(
+                              children: [
+                                FaIcon(FontAwesomeIcons.envelope),
+                                SizedBox(
+                                    width:
+                                        16), // Espacement entre l'icône et le champ
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      final Uri emailUrl = Uri(
+                                        scheme: 'mailto',
+                                        path: 'elbaraexpress@gmail.com',
+                                      );
+                                      if (await canLaunchUrl(emailUrl)) {
+                                        await launchUrl(emailUrl);
+                                      } else {
+                                        throw 'Could not launch $emailUrl';
+                                      }
+                                    },
+                                    child: AbsorbPointer(
+                                      child: CustomTextFormField(
+                                        hintText: "Elbaraexpress@gmail.com",
+                                        textInputAction: TextInputAction.done,
+                                        variant:
+                                            TextFormFieldVariant.OutlineGray300,
+                                        prefixConstraints: BoxConstraints(
+                                            maxHeight: getVerticalSize(54)),
+                                        textInputType:
+                                            TextInputType.emailAddress,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
                   ),
                 ],
               ),

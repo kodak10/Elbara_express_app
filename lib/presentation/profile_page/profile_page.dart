@@ -13,6 +13,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -37,6 +38,15 @@ class _ProfilePageState extends State<ProfilePage> {
     _getUserImage(); // Appel de la fonction pour récupérer l'image de l'utilisateur
 
   }
+
+  Future<void> _launchURL() async {
+  const url = 'https://sites.google.com/view/elbara-express';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
 
 // Fonction pour récupérer l'image de l'utilisateur
   Future<void> _getUserImage() async {
@@ -331,9 +341,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               
               GestureDetector(
-                onTap: () {
-                  Get.toNamed(AppRoutes.privacyPolicyScreen);
-                },
+                onTap: () async {
+                                              _launchURL();
+                                            },
                 child: Container(
                   margin: getMargin(
                     left: 16,

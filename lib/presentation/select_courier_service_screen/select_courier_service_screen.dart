@@ -63,18 +63,17 @@ class _SelectCourierServiceScreenState
 
   String documentId = "";
 
-  String mode_paiement =
-      ''; // Définir une variable pour stocker la valeur sélectionnée
+  String mode_paiement = ''; // Définir une variable pour stocker la valeur sélectionnée
   late QrCode qrCode;
   late QrImage qrImage;
 
   String selectedVehicle = 'Moto';
 
+  
   int selectedPrice = 0;
   int price = 0;
 
-  GeoPoint geoPoint =
-      GeoPoint(37.4219983, -122.084); // en attente de api google maps
+  GeoPoint geoPoint = GeoPoint(37.4219983, -122.084); // en attente de api google maps
 
   String generateOrderId() {
     const String chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -175,18 +174,9 @@ class _SelectCourierServiceScreenState
     };
 
     try {
-      // Enregistrez toutes ces données dans la collection Firestore
-      // DocumentReference documentReference =
-      //     await _firestore.collection('orders').add(combinedData);
-
-      
-
       //DocumentReference documentReference = await _firestore.collection('orders').doc(orderId).set(combinedData); // Utiliser l'identifiant unique comme nom de document
       await _firestore.collection('orders').doc(orderId).set(combinedData); // Utiliser l'identifiant unique comme nom de document
       
-      // Récupérer l'ID du document nouvellement ajouté
-      //documentId = documentReference.id;
-
       // Naviguez vers l'écran suivant si nécessaire
     } catch (error) {
       print('Erreur lors de l\'enregistrement des données: $error');
@@ -308,14 +298,11 @@ class _SelectCourierServiceScreenState
         paymentUrl = responseData['url'];
         paymentRef = responseData['reference_number'];
 
-        // saveCommande(paymentUrl);
         // generateQRAndUpload(context, paymentUrl);
         await saveCommande(paymentUrl);
+        
+        print('Enregistrer avec succès.');
 
-        // Appeler saveQRImage en passant le context actuel
-        //await saveQRImage(context, paymentUrl, documentId);
-
-        print('okay');
       } else {
         // Echec de l'initiation de paiement
         ScaffoldMessenger.of(context).showSnackBar(
@@ -619,8 +606,7 @@ class _SelectCourierServiceScreenState
                                 onTap: () {
                                   controller.setCurrentPaymentMethod(index);
                                   setState(() {
-                                    mode_paiement = data
-                                        .title!; // Mettre à jour la valeur sélectionnée
+                                    mode_paiement = data.title!; // Mettre à jour la valeur sélectionnée
                                   });
                                 },
                                 child: Padding(
@@ -699,12 +685,12 @@ class _SelectCourierServiceScreenState
             }
 
              if (selectedPrice == 0) {
-               showCustomSnackBar(context, "Veuillez sélectionner le mode de payement", isError: true);                        
+               showCustomSnackBar(context, "Veuillez sélectionner un engin", isError: true);                        
                return;
             }
 
             if (mode_paiement == '') {
-                showCustomSnackBar(context, "Veuillez sélectionner le mode de payement", isError: true);
+                showCustomSnackBar(context, "Veuillez sélectionner le mode de paiement", isError: true);
                 return;
             }
 

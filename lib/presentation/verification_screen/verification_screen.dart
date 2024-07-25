@@ -15,11 +15,9 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'dart:async'; // Importer pour TimeoutException
 
 class VerificationScreen extends StatefulWidget {
-  const VerificationScreen(
-      {Key? key, required this.verificationId, required this.phoneNumber})
-      : super(key: key);
-  final String verificationId;
-  final String phoneNumber;
+   final String verificationId;
+  VerificationScreen({required this.verificationId});
+
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
 }
@@ -63,39 +61,29 @@ class _VerificationScreenState extends State<VerificationScreen> {
     });
   }
 
-  void onResendSmsCode() {
-    resend = false;
-    setState(() {});
-    authWithPhoneNumber(widget.phoneNumber, onCodeSend: (verificationId, v) {
-      loading = false;
-      decompte();
-      setState(() {});
-    }, onAutoVerify: (v) async {
-      await _auth.signInWithCredential(v);
-      Navigator.of(context).pop();
-    }, onFailed: (e) {
-      loading = false;
-      setState(() {});
-      print("Le code est erroné");
-    }, autoRetrieval: (v) {});
-  }
+  
 
-  void onVerifySmsCode() async {
-    loading = true;
-    setState(() {});
-    await validateOtp(smsCode, widget.verificationId);
-    loading = true;
-    setState(() {});
-    Navigator.of(context).pop();
-    print("Vérification éfectué avec succès");
-  }
+  
 
-  Future<void> validateOtp(String smsCode, String verificationId) async {
-    final _credential = PhoneAuthProvider.credential(
-        verificationId: verificationId, smsCode: smsCode);
-    await _auth.signInWithCredential(_credential);
-    return;
+  final TextEditingController _otpController = TextEditingController();
+ void verifyOTP() async {
+  final otp = _otpController.text.trim();
+  PhoneAuthCredential credential = PhoneAuthProvider.credential(
+    verificationId: widget.verificationId,
+    smsCode: otp,
+  );
+
+  try {
+    await _auth.signInWithCredential(credential);
+    Navigator.of(context).pushReplacementNamed(AppRoutes.homeContainer1Screen);
+  } catch (e) {
+    print("Error: ${e}");
+    // Optionally, show an error message to the user
+    showCustomSnackBar(context, "Invalid verification code", isError: true);
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -229,17 +217,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       ),
                     ),
                   ),
-                  CustomButton(
-                    height: getVerticalSize(54),
-                    text: "Vérifier".tr,
-                    margin: getMargin(top: 30),
-                    onTap: () async {
-                      if (_formKey.currentState!.validate()) {
-                        onVerifySmsCode();
-                        //await verifySmsCode(controler.otpController.text); // Passer seulement le smsCode
-                      }
+                  ElevatedButton(
+                    onPressed: () {
+                      verifyOTP();
                     },
+                    child: const Text(
+                      'Verify',
+                      style: TextStyle(fontSize: 16),
+                    ).paddingAll(14),
                   ),
+
                   Padding(
                     padding: getPadding(top: 32, bottom: 5),
                     child: RichText(

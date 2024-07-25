@@ -33,10 +33,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   static const String defaultRole = 'user'; // Définir le rôle par défaut
 
   TextEditingController nameController = TextEditingController();
-  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
 
   var otpController = TextEditingController().obs;
-  var verificationId = ''.obs;
+  // var verificationId = ''.obs;
   // Rx<Country> selectedCountry = CountryPickerUtils.getCountryByPhoneCode('1').obs;
 
   final _promoCodeController = TextEditingController();
@@ -59,39 +59,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _promoCodeController.dispose();
     super.dispose();
   }
- bool loading = false;
+
+  bool visibility = false;
+  bool codeSent = false;
+  bool _isLoading = false;
+
+  String verificationId = '';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool loading = false;
   String phoneNumber = '';
-  void sendOtpCode() {
-    loading = true;
-    setState(() {});
-    final _auth = FirebaseAuth.instance;
-    if (phoneNumber.isNotEmpty) {
-      authWithPhoneNumber(phoneNumber, onCodeSend: (verificationId, v) {
-        loading = false;
-        setState(() {});
-        Navigator.of(context).push(MaterialPageRoute(
-            // builder: (c) => VerificationOtp(
-            //       verificationId: verificationId,
-            //       phoneNumber: phoneNumber,
-            //     )
-                
-             builder: (BuildContext context) {
-      return VerificationScreen(verificationId: verificationId,
-                  phoneNumber: phoneNumber,); // Vous devez créer et afficher votre widget LoadingPage
-    },
-
-                ));
-      }, onAutoVerify: (v) async {
-        await _auth.signInWithCredential(v);
-        Navigator.of(context).pop();
-      }, onFailed: (e) {
-        loading = false;
-        setState(() {});
-        print("Le code est erroné");
-      }, autoRetrieval: (v) {});
-    }
-  }
-
   Future<bool> checkPhoneNumberExists(String phoneNumber) async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     QuerySnapshot querySnapshot = await firebaseFirestore
@@ -110,6 +87,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
         .get();
 
     return querySnapshot.docs.isNotEmpty;
+  }
+
+  void sendOTP() async {
+    final phone = _phoneController.text.trim();
+    print('phone: $phone');
+    await _auth.verifyPhoneNumber(
+  phoneNumber: '+225${_phoneController.text.trim()}',
+  timeout: const Duration(seconds: 60),
+  verificationCompleted: (PhoneAuthCredential credential) async {
+    await _auth.signInWithCredential(credential);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VerificationScreen(
+          verificationId: verificationId,
+        ),
+      ),
+    );
+  },
+  verificationFailed: (FirebaseAuthException e) {
+    print("Phone number verification failed. Code: ${e.code}. Message: ${e.message}");
+  },
+  codeSent: (String verificationId, int? resendToken) {
+    setState(() {
+      this.verificationId = verificationId;
+      this.codeSent = true;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VerificationScreen(
+          verificationId: this.verificationId,
+        ),
+      ),
+    );
+  },
+  codeAutoRetrievalTimeout: (String verificationId) {
+    this.verificationId = verificationId;
+  },
+);
+
   }
 
   @override
@@ -200,7 +218,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 height: getVerticalSize(16),
                               ),
                               phone_number_field(
-                                controller.phoneNumberController,
+                               _phoneController,
                                 (p0) {
                                   if (p0 == null || p0.number.isEmpty) {
                                     showCustomSnackBar(context,
@@ -371,7 +389,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
 
         // Envoyer le code de vérification par SMS
-        sendOtpCode();
+        //sendOtpCode();
+        sendOTP();
         // await FirebaseAuth.instance.verifyPhoneNumber(
         //   phoneNumber: '+225${controller.phoneNumberController.text}',
         //   verificationCompleted: (PhoneAuthCredential credential) async {
@@ -434,7 +453,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'displayName': name,
       'role': defaultRole,
       'phoneNumber': '+225${controller.phoneNumberController.text}',
-      'photoURL': 'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
+      'photoURL':
+          'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
       'codePromo': codePromo,
       'verif': verifStatus,
       'code': '',
@@ -447,7 +467,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     await docRef.update({'id': documentId});
 
     // Redirigez vers la page de connexion
-   // Get.toNamed(AppRoutes.verificationScreen);
+    // Get.toNamed(AppRoutes.verificationScreen);
   }
 
   onTapTxtAlreadyhavean() {

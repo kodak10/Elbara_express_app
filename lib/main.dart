@@ -21,19 +21,7 @@ Future main() async {
           "elbaraexpress-9b834.appspot.com", // Nom du bucket uniquement
     ),
   );
-  // await FirebaseAppCheck.instance.activate(
-  //     webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-  //     androidProvider: AndroidProvider.playIntegrity,
-  //     //androidProvider: AndroidProvider.playIntegrity,
-
-  //     // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
-  //         // your preferred provider. Choose from:
-  //         // 1. Debug provider
-  //         // 2. Device Check provider
-  //         // 3. App Attest provider
-  //         // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
-  //     appleProvider: AppleProvider.appAttest,
-  //   );
+ 
   
   
   runApp(MyApp());

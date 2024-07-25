@@ -367,7 +367,7 @@ class AppRoutes {
     ),
     GetPage(
       name: verificationScreen,
-      page: () => const VerificationScreen(verificationId: '', phoneNumber: '',),
+      page: () => VerificationScreen(verificationId: ''),
       bindings: [
         VerificationBinding(),
       ],

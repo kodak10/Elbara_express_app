@@ -9,7 +9,7 @@ final Map<String, String> enUs = {
   "msg_new_mexico_31134": " New Mexico 31134",
   "msg_tracking_details3": "Tracking details One",
   "msg_please_provide_the":
-      "Veuillez entrer le code reçu par SMS au:",
+      "Veuillez entrer votre Email.",
   "lbl_30_off_on": "30% Off on \n",
   "lbl_reset_password": "Reset password",
   "msg_maecenas_egestas":

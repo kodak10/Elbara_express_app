@@ -12,45 +12,48 @@ class HomeData {
         ImageConstant.imgSlider1st,
         "Livraisons",
         "Les étapes à suivre pour une Livraison.\n"
-        "Etape 01 : Cliquez sur le bouton ‘Envoyer un colis‘\n"
-        "Etape 02 : Sélectionnez 'Livraisons' comme type de service \n"
-        "Etape 03 : Sélectionnez la zone de ramassage et de destination puis précisé les lieux.\n"
-        "Etape 04 : Entrez les informations de personne à contacter en cas d’urgence et les informations complémentaires de votre livraison puis cliquez sur ‘Suivant’\n"
-        "Etape 05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
-        "Etape 06 : Sélectionnez le mode de paiement :\n"
+        "01 : Cliquez sur le bouton ‘Livraisons‘\n"
+        "02 : Autorisez la demande de position.\n"
+        "03 : Sélectionnez le type de colis.\n"
+        "04 : Entrez le point de départ et d'arriver.\n"
+        "05 : Entrez les informations de la personne à contacter en cas d’urgence, son contact et les informations complémentaires de votre livraison puis cliquez sur ‘Suivant’.\n"
+        "06 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
+        "07 : Sélectionnez le mode de paiement :\n"
         "• Payer maintenant : Payez via les services de mobile money\n"
-        "• Payer à la livraison : le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la livraison.",
+        "• Payer à la livraison : Le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la livraison.",
       ),
       HomeSlider(
         ImageConstant.imgSlider2nd, 
         "Courses", 
         "Les étapes à suivre pour une Course.\n"
-        "Etape 01 : Cliquez sur le bouton ‘Envoyer un colis‘\n"
-        "Etape 02 : Sélectionnez 'Courses' comme type de service \n"
-        "Etape 03 : Sélectionnez la zone et le lieu où vous souhaitez faire votre course et la zone de destination.\n"
-        "Etape 04 : Entrez les informations de la personne à contacter en cas d’urgence et les informations complémentaires de votre course puis cliquez sur ‘Suivant’\n"
-        "Etape 05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
-        "Etape 06 : Sélectionnez le mode de paiement :\n"
+        "01 : Cliquez sur le bouton ‘Courses‘\n"
+        "02 : Sélectionnez le type de colis.\n"
+        "03 : Entrez l'endroit où vous souhaiter faire votre course (facultatif) et votre destination.\n"
+        "04 : Entrez les informations de la personne à contacter en cas d’urgence, son contact et les informations complémentaires de votre course puis cliquez sur ‘Suivant’\n"
+        "05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
+        "06 : Sélectionnez le mode de paiement :\n"
         "• Payer maintenant : Payez via les services de mobile money\n"
         "• Payer à la livraison : Le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la course.",
       ),
        HomeSlider(
-        ImageConstant.imgSlider2nd, 
+        ImageConstant.imgSlider3rd, 
         "Expéditions", 
         "Les étapes à suivre pour une Expédition.\n"
-        "Etape 01 : Cliquez sur le bouton ‘Envoyer un colis‘\n"
-        "Etape 02 : Sélectionnez 'Courses' comme type de service \n"
-        "Etape 03 : Sélectionnez la zone et le lieu où vous souhaitez faire votre course et la zone de destination.\n"
-        "Etape 04 : Entrez les informations de la personne à contacter en cas d’urgence et les informations complémentaires de votre course puis cliquez sur ‘Suivant’\n"
-        "Etape 05 : Sélectionnez le type d’engin entre Moto, Tricycle et Camion.\n"
-        "Etape 06 : Sélectionnez le mode de paiement :\n"
+        "01 : Cliquez sur le bouton ‘Expéditions‘\n"
+        "02 : Sélectionnez le type de colis.\n"
+        "03 : Sélectionnez la compagnie de transport par laquelle vous souhaitez faire transiter le colis.\n"
+        "04 : Sélectionnez la gare de cette compagnie.\n"
+        "05 : Entrez le point de recupération du colis\n"
+        "06 : Entrez le point de destination du colis (facultatif).\n"
+        "07 : Entrez les informations suivantes: poids, date de récupération, téléphone (obligatoire) puis des informations concernant le colis à expédier puis cliquez sur Suivant.\n"
+        "08 : Sélectionnez le mode de paiement :\n"
         "• Payer maintenant : Payez via les services de mobile money\n"
         "• Payer à la livraison : Le réceptionneur du colis sera invité à scanner le code QR du livreur et procéder au paiement de la course.",
       ),
-      HomeSlider(
-        ImageConstant.imgSlider3rd, 
-        "Déménagements", 
-        "Ce service sera disponible très bientôt."),
+      // HomeSlider(
+      //   ImageConstant.imgSlider3rd, 
+      //   "Déménagements", 
+      //   "Ce service sera disponible très bientôt."),
     ];
   }
 

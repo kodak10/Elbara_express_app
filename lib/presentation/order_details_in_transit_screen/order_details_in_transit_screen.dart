@@ -44,6 +44,21 @@ class _OrderDetailsInTransitScreenState
     super.initState();
   }
 
+  Future<bool> _getRecevoirArgentStatus() async {
+  try {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(widget.orderData.docID)
+        .get();
+
+    return doc.get('recevoirArgent') ?? false;
+  } catch (e) {
+    print('Erreur lors de la récupération de recevoirArgent: $e');
+    return false;
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -278,72 +293,155 @@ class _OrderDetailsInTransitScreenState
                                 ), 
                                 ),
 
-                                SizedBox(
-                          height: getVerticalSize(16),
-                        ),
+                                FutureBuilder<bool>(
+                        future: _getRecevoirArgentStatus(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(child: Text('Erreur lors de la récupération des données'));
+                          } else if (snapshot.hasData && snapshot.data == true) {
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: getVerticalSize(16),
+                                  ),
+                                  Divider(
+                                      height: getVerticalSize(1),
+                                      thickness: getVerticalSize(1),
+                                      color: ColorConstant.gray300),
+                                  SizedBox(
+                                    height: getVerticalSize(8),
+                                  ),
+                                  Padding(
+                                      padding: getPadding(top: 22),
+                                      child: Text("Montant à recevoir".tr,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBodyGray600)),
+                                  Padding(
+                                      padding: getPadding(top: 10, bottom: 0),
+                                      child: Text(widget.orderData.montantRecevoir,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBody)),
+                                  Padding(
+                                      padding: getPadding(top: 22),
+                                      child: Text("Mode de réception".tr,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBodyGray600)),
+                                  Padding(
+                                      padding: getPadding(top: 10, bottom: 0),
+                                      child: Text(widget.orderData.modePaiement,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBody)),
+                                  Padding(
+                                      padding: getPadding(top: 22),
+                                      child: Text("Numéro de téléphone".tr,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBodyGray600)),
+                                  Padding(
+                                      padding: getPadding(top: 10, bottom: 0),
+                                      child: Text(widget.orderData.numeroDeReception,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBody)),
+                                  Padding(
+                                      padding: getPadding(top: 22),
+                                      child: Text("Statut de la transaction".tr,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBodyGray600)),
+                                  Padding(
+                                      padding: getPadding(top: 10, bottom: 0),
+                                      child: Text('',
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.left,
+                                          style: AppStyle.txtBody)),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return SizedBox(); // Return an empty widget if `recevoirArgent` is false
+                          }
+                        },
+                      ),
 
-                                Divider(
-                            height: getVerticalSize(1),
-                            thickness: getVerticalSize(1),
-                            color: ColorConstant.gray300),
-                        SizedBox(
-                          height: getVerticalSize(8),
-                        ),
+                      // Autres widgets ici...
+                    ],
 
-                         Padding(
-                            padding: getPadding(top: 22),
-                            child: Text("Montant à recevoir".tr,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBodyGray600)),
-                        Padding(
-                            padding: getPadding(top: 10, bottom: 0),
-                            child: Text(widget.orderData.montantRecevoir,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBody)),
+                      //           SizedBox(
+                      //     height: getVerticalSize(16),
+                      //   ),
+
+                      //           Divider(
+                      //       height: getVerticalSize(1),
+                      //       thickness: getVerticalSize(1),
+                      //       color: ColorConstant.gray300),
+                      //   SizedBox(
+                      //     height: getVerticalSize(8),
+                      //   ),
+
+                      //    Padding(
+                      //       padding: getPadding(top: 22),
+                      //       child: Text("Montant à recevoir".tr,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBodyGray600)),
+                      //   Padding(
+                      //       padding: getPadding(top: 10, bottom: 0),
+                      //       child: Text(widget.orderData.montantRecevoir,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBody)),
 
 
-                         Padding(
-                            padding: getPadding(top: 22),
-                            child: Text("Mode de reception".tr,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBodyGray600)),
-                        Padding(
-                            padding: getPadding(top: 10, bottom: 0),
-                            child: Text(widget.orderData.modePaiement,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBody)),
+                      //    Padding(
+                      //       padding: getPadding(top: 22),
+                      //       child: Text("Mode de reception".tr,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBodyGray600)),
+                      //   Padding(
+                      //       padding: getPadding(top: 10, bottom: 0),
+                      //       child: Text(widget.orderData.modePaiement,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBody)),
                        
-                       Padding(
-                            padding: getPadding(top: 22),
-                            child: Text("Numéro de téléphone".tr,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBodyGray600)),
-                        Padding(
-                            padding: getPadding(top: 10, bottom: 0),
-                            child: Text(widget.orderData.numeroDeReception,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBody)),
+                      //  Padding(
+                      //       padding: getPadding(top: 22),
+                      //       child: Text("Numéro de téléphone".tr,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBodyGray600)),
+                      //   Padding(
+                      //       padding: getPadding(top: 10, bottom: 0),
+                      //       child: Text(widget.orderData.numeroDeReception,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBody)),
 
-                       Padding(
-                            padding: getPadding(top: 22),
-                            child: Text("Status de la transaction".tr,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBodyGray600)),
-                        Padding(
-                            padding: getPadding(top: 10, bottom: 0),
-                            child: Text(widget.orderData.orderID,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.left,
-                                style: AppStyle.txtBody)),
+                      //  Padding(
+                      //       padding: getPadding(top: 22),
+                      //       child: Text("Status de la transaction".tr,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBodyGray600)),
+                      //   Padding(
+                      //       padding: getPadding(top: 10, bottom: 0),
+                      //       child: Text(widget.orderData.orderID,
+                      //           overflow: TextOverflow.ellipsis,
+                      //           textAlign: TextAlign.left,
+                      //           style: AppStyle.txtBody)),
 
-                      ],
+                      //],
                     )),
                 bottomNavigationBar: Padding(
                     padding: getPadding(left: 16, right: 16, bottom: 40),

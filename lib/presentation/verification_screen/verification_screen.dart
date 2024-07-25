@@ -15,7 +15,7 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'dart:async'; // Importer pour TimeoutException
 
 class VerificationScreen extends StatefulWidget {
-   final String verificationId;
+  final String verificationId;
   VerificationScreen({required this.verificationId});
 
   @override
@@ -33,6 +33,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
   int count = 20;
 
   final _auth = FirebaseAuth.instance;
+  late Timer timer;
 
   @override
   void initState() {
@@ -44,8 +45,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
     super.initState();
     decompte();
   }
-
-  late Timer timer;
 
   void decompte() {
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
@@ -61,29 +60,24 @@ class _VerificationScreenState extends State<VerificationScreen> {
     });
   }
 
-  
-
-  
-
   final TextEditingController _otpController = TextEditingController();
- void verifyOTP() async {
-  final otp = _otpController.text.trim();
-  PhoneAuthCredential credential = PhoneAuthProvider.credential(
-    verificationId: widget.verificationId,
-    smsCode: otp,
-  );
 
-  try {
-    await _auth.signInWithCredential(credential);
-    Navigator.of(context).pushReplacementNamed(AppRoutes.homeContainer1Screen);
-  } catch (e) {
-    print("Error: ${e}");
-    // Optionally, show an error message to the user
-    showCustomSnackBar(context, "Invalid verification code", isError: true);
+  Future<void> verifyOTP() async {
+    final otp = _otpController.text.trim();
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+      verificationId: widget.verificationId,
+      smsCode: otp,
+    );
+
+    try {
+      await _auth.signInWithCredential(credential);
+      Navigator.of(context).pushReplacementNamed(AppRoutes.homeContainer1Screen);
+    } catch (e) {
+      // Affichez une erreur plus détaillée pour le débogage
+      print("Error during OTP verification: ${e.toString()}");
+      showCustomSnackBar(context, "Code de vérification invalide", isError: true);
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -172,10 +166,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                         padding: getPadding(left: 9, right: 9),
                         decoration: BoxDecoration(color: Colors.red),
                       ),
-                      controller: controller.otpController,
+                      controller: _otpController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Please enter valid code";
+                          return "Please enter a valid code";
                         }
                         return null;
                       },
@@ -219,14 +213,15 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      verifyOTP();
+                      if (_formKey.currentState?.validate() ?? false) {
+                        verifyOTP();
+                      }
                     },
                     child: const Text(
                       'Verify',
                       style: TextStyle(fontSize: 16),
                     ).paddingAll(14),
                   ),
-
                   Padding(
                     padding: getPadding(top: 32, bottom: 5),
                     child: RichText(
@@ -262,48 +257,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> verifySmsCode(String smsCode) async {
-    try {
-      // Créer les credentials à partir du code de vérification
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: controller.verificationId.value,
-        smsCode: smsCode,
-      );
-
-      // Signer avec les credentials
-      await FirebaseAuth.instance.signInWithCredential(credential);
-
-      // Redirection vers l'écran de réinitialisation du mot de passe
-      Get.toNamed(AppRoutes.resetPasswordScreen);
-    } on FirebaseAuthException catch (e) {
-      // Gérer les erreurs spécifiques de Firebase Auth
-      if (e.code == 'invalid-verification-code') {
-        showCustomSnackBar(context, 'Code SMS incorrect. Veuillez réessayer.',
-            isError: true);
-      } else if (e.code == 'invalid-verification-id') {
-        showCustomSnackBar(context,
-            'La validation du code SMS a expiré. Veuillez demander un nouveau code.',
-            isError: true);
-      } else {
-        showCustomSnackBar(context, 'Échec de la vérification : ${e.message}',
-            isError: true);
-      }
-    } on TimeoutException catch (_) {
-      // Gérer les erreurs de délai d'attente (timeout)
-      showCustomSnackBar(context,
-          'Délai d\'attente dépassé. Veuillez vérifier votre connexion internet.',
-          isError: true);
-    } catch (e) {
-      // Gérer toutes les autres exceptions
-      showCustomSnackBar(context, 'Échec de la vérification : $e',
-          isError: true);
-    }
-  }
-
-  void onTapVerify() {
-    Navigator.of(context).pushNamed(AppRoutes.resetPasswordScreen);
   }
 
   void onTapArrowleft1() {

@@ -378,15 +378,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
 
         // Vérifier si le numéro de téléphone est déjà utilisé
-        bool isPhoneNumberTaken =
-            await checkPhoneNumberExists(controller.phoneNumberController.text);
-        if (isPhoneNumberTaken) {
-          Navigator.pop(context); // Fermer la page de chargement
-          showCustomSnackBar(
-              context, 'Un compte existe déjà avec ce numéro de téléphone.',
-              isError: true);
-          return;
-        }
+        // bool isPhoneNumberTaken =
+        //     await checkPhoneNumberExists(controller.phoneNumberController.text);
+        // if (isPhoneNumberTaken) {
+        //   Navigator.pop(context); // Fermer la page de chargement
+        //   showCustomSnackBar(
+        //       context, 'Un compte existe déjà avec ce numéro de téléphone.',
+        //       isError: true);
+        //   return;
+        // }
 
         // Envoyer le code de vérification par SMS
         //sendOtpCode();

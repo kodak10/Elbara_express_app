@@ -117,40 +117,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     width: getHorizontalSize(355),
                     margin: getMargin(left: 20, right: 20),
                     child: Text(
-                      "msg_please_provide_the".tr,
+                      "Veuillez entrer le code reçu par SMS".tr,
                       maxLines: null,
                       textAlign: TextAlign.center,
                       style: AppStyle.txtBody,
                     ),
                   ),
-                  Padding(
-                    padding: getPadding(top: 30),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "lbl_code_sent_to".tr,
-                            style: TextStyle(
-                              color: ColorConstant.black900,
-                              fontSize: getFontSize(16),
-                              fontFamily: 'Avenir',
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "msg_ronaldrichards_gmail_com".tr,
-                            style: TextStyle(
-                              color: ColorConstant.black900,
-                              fontSize: getFontSize(16),
-                              fontFamily: 'Avenir',
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
+                 
                   Padding(
                     padding: getPadding(left: 3, top: 29, right: 3),
                     child: Pinput(
@@ -211,16 +184,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
+
+                  CustomButton(
+                                height: getVerticalSize(54),
+                                text: "Valider".tr,
+                                margin: getMargin(top: 30),
+                                onTap: () {
                       if (_formKey.currentState?.validate() ?? false) {
                         verifyOTP();
                       }
                     },
-                    child: const Text(
-                      'Verify',
-                      style: TextStyle(fontSize: 16),
-                    ).paddingAll(14),
                   ),
                   Padding(
                     padding: getPadding(top: 32, bottom: 5),

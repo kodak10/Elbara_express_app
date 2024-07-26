@@ -266,11 +266,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       }
                     },
                   ),
+                  //371390
                   Padding(
                     padding: getPadding(top: 32, bottom: 5),
                     child: RichText(
                       text: TextSpan(
-                        children: [
+                        children: [  
                           TextSpan(
                             text: "msg_don_t_receive_code2".tr,
                             style: TextStyle(

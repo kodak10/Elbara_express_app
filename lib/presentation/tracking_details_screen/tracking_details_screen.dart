@@ -247,28 +247,28 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                             radius: BorderRadius.circular(
                                                 getHorizontalSize(8)),
                                             alignment: Alignment.center),
-                                        // Visibility(
-                                        //   visible: status == "onTheWay",
-                                        //   child: Padding(
-                                        //     padding:
-                                        //         getPadding(left: 8, right: 8),
-                                        //     child: CustomButton(
-                                        //       height: getVerticalSize(40),
-                                        //       width: getHorizontalSize(143),
-                                        //       text: "Suivre le livreur".tr,
-                                        //       margin:
-                                        //           getMargin(left: 8, bottom: 8),
-                                        //       padding:
-                                        //           ButtonPadding.PaddingAll11,
-                                        //       fontStyle: ButtonFontStyle
-                                        //           .SFProTextBold15WhiteA700,
-                                        //       onTap: () {
-                                        //         onTapLivetracking();
-                                        //       },
-                                        //       alignment: Alignment.bottomLeft,
-                                        //     ),
-                                        //   ),
-                                        // )
+                                        Visibility(
+                                          visible: status == "onTheWay",
+                                          child: Padding(
+                                            padding:
+                                                getPadding(left: 8, right: 8),
+                                            child: CustomButton(
+                                              height: getVerticalSize(40),
+                                              width: getHorizontalSize(143),
+                                              text: "Suivre le livreur".tr,
+                                              margin:
+                                                  getMargin(left: 8, bottom: 8),
+                                              padding:
+                                                  ButtonPadding.PaddingAll11,
+                                              fontStyle: ButtonFontStyle
+                                                  .SFProTextBold15WhiteA700,
+                                              onTap: () {
+                                                onTapLivetracking();
+                                              },
+                                              alignment: Alignment.bottomLeft,
+                                            ),
+                                          ),
+                                        )
                                       ])),
                               Padding(
                                   padding: getPadding(top: 21),

@@ -213,7 +213,9 @@ class _LogInScreenState extends State<LogInScreen> {
                 // L'utilisateur n'est pas vérifié, envoyer le code et rediriger vers l'écran de vérification
                 final phone = documentSnapshot.get('phoneNumber') ?? '';
 
-                print('phone: $phone');
+                print('phone1: $phone');
+
+                
                 await FirebaseAuth.instance.verifyPhoneNumber(
                   phoneNumber: '$phone',
                   timeout: const Duration(seconds: 60),

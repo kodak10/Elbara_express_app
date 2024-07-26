@@ -17,8 +17,8 @@ import 'package:elbara_express/widgets/custom_button.dart';
 import 'dart:async';
 
 class VerificationScreen extends StatefulWidget {
- final String verificationId;
- String phoneNumber;
+  final String verificationId;
+  String phoneNumber;
 
   VerificationScreen({
     Key? key,
@@ -33,8 +33,7 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   final VerificationController controller = Get.put(VerificationController());
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    final TextEditingController _phoneController = TextEditingController();
-
+  final TextEditingController _phoneController = TextEditingController();
 
   String smsCode = "";
   bool loading = false;
@@ -44,7 +43,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
   final _auth = FirebaseAuth.instance;
   late Timer timer;
   final TextEditingController _otpController = TextEditingController();
-  
 
   @override
   void initState() {
@@ -55,7 +53,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
     super.initState();
     _phoneController.text = widget.phoneNumber;
-
+    print('phone veeification: $_phoneController.text');
     decompte();
   }
 
@@ -74,51 +72,53 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   Future<void> resendOTP() async {
-  setState(() {
-    loading = true;
-  });
-
-  try {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: '+225${_phoneController.text.trim()}', // Assurez-vous d'utiliser le numéro de téléphone actuel
-      timeout: const Duration(seconds: 60),
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        // Optionnel: Authentification automatique
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        // Vous pouvez rediriger vers l'écran d'accueil ou un autre écran ici si nécessaire
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        print("Erreur lors de l'envoi du code: ${e.message}");
-        // Affichez un message d'erreur à l'utilisateur si nécessaire
-        showCustomSnackBar(context, 'Erreur lors de l\'envoi du code: ${e.message}', isError: true);
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-         verificationId = verificationId;
-          loading = false;
-          // Vous pouvez afficher un message de succès ou rediriger l'utilisateur vers un autre écran si nécessaire
-        });
-        // Naviguez vers l'écran de vérification ou mettez à jour l'état
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        // Ce callback est appelé lorsque la période d'attente pour la récupération automatique du code expire
-        setState(() {
-         verificationId = verificationId;
-          loading = false;
-        });
-      },
-    );
-  } catch (e) {
-    print("Erreur: $e");
-    // Gérez les exceptions non-Firebase si nécessaire
-    showCustomSnackBar(context, 'Une erreur est survenue: ${e.toString()}', isError: true);
-  } finally {
     setState(() {
-      loading = false;
+      loading = true;
     });
-  }
-}
 
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: _phoneController.text.trim(), // Assurez-vous d'utiliser le numéro de téléphone actuel
+        timeout: const Duration(seconds: 60),
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Optionnel: Authentification automatique
+          await FirebaseAuth.instance.signInWithCredential(credential);
+          // Vous pouvez rediriger vers l'écran d'accueil ou un autre écran ici si nécessaire
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print("Erreur lors de l'envoi du code: ${e.message}");
+          // Affichez un message d'erreur à l'utilisateur si nécessaire
+          showCustomSnackBar(
+              context, 'Erreur lors de l\'envoi du code: ${e.message}',
+              isError: true);
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            verificationId = verificationId;
+            loading = false;
+            // Vous pouvez afficher un message de succès ou rediriger l'utilisateur vers un autre écran si nécessaire
+          });
+          // Naviguez vers l'écran de vérification ou mettez à jour l'état
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Ce callback est appelé lorsque la période d'attente pour la récupération automatique du code expire
+          setState(() {
+            verificationId = verificationId;
+            loading = false;
+          });
+        },
+      );
+    } catch (e) {
+      print("Erreur: $e");
+      // Gérez les exceptions non-Firebase si nécessaire
+      showCustomSnackBar(context, 'Une erreur est survenue: ${e.toString()}',
+          isError: true);
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
 
   Future<void> verifyOTP() async {
     final otp = _otpController.text.trim();
@@ -131,22 +131,26 @@ class _VerificationScreenState extends State<VerificationScreen> {
       var _currentUser = FirebaseAuth.instance.currentUser;
 
       if (_currentUser != null) {
-        UserCredential userCredential = await _auth.signInWithCredential(credential);
+        UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
         String uid = _currentUser.uid;
         print("UID: $uid");
 
-        DocumentReference userDocRef = FirebaseFirestore.instance.collection('users').doc(uid);
+        DocumentReference userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(uid);
         await userDocRef.update({
           'verif': true,
         });
 
         Navigator.of(context).pushReplacementNamed(AppRoutes.logInScreen);
       } else {
-        showCustomSnackBar(context, "Utilisateur non authentifié", isError: true);
+        showCustomSnackBar(context, "Utilisateur non authentifié",
+            isError: true);
       }
     } catch (e) {
       print("Error during OTP verification: ${e.toString()}");
-      showCustomSnackBar(context, "Code de vérification invalide", isError: true);
+      showCustomSnackBar(context, "Code de vérification invalide",
+          isError: true);
     }
   }
 
@@ -194,7 +198,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       style: AppStyle.txtBody,
                     ),
                   ),
-                 
+
                   Padding(
                     padding: getPadding(left: 3, top: 29, right: 3),
                     child: Pinput(
@@ -213,7 +217,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       controller: _otpController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return "Please enter a valid code";
+                          return "Veuillez entrer un code valide";
                         }
                         return null;
                       },
@@ -271,7 +275,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     padding: getPadding(top: 32, bottom: 5),
                     child: RichText(
                       text: TextSpan(
-                        children: [  
+                        children: [
                           TextSpan(
                             text: "msg_don_t_receive_code2".tr,
                             style: TextStyle(
@@ -282,9 +286,11 @@ class _VerificationScreenState extends State<VerificationScreen> {
                             ),
                           ),
                           TextSpan(
-                            text: resend ? "lbl_resend_code".tr : "".tr,
+                            text: resend ? "lbl_resend_code".tr : "Patientez".tr,
                             style: TextStyle(
-                              color: resend ? ColorConstant.deepPurple600 : ColorConstant.gray600,
+                              color: resend
+                                  ? ColorConstant.deepPurple600
+                                  : ColorConstant.gray600,
                               fontSize: getFontSize(16),
                               fontFamily: 'SF Pro Text',
                               fontWeight: FontWeight.w600,

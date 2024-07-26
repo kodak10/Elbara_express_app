@@ -147,7 +147,7 @@ Widget phone_number_field(
       //   ),
       // ),
       // label: Align(alignment: Alignment.topLeft,child: Text("Phone number",textAlign: TextAlign.left,)),
-      hintText: "Phone number",
+      hintText: "Téléphone",
       hintStyle: TextStyle(
         color: ColorConstant.gray600,
         fontSize: getFontSize(

@@ -380,40 +380,18 @@ void sendOTP() async {
         }
 
         // Vérifier si le numéro de téléphone est déjà utilisé
-        // bool isPhoneNumberTaken =
-        //     await checkPhoneNumberExists(controller.phoneNumberController.text);
-        // if (isPhoneNumberTaken) {
-        //   Navigator.pop(context); // Fermer la page de chargement
-        //   showCustomSnackBar(
-        //       context, 'Un compte existe déjà avec ce numéro de téléphone.',
-        //       isError: true);
-        //   return;
-        // }
+        bool isPhoneNumberTaken =
+            await checkPhoneNumberExists(controller.phoneNumberController.text);
+        if (isPhoneNumberTaken) {
+          Navigator.pop(context); // Fermer la page de chargement
+          showCustomSnackBar(
+              context, 'Un compte existe déjà avec ce numéro de téléphone.',
+              isError: true);
+          return;
+        }
 
         // Envoyer le code de vérification par SMS
-        //sendOtpCode();
         sendOTP();
-        // await FirebaseAuth.instance.verifyPhoneNumber(
-        //   phoneNumber: '+225${controller.phoneNumberController.text}',
-        //   verificationCompleted: (PhoneAuthCredential credential) async {
-        //     // Vérification automatique ou instantanée
-        //     await FirebaseAuth.instance.signInWithCredential(credential);
-        //   },
-        //   verificationFailed: (FirebaseAuthException e) {
-        //     Navigator.pop(context); // Fermer la page de chargement
-        //     showCustomSnackBar(
-        //         context, 'Échec de la vérification : ${e.message}',
-        //         isError: true);
-        //   },
-        //   codeSent: (String verificationId, int? resendToken) {
-        //     controller.verificationId.value = verificationId;
-        //     Navigator.pop(context); // Fermer la page de chargement
-        //     Get.toNamed(AppRoutes.verificationScreen); // Naviguer vers l'écran de vérification
-        //   },
-        //   codeAutoRetrievalTimeout: (String verificationId) {
-        //     controller.verificationId.value = verificationId;
-        //   },
-        // );
 
         await postDetailsToFirestore(
             controller.emailController.text,
@@ -454,7 +432,7 @@ void sendOTP() async {
       'email': email,
       'displayName': name,
       'role': defaultRole,
-      'phoneNumber': '+225${controller.phoneNumberController.text}',
+      'phoneNumber': '+225${_phoneController.text.trim()}',
       'photoURL':
           'https://firebasestorage.googleapis.com/v0/b/elbaraexpress-9b834.appspot.com/o/images%2Fuser.png?alt=media&token=d2065aab-9369-4c90-9438-f03c15a84fca',
       'codePromo': codePromo,

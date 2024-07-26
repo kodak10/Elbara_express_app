@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elbara_express/core/utils/snackbar.dart';
 import 'package:elbara_express/core/utils/loading.dart';
+import 'package:elbara_express/presentation/verification_screen/verification_screen.dart';
 
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class _LogInScreenState extends State<LogInScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false; // Variable pour gérer l'état du chargement
 
+  String verificationId = '';
+  bool codeSent = false;
 
   @override
   void initState() {
@@ -173,56 +176,105 @@ class _LogInScreenState extends State<LogInScreen> {
                     ),
                   ),
                 CustomButton(
-                      height: getVerticalSize(54),
-                      text: "Se Connecter",
-                      margin: getMargin(top: 31),
-                      onTap: () async {
-                        if (_formKey.currentState!.validate()) {
-                          // Retirer le focus de tous les champs de saisie
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          // Navigate to the LoadingPage
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => LoadingPage()),
-                          );
+  height: getVerticalSize(54),
+  text: "Se Connecter",
+  margin: getMargin(top: 31),
+  onTap: () async {
+    if (_formKey.currentState!.validate()) {
+      // Retirer le focus de tous les champs de saisie
+      FocusScope.of(context).requestFocus(FocusNode());
+      // Navigate to the LoadingPage
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => LoadingPage()),
+      );
+
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: controller.emailController.text,
+          password: controller.passwordController.text,
+        );
+
+        // L'utilisateur est connecté avec succès
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+          Navigator.of(context).pop(); // Fermer le modal de chargement
+
+          if (documentSnapshot.exists) {
+            if (documentSnapshot.get('role') == "user") {
+              bool isVerified = documentSnapshot.get('verif') ?? false;
+             
+
+              if (!isVerified) {
+                // L'utilisateur n'est pas vérifié, envoyer le code et rediriger vers l'écran de vérification
+                final phone = documentSnapshot.get('phoneNumber') ?? '';
+
+                print('phone: $phone');
+                await FirebaseAuth.instance.verifyPhoneNumber(
+                  phoneNumber: '$phone',
+                  timeout: const Duration(seconds: 60),
+                  verificationCompleted: (PhoneAuthCredential credential) async {
+                    await FirebaseAuth.instance.signInWithCredential(credential);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VerificationScreen(
+                          verificationId: verificationId,
+                          phoneNumber: phone,
+                        ),
+                      ),
+                    );
+                  },
+                  verificationFailed: (FirebaseAuthException e) {
+                    showCustomSnackBar(context, 'Erreur lors de l\'envoi du code: ${e.message}', isError: true);
+                  },
+                  codeSent: (String verificationId, int? resendToken) {
+                    setState(() {
+                      this.verificationId = verificationId;
+                      this.codeSent = true;
+                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VerificationScreen(
+                          verificationId: this.verificationId,
+                          phoneNumber: phone,
+                        ),
+                      ),
+                    );
+                  },
+                  codeAutoRetrievalTimeout: (String verificationId) {
+                    this.verificationId = verificationId;
+                  },
+                );
+              } else {
+                // L'utilisateur est déjà vérifié, naviguer vers la page d'accueil
+                PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
+                Get.toNamed(AppRoutes.homeContainer1Screen);
+              }
+            } else {
+              showCustomSnackBar(context, 'Email ou mot de passe incorrecte.', isError: true);
+            }
+          } else {
+            showCustomSnackBar(context, 'Une erreur est survenue, veuillez contacter le service client.', isError: true);
+          }
+        }
+      } on FirebaseAuthException catch (e) {
+        Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+        showCustomSnackBar(context, "Email ou mot de passe incorrect.", isError: true);
+      } catch (e) {
+        Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
+        showCustomSnackBar(context, 'Une erreur s\'est produite: $e', isError: true);
+      }
+    }
+  },
+),
 
 
-                          try {
-                            UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                              email: controller.emailController.text,
-                              password: controller.passwordController.text,
-                            );
-
-                            // L'utilisateur est connecté avec succès
-                            User? user = FirebaseAuth.instance.currentUser;
-                            FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user!.uid)
-                              .get()
-                              .then((DocumentSnapshot documentSnapshot) {
-                                Navigator.of(context).pop(); // Fermer le modal de chargement
-                                if (documentSnapshot.exists) {
-                                  if (documentSnapshot.get('role') == "user") {
-                                    PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
-                                    Get.toNamed(AppRoutes.homeContainer1Screen);
-                                  } else {
-                                    showCustomSnackBar(context, 'Email ou mot de passe incorrecte.', isError: true);
-                                  }
-                                } else {
-                                  showCustomSnackBar(context, 'Une erreur est survenue, veuillez contacter le service client.', isError: true);
-                                }
-                              });
-
-                          } on FirebaseAuthException catch (e) {
-                            Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
-                            showCustomSnackBar(context, "Email ou mot de passe incorrect.", isError: true);
-
-                          } catch (e) {
-                            Navigator.of(context).pop(); // Fermer le modal de chargement en cas d'erreur
-                            showCustomSnackBar(context, 'Une erreur s\'est produite: $e', isError: true);
-                          }
-                        }
-                      },
-                    ),
                   Spacer(),
                   GestureDetector(
                     onTap: () {

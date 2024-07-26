@@ -89,46 +89,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  void sendOTP() async {
-    final phone = _phoneController.text.trim();
-    print('phone: $phone');
-    await _auth.verifyPhoneNumber(
-  phoneNumber: '+225${_phoneController.text.trim()}',
-  timeout: const Duration(seconds: 60),
-  verificationCompleted: (PhoneAuthCredential credential) async {
-    await _auth.signInWithCredential(credential);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VerificationScreen(
-          verificationId: verificationId,
+void sendOTP() async {
+  final phone = _phoneController.text.trim();
+  print('phone: $phone');
+  await _auth.verifyPhoneNumber(
+    phoneNumber: '+225$phone',
+    timeout: const Duration(seconds: 60),
+    verificationCompleted: (PhoneAuthCredential credential) async {
+      await _auth.signInWithCredential(credential);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerificationScreen(
+            verificationId: verificationId,
+            phoneNumber: phone, // Passez le numéro de téléphone ici
+          ),
         ),
-      ),
-    );
-  },
-  verificationFailed: (FirebaseAuthException e) {
-    print("Phone number verification failed. Code: ${e.code}. Message: ${e.message}");
-  },
-  codeSent: (String verificationId, int? resendToken) {
-    setState(() {
+      );
+    },
+    verificationFailed: (FirebaseAuthException e) {
+      print("Phone number verification failed. Code: ${e.code}. Message: ${e.message}");
+    },
+    codeSent: (String verificationId, int? resendToken) {
+      setState(() {
+        this.verificationId = verificationId;
+        this.codeSent = true;
+      });
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerificationScreen(
+            verificationId: this.verificationId,
+            phoneNumber: phone, // Passez le numéro de téléphone ici
+          ),
+        ),
+      );
+    },
+    codeAutoRetrievalTimeout: (String verificationId) {
       this.verificationId = verificationId;
-      this.codeSent = true;
-    });
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => VerificationScreen(
-          verificationId: this.verificationId,
-        ),
-      ),
-    );
-  },
-  codeAutoRetrievalTimeout: (String verificationId) {
-    this.verificationId = verificationId;
-  },
-);
+    },
+  );
+}
 
-  }
 
   @override
   Widget build(BuildContext context) {

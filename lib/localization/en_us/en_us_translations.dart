@@ -70,7 +70,7 @@ final Map<String, String> enUs = {
   "lbl_welcome": "Welcome",
   "lbl_splash_one": "Splash One",
   "msg_receive_a_25_discount": "receive a 25% discount On Sunday deliveries.",
-  "lbl_resend_code": " renvoyer le code",
+  "lbl_resend_code": " Renvoyer le code",
   "msg_enter_your_card2":
       "Enter your card details. signal does not \ncollect or store your personal information.\n",
   "lbl_card_number": "Card number",

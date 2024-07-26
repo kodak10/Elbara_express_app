@@ -541,6 +541,8 @@ class _OrderDetailsInTransitScreenState
       'docID': widget.orderData.docID, // Numéro de commande
       'dateRegister': widget.orderData.date, // Date de la commande
       'status': widget.orderData.status, 
+      'deliveryId': widget.orderData.deliveryID, 
+
       },);
   }
 

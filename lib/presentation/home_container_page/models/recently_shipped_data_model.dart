@@ -21,6 +21,8 @@ class RecentlyShipped{
   final String modePaiement;
   final String numeroDeReception;
 
+  final String deliveryID;
+
 
 
 
@@ -40,6 +42,9 @@ class RecentlyShipped{
     required this.payemenStatus,
     required this.cout,
     required this.modePayment,
+    
+    required this.deliveryID,
+
 
     required this.recevoirArgent,
     required this.modePaiement,

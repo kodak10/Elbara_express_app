@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
+import 'package:elbara_express/presentation/live_tracking_one_screen/live_tracking_one_screen.dart';
+import 'package:elbara_express/presentation/live_tracking_screen/live_tracking_screen.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_image.dart';
 import 'package:elbara_express/widgets/app_bar/appbar_subtitle_1.dart';
 import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
@@ -27,7 +29,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
   late String statusOrderDeliveryConfirmed = '';
   late String statusOrderDelivered = '';
   late String deliveryConfirm = '';
-  late String deliveryID = '';
+ // late String deliveryID = '';
 
   String displayName = '';
   String phoneNumber = '';
@@ -95,15 +97,16 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
           } else {
             statusOrderDeliveryConfirmed = 'En attente';
             deliveryConfirm = "En attente";
-
           }
 
           if (orderDelivered) {
-            Timestamp orderDeliveredTimestamp = documentSnapshot['order_delivered_date'];
+            Timestamp orderDeliveredTimestamp =
+                documentSnapshot['order_delivered_date'];
             DateTime orderDeliveredDate = orderDeliveredTimestamp.toDate();
-            statusOrderDelivered = DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
-            deliveryConfirm = DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
-          
+            statusOrderDelivered =
+                DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
+            deliveryConfirm =
+                DateFormat('dd/MM/yyyy HH:mm:ss').format(orderDeliveredDate);
           } else {
             statusOrderDelivered = 'En attente';
           }
@@ -121,15 +124,14 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
     final String orderID = args?['orderId'] ?? '';
     final String status = args?['status'] ?? '';
 
-    deliveryID = args?['deliveryId'] ?? '';
-    
+    final String deliveryID = args?['deliveryId'] ?? '';
+
     DateTime dateCommandeDateTime = args?['dateRegister'] as DateTime;
     // Formatter la date
-    String formattedDate = DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
+    String formattedDate =
+        DateFormat('dd/MM/yyyy HH:mm:ss').format(dateCommandeDateTime);
 
-
-  
-  // Votre code de construction de widget continue ici
+    // Votre code de construction de widget continue ici
 
     return WillPopScope(
         onWillPop: () async {
@@ -263,7 +265,14 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                               fontStyle: ButtonFontStyle
                                                   .SFProTextBold15WhiteA700,
                                               onTap: () {
-                                                onTapLivetracking();
+                                                print(
+                                                    'deliveryID: $deliveryID');
+                                                Get.to(
+                                                  () => LiveTrackingOneScreen(
+                                                      deliveryID: deliveryID),
+                                                );
+
+                                                //onTapLivetracking();
                                               },
                                               alignment: Alignment.bottomLeft,
                                             ),
@@ -353,7 +362,7 @@ class _TrackingDetailsScreenState extends State<TrackingDetailsScreen> {
                                             Padding(
                                                 padding: getPadding(top: 15),
                                                 child: Text(
-                                                  "Terminé le: $deliveryConfirm",
+                                                    "Terminé le: $deliveryConfirm",
                                                     //deliveryConfirm,
                                                     overflow:
                                                         TextOverflow.ellipsis,

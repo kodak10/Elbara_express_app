@@ -1,0 +1,130 @@
+import 'package:url_launcher/url_launcher.dart';
+import 'controller/live_tracking_controller.dart';
+import 'package:elbara_express/core/app_export.dart';
+import 'package:flutter/material.dart';
+
+class LiveTrackingScreen extends StatefulWidget {
+  final String deliveryID;
+
+  const LiveTrackingScreen({Key? key, required this.deliveryID}) : super(key: key);
+
+  @override
+  _LiveTrackingScreenState createState() => _LiveTrackingScreenState();
+}
+
+class _LiveTrackingScreenState extends State<LiveTrackingScreen> {
+  final LiveTrackingController controller = Get.put(LiveTrackingController());
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchUserDetails(widget.deliveryID);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Live Tracking'),
+      ),
+      body: Padding(
+        padding: getPadding(left: 16, right: 16, top: 0, bottom: 20),
+        child: Obx(() {
+          if (controller.user.isEmpty) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: getSize(15)),
+                Center(
+                  child: Container(
+                    height: getSize(5),
+                    width: getSize(70),
+                    decoration: BoxDecoration(
+                      color: ColorConstant.gray300,
+                      borderRadius: BorderRadius.circular(getHorizontalSize(100)),
+                    ),
+                  ),
+                ),
+                SizedBox(height: getSize(20)),
+                
+                Container(
+                  margin: getMargin(top: 18),
+                  padding: getPadding(all: 16),
+                  decoration: AppDecoration.fillGray50.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: getHorizontalSize(146),
+                        margin: getMargin(top: 1),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (controller.user['photoURL'] != null)
+                              CircleAvatar(
+                                radius: getHorizontalSize(30),
+                                backgroundImage: NetworkImage(controller.user['photoURL']),
+                              ),
+                            SizedBox(width: getHorizontalSize(8)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    controller.user['displayName'] ?? '',
+                                    style: TextStyle(
+                                      color: ColorConstant.black900,
+                                      fontSize: getFontSize(18),
+                                      fontFamily: 'SF Pro Text',
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  SizedBox(height: getVerticalSize(8)),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (controller.user['phoneNumber'] != null) {
+                                        launch("tel://${controller.user['phoneNumber']}");
+                                      }
+                                    },
+                                    child: Text('Appeler le livreur'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Image.asset(
+                          ImageConstant.phone,
+                          width: getHorizontalSize(32),
+                          height: getVerticalSize(32),
+                        ),
+                        onPressed: () {
+                          if (controller.user['phoneNumber'] != null) {
+                            launch("tel://${controller.user['phoneNumber']}");
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: getVerticalSize(16)),
+              ],
+            );
+          }
+        }),
+      ),
+    );
+  }
+
+  onTapArrowleft17() {
+    Get.back();
+  }
+}

@@ -252,7 +252,7 @@ final Map<String, String> enUs = {
   "lbl_my_orders": "Mes Commandes",
   "lbl_address_line_1": "Address line 1",
   "msg_order_date_sat4": "Order date: Sat, 29 Jun 23",
-  "msg_package_information": "Informations",
+  "msg_package_information": "Informations sur le livreur",
   "msg_weekend_warriors": "Weekend warriors deal",
   "lbl_iphone_12_pro": "Iphone 12 pro",
   "msg_order_id_202022194": "Order id : #202022194",

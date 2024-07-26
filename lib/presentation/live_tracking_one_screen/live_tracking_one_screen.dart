@@ -1,4 +1,5 @@
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:elbara_express/presentation/live_tracking_screen/controller/live_tracking_controller.dart';
 import 'package:elbara_express/presentation/live_tracking_screen/live_tracking_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:elbara_express/core/app_export.dart';
@@ -8,13 +9,19 @@ import 'package:elbara_express/widgets/app_bar/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class LiveTrackingOneScreen extends StatefulWidget {
-  const LiveTrackingOneScreen({Key? key}) : super(key: key);
+   final String deliveryID;
+
+  const LiveTrackingOneScreen({Key? key, required this.deliveryID}) : super(key: key);
+
 
   @override
   State<LiveTrackingOneScreen> createState() => _LiveTrackingOneScreenState();
 }
 
 class _LiveTrackingOneScreenState extends State<LiveTrackingOneScreen> {
+    final LiveTrackingController controller = Get.put(LiveTrackingController());
+
+
   @override
   void initState() {
     SystemChrome.setSystemUIOverlayStyle(
@@ -23,6 +30,8 @@ class _LiveTrackingOneScreenState extends State<LiveTrackingOneScreen> {
           statusBarIconBrightness: Brightness.dark),
     );
     super.initState();
+    controller.fetchUserDetails(widget.deliveryID);
+
   }
 
   @override
@@ -68,26 +77,51 @@ class _LiveTrackingOneScreenState extends State<LiveTrackingOneScreen> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     showModalBottomSheet(
+                          //       context: context,
+                          //       builder: (context) {
+                          //         return LiveTrackingScreen(deliveryID: '',);
+                          //       },
+                          //     );
+                          //   },
+                          //   child: Container(
+                          //     width: getSize(60),
+                          //     decoration: BoxDecoration(
+                          //         borderRadius: BorderRadius.circular(
+                          //             getHorizontalSize(8)),
+                          //         color: ColorConstant.whiteA700),
+                          //     child: Padding(
+                          //       padding: getPadding(all: 12),
+                          //       child: CustomImageView(
+                          //           svgPath:
+                          //               ImageConstant.trackingLocationIcon),
+                          //     ),
+                          //   ),
+                          // ),
                           GestureDetector(
                             onTap: () {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (context) {
-                                  return LiveTrackingScreen();
+                                  return LiveTrackingScreen(
+                                    deliveryID: widget.deliveryID,
+                                  );
                                 },
                               );
                             },
                             child: Container(
                               width: getSize(60),
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                      getHorizontalSize(8)),
-                                  color: ColorConstant.whiteA700),
+                                borderRadius: BorderRadius.circular(getHorizontalSize(8)),
+                                color: ColorConstant.whiteA700,
+                              ),
                               child: Padding(
                                 padding: getPadding(all: 12),
                                 child: CustomImageView(
-                                    svgPath:
-                                        ImageConstant.trackingLocationIcon),
+                                  svgPath: ImageConstant.trackingLocationIcon,
+                                ),
                               ),
                             ),
                           ),

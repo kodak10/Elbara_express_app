@@ -522,7 +522,7 @@ class AppRoutes {
     ),
     GetPage(
       name: liveTrackingScreen,
-      page: () => LiveTrackingScreen(),
+      page: () => LiveTrackingScreen(deliveryID: '',),
       bindings: [
         LiveTrackingBinding(),
       ],
@@ -566,7 +566,7 @@ class AppRoutes {
     ),
     GetPage(
       name: liveTrackingOneScreen,
-      page: () => LiveTrackingOneScreen(),
+      page: () => LiveTrackingOneScreen(deliveryID: '',),
       bindings: [
         LiveTrackingOneBinding(),
       ],

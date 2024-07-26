@@ -81,6 +81,8 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
             modePayment: data['paymentMethod'] ?? '',
             payemenStatus: data['paymentStatus'] ?? '', // Valeur pour le statut
 
+            deliveryID: data['deliveryId'] ?? '', // Valeur pour le statut
+
             recevoirArgent: data['recevoirArgent'] ?? '', // Valeur pour le statut
             modePaiement: data['modePaiement'] ?? '', // Valeur pour le statut
             numeroDeReception: data['numeroDeReception'] ?? '', // Valeur pour le statut

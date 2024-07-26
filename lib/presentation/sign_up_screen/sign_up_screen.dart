@@ -401,7 +401,7 @@ void sendOTP() async {
             _promoCodeController.text,
             verifStatus);
 
-        PrefUtils.setIsSignIn(false); // Mettre à jour le statut de connexion
+        PrefUtils.setIsSignIn(true); // Mettre à jour le statut de connexion
 
         // Naviguer vers l'écran d'accueil uniquement après la vérification
         // Si vous avez besoin de naviguer à la fin de tout, placez ici Get.toNamed(AppRoutes.homeContainer1Screen);

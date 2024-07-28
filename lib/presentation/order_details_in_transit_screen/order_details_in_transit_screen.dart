@@ -91,7 +91,7 @@ class _OrderDetailsInTransitScreenState
                       children: [
                         Padding(
                             padding: getPadding(top: 3),
-                            child: Text("Adresse de ramassage".tr,
+                            child: Text("Adresse de récupération".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),
@@ -166,7 +166,7 @@ class _OrderDetailsInTransitScreenState
 
                         Padding(
                             padding: getPadding(top: 21),
-                            child: Text("Date de recuperation du colis".tr,
+                            child: Text("Date de récupération du colis".tr,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.left,
                                 style: AppStyle.txtBodyGray600)),

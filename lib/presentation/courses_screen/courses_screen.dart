@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:elbara_express/core/app_export.dart';
 import 'package:elbara_express/core/utils/loading.dart';
@@ -15,6 +17,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'controller/courses_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class CoursesScreen extends StatefulWidget {
   CoursesScreen({Key? key}) : super(key: key);
@@ -28,14 +31,21 @@ class _CoursesScreenState extends State<CoursesScreen> {
 
   SelectionPopupModel? _typeColis;
 
-  final TextEditingController _depart = TextEditingController();
-  final TextEditingController _destination = TextEditingController();
+  //final TextEditingController _depart = TextEditingController();
+  TextEditingController _depart =
+      TextEditingController(text: "9XXV+QFR Pharmacie Azur, Abidjan");
+
+  //final TextEditingController _destination = TextEditingController();
+  final TextEditingController _destination =
+      TextEditingController(text: "AGORA KOUMASSI, 72PP+XW5, Abidjan");
 
   final TextEditingController _nomRecepteur = TextEditingController();
   final TextEditingController _telephoneRecepteur = TextEditingController();
   final TextEditingController _infosComplementaire = TextEditingController();
 
-  int montantCourse = 2000; // pARFAIT
+  int montantCourse = 0; // pARFAIT
+  //int montantCourse = 2000;
+
   bool isLoading = false;
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -55,6 +65,34 @@ class _CoursesScreenState extends State<CoursesScreen> {
         null); // Initialisez les données de localisation pour le français
     _fetchOptions();
   }
+
+  Future<double> getDistanceFromGoogleMaps(String origin, String destination) async {
+  try {
+    // Remplacez YOUR_API_KEY par votre clé API Google Maps
+    String url = 'https://maps.googleapis.com/maps/api/directions/json?origin=${Uri.encodeComponent(origin)}&destination=${Uri.encodeComponent(destination)}&key=AIzaSyB0gDkkr1joWeyRz-T7Wx0YBSUiOtt-DjY';
+
+    final response = await http.get(Uri.parse(url));
+    final json = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      if (json['status'] == 'OK') {
+        // Obtenez la distance en mètres depuis la réponse JSON
+        var distanceInMeters = json['routes'][0]['legs'][0]['distance']['value'];
+        return distanceInMeters / 1000; // Convertir en kilomètres
+      } else {
+        print("Erreur de l'API Google Maps : ${json['status']}");
+        throw Exception("Erreur de l'API Google Maps : ${json['status']}");
+      }
+    } else {
+      print("Erreur lors de la requête : ${response.statusCode}");
+      throw Exception("Erreur lors de la requête : ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Erreur lors du calcul de la distance : $e");
+    throw Exception("Erreur lors du calcul de la distance : $e");
+  }
+}
+
 
   Future<void> _fetchOptions() async {
     // Fetch data from Firestore
@@ -356,6 +394,29 @@ class _CoursesScreenState extends State<CoursesScreen> {
     );
   }
 
+  int calculateFare(double distance) {
+    // Définissez ici votre logique de calcul de tarif
+    // Exemple: 500 FCFA de base + 100 FCFA par kilomètre
+    int baseFare = 500; // Tarif de départ
+    int farePerKm = 100; // Tarif par kilomètre
+
+    return baseFare + (distance * farePerKm).toInt();
+  }
+
+  Future<void> calculateAndDisplayFare() async {
+    try {
+      double distance =
+          await getDistanceFromGoogleMaps(_depart.text, _destination.text);
+      int fare = calculateFare(distance);
+
+      setState(() {
+        montantCourse = fare;
+      });
+    } catch (e) {
+      print("Erreur lors du calcul de la distance : $e");
+    }
+  }
+
   Future<void> onTapNext(BuildContext context) async {
     setState(() {
       isLoading = true;
@@ -370,6 +431,9 @@ class _CoursesScreenState extends State<CoursesScreen> {
         return LoadingPage(); // Vous devez créer et afficher votre widget LoadingPage
       },
     );
+
+    // Calculez le tarif avant de continuer
+    await calculateAndDisplayFare();
 
     // Simuler un délai de collecte de données
     await Future.delayed(Duration(seconds: 2));
@@ -399,6 +463,52 @@ class _CoursesScreenState extends State<CoursesScreen> {
           .pop(); // Cela fermera la boîte de dialogue de chargement
     });
   }
+  // Future<void> onTapNext(BuildContext context) async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+
+  //   // Afficher la page de chargement
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible:
+  //         false, // Empêche de fermer la boîte de dialogue en cliquant à l'extérieur
+  //     builder: (BuildContext context) {
+  //       return LoadingPage(); // Vous devez créer et afficher votre widget LoadingPage
+  //     },
+  //   );
+
+  //    // Calculez le tarif avant de continuer
+  //   await calculateAndDisplayFare();
+
+  //   // Simuler un délai de collecte de données
+  //   await Future.delayed(Duration(seconds: 2));
+
+  //   // Collectez toutes les données de l'écran 1
+  //   Map<String, dynamic> DataInfos = {
+  //     //'typeColis': _typeColis,
+  //     'typeColis': _selectedOption,
+  //     'typeService': "Courses",
+  //     'nomReceptioneur': _nomRecepteur.text,
+  //     'telephoneReceptioneur': '+225 ${_telephoneRecepteur.text}',
+  //     'infosComplementaire': _infosComplementaire.text,
+  //     'priceCalculed': montantCourse,
+  //     'lieuDepart': _depart.text,
+  //     'lieuDestination': _destination.text,
+  //     'recevoirArgent': false,
+  //   };
+
+  //   // Passez les données à l'écran suivant et naviguez
+  //   Get.toNamed(AppRoutes.selectCourierServiceScreen, arguments: DataInfos)
+  //       ?.then((_) {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //     // Fermer la boîte de dialogue de chargement après la navigation
+  //     Navigator.of(context)
+  //         .pop(); // Cela fermera la boîte de dialogue de chargement
+  //   });
+  // }
 
   onTapArrowleft4() {
     Get.back();
